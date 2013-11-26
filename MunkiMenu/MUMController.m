@@ -25,9 +25,9 @@ const NSString* MSUbundleID = @"ManagedInstalls";
     [statusItem setHighlightMode:YES];
     [menu setDelegate:self];
     
-    [menu addUpdateServerURLToMenu];
-    [menu addManifestNameToMenu];
+    [menu addManagedInstallListToMenu];
     [menu addOptionalInstallListToMenu];
+    [menu addInfoToMenu];
 }
 
 #pragma mark - IBActions
@@ -44,8 +44,7 @@ const NSString* MSUbundleID = @"ManagedInstalls";
 
 #pragma mark - Menu Delegate
 -(NSString*)managedSoftwareUpdateURL:(MUMMenu*)menu{
-    NSString* munkiURL = [self stringFromCFPref:@"SoftwareRepoURL"];
-    return munkiURL;
+    return [self stringFromCFPref:@"SoftwareRepoURL"];
 }
 
 -(NSString *)manifestName:(MUMMenu *)menu{

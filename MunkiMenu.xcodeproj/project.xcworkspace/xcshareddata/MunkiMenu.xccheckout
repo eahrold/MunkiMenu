@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>6755196F-04BF-472D-96B8-558B47327798</string>
+	<key>IDESourceControlProjectName</key>
+	<string>MunkiMenu</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>6C18FD86-A452-4B90-B799-E43B612CB387</key>
+		<string>https://code.google.com/p/munkimenu/</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>MunkiMenu.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>6C18FD86-A452-4B90-B799-E43B612CB387</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://code.google.com/p/munkimenu/</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>6C18FD86-A452-4B90-B799-E43B612CB387</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>6C18FD86-A452-4B90-B799-E43B612CB387</string>
+			<key>IDESourceControlWCCName</key>
+			<string>munkimenu</string>
+		</dict>
+	</array>
+</dict>
+</plist>

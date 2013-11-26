@@ -21,6 +21,7 @@
 		BE8B46171845155A005D435B /* Managed Software Update.icns in Resources */ = {isa = PBXBuildFile; fileRef = BE8B46161845155A005D435B /* Managed Software Update.icns */; };
 		BE8B461A18451663005D435B /* MUMController.m in Sources */ = {isa = PBXBuildFile; fileRef = BE8B461918451663005D435B /* MUMController.m */; };
 		BE8B461D18451687005D435B /* MUMMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = BE8B461C18451687005D435B /* MUMMenu.m */; };
+		BE966FDE184544F4006B3A92 /* MUMLoginItem.m in Sources */ = {isa = PBXBuildFile; fileRef = BE966FDD184544F4006B3A92 /* MUMLoginItem.m */; };
 		BEB7F5D718451F3700C7ADDB /* Managed Software Update18x18.png in Resources */ = {isa = PBXBuildFile; fileRef = BEB7F5D618451F3700C7ADDB /* Managed Software Update18x18.png */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +60,8 @@
 		BE8B461918451663005D435B /* MUMController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MUMController.m; sourceTree = "<group>"; };
 		BE8B461B18451687005D435B /* MUMMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MUMMenu.h; sourceTree = "<group>"; };
 		BE8B461C18451687005D435B /* MUMMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MUMMenu.m; sourceTree = "<group>"; };
+		BE966FDC184544F4006B3A92 /* MUMLoginItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MUMLoginItem.h; sourceTree = "<group>"; };
+		BE966FDD184544F4006B3A92 /* MUMLoginItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MUMLoginItem.m; sourceTree = "<group>"; };
 		BEB7F5D618451F3700C7ADDB /* Managed Software Update18x18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Managed Software Update18x18.png"; path = "Images.xcassets/AppIcon-2.appiconset/Managed Software Update18x18.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -127,12 +130,14 @@
 			isa = PBXGroup;
 			children = (
 				BE8B45F4184510B0005D435B /* MUMDelegate.h */,
+				BE8B45F5184510B0005D435B /* MUMDelegate.m */,
 				BE8B461818451663005D435B /* MUMController.h */,
 				BE8B461918451663005D435B /* MUMController.m */,
 				BE8B461B18451687005D435B /* MUMMenu.h */,
 				BE8B461C18451687005D435B /* MUMMenu.m */,
-				BE8B45F5184510B0005D435B /* MUMDelegate.m */,
 				BE8B45F7184510B0005D435B /* MainMenu.xib */,
+				BE966FDC184544F4006B3A92 /* MUMLoginItem.h */,
+				BE966FDD184544F4006B3A92 /* MUMLoginItem.m */,
 				BE8B45FA184510B0005D435B /* Images.xcassets */,
 				BE8B45E9184510B0005D435B /* Supporting Files */,
 			);
@@ -276,6 +281,7 @@
 				BE8B45F6184510B0005D435B /* MUMDelegate.m in Sources */,
 				BE8B45EF184510B0005D435B /* main.m in Sources */,
 				BE8B461A18451663005D435B /* MUMController.m in Sources */,
+				BE966FDE184544F4006B3A92 /* MUMLoginItem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

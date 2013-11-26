@@ -25,7 +25,7 @@
 @interface MUMMenu : NSMenu
 
 @property (weak) id<MUMMenuDelegate>delegate;
--(void)addUpdateServerURLToMenu;
--(void)addManifestNameToMenu;
+-(void)addInfoToMenu;
+-(void)addManagedInstallListToMenu;
 -(void)addOptionalInstallListToMenu;
 @end
