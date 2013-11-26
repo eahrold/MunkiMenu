@@ -6,9 +6,9 @@
 //  Copyright (c) 2013 Eldon Ahrold. All rights reserved.
 //
 
-#import "AppDelegate.h"
+#import "MUMDelegate.h"
 
-@implementation AppDelegate
+@implementation MUMDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
