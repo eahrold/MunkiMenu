@@ -24,7 +24,7 @@
     
     if(url){
         NSMenuItem* menu_url;
-        menu_url = [[NSMenuItem alloc]initWithTitle:url
+        menu_url = [[NSMenuItem alloc]initWithTitle:[NSString stringWithFormat:@"Repo URL: %@",url]
                                          action:@selector(dud:)
                                   keyEquivalent:@""];
         [menu_url setTarget:self];
@@ -45,30 +45,6 @@
     
     [self insertItem:info atIndex:[self numberOfItems]-1];
         
-}
--(void)addUpdateServerURLToMenu{
-    NSString* url = [delegate managedSoftwareUpdateURL:self];
-    if(url){
-        NSMenuItem* mums;
-        mums = [[NSMenuItem alloc]initWithTitle:url
-                                         action:@selector(dud:)
-                                 keyEquivalent:@""];
-        [mums setTarget:self];
-        [self insertItem:mums atIndex:[self numberOfItems]-2];
-    }
-}
-
--(void)addManifestNameToMenu{
-    NSString* manifest = [delegate manifestName:self];
-    if(manifest){
-        NSMenuItem* mums;
-        mums = [[NSMenuItem alloc]initWithTitle:[NSString stringWithFormat:@"Using Manifest: %@",manifest]
-                                         action:@selector(dud:)
-                                  keyEquivalent:@""];
-        
-        [mums setTarget:self];
-        [self insertItem:mums atIndex:[self numberOfItems]-2];
-    }
 }
 
 -(void)addManagedInstallListToMenu{

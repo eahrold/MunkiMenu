@@ -65,28 +65,23 @@ const NSString* MSUbundleID = @"ManagedInstalls";
 
 -(NSArray *)installedItems:(MUMMenu *)menu{
     return msuReport[@"InstalledItems"];
-
 }
 
 -(NSArray *)itemsToInstall:(MUMMenu *)menu{
     return msuReport[@"ItemsToInstall"];
-
 }
 
 -(NSArray *)itemsToRemove:(MUMMenu *)menu{
     return msuReport[@"ItemsToRemove"];
-
 }
 
 -(NSArray *)warnings:(MUMMenu *)menu{
     return msuReport[@"Warnings"];
-
 }
 
 #pragma mark - utils
 -(NSString*)stringFromCFPref:(NSString*)pref{
     NSString* string = (__bridge NSString *)(CFPreferencesCopyAppValue((__bridge CFStringRef)(pref), (__bridge CFStringRef)(MSUbundleID)));
-
     return string;
 }
 
