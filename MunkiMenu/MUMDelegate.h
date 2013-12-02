@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface MUMDelegate : NSObject <NSApplicationDelegate>
+extern NSString* const MUMFinishedLaunching;
 
+@interface MUMDelegate : NSObject <NSApplicationDelegate>
+-(void)setupDidEndWithTerminalError:(NSAlert *)alert;
 @end

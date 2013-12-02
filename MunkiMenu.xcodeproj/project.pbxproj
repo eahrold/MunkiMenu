@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BE2C07321847A88B00DF867A /* MUMHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = BE96705F1847896B006B3A92 /* MUMHelper.m */; };
+		BE2C07371847CE6000DF867A /* SMJobBlesser.m in Sources */ = {isa = PBXBuildFile; fileRef = BE2C07361847CE6000DF867A /* SMJobBlesser.m */; };
+		BE2C07391847CF8800DF867A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE2C07381847CF8800DF867A /* Security.framework */; };
 		BE8B45E3184510B0005D435B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE8B45E2184510B0005D435B /* Cocoa.framework */; };
 		BE8B45ED184510B0005D435B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BE8B45EB184510B0005D435B /* InfoPlist.strings */; };
 		BE8B45EF184510B0005D435B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BE8B45EE184510B0005D435B /* main.m */; };
@@ -22,6 +25,10 @@
 		BE8B461A18451663005D435B /* MUMController.m in Sources */ = {isa = PBXBuildFile; fileRef = BE8B461918451663005D435B /* MUMController.m */; };
 		BE8B461D18451687005D435B /* MUMMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = BE8B461C18451687005D435B /* MUMMenu.m */; };
 		BE966FDE184544F4006B3A92 /* MUMLoginItem.m in Sources */ = {isa = PBXBuildFile; fileRef = BE966FDD184544F4006B3A92 /* MUMLoginItem.m */; };
+		BE96704D18478586006B3A92 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE96704C18478586006B3A92 /* Foundation.framework */; };
+		BE96705018478586006B3A92 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BE96704F18478586006B3A92 /* main.m */; };
+		BE96705B184785C2006B3A92 /* com.googlecode.MunkiMenu.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = BE96704B18478586006B3A92 /* com.googlecode.MunkiMenu.helper */; };
+		BE96705D18478689006B3A92 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE96705C18478689006B3A92 /* ServiceManagement.framework */; };
 		BEB7F5D718451F3700C7ADDB /* Managed Software Update18x18.png in Resources */ = {isa = PBXBuildFile; fileRef = BEB7F5D618451F3700C7ADDB /* Managed Software Update18x18.png */; };
 /* End PBXBuildFile section */
 
@@ -33,9 +40,36 @@
 			remoteGlobalIDString = BE8B45DE184510B0005D435B;
 			remoteInfo = MunkiMenu;
 		};
+		BE967058184785AC006B3A92 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BE8B45D7184510B0005D435B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BE96704A18478586006B3A92;
+			remoteInfo = helper;
+		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		BE96705A184785B7006B3A92 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LaunchServices;
+			dstSubfolderSpec = 1;
+			files = (
+				BE96705B184785C2006B3A92 /* com.googlecode.MunkiMenu.helper in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		BE2C07301847A7CD00DF867A /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/CoreServices.framework; sourceTree = DEVELOPER_DIR; };
+		BE2C07331847AB7400DF867A /* helper-Launchd.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "helper-Launchd.plist"; sourceTree = "<group>"; };
+		BE2C07341847BB9C00DF867A /* helper-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "helper-Info.plist"; sourceTree = "<group>"; };
+		BE2C07351847CE6000DF867A /* SMJobBlesser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMJobBlesser.h; sourceTree = "<group>"; };
+		BE2C07361847CE6000DF867A /* SMJobBlesser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMJobBlesser.m; sourceTree = "<group>"; };
+		BE2C07381847CF8800DF867A /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
+		BE2C073A1848FA3400DF867A /* MUMInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MUMInterface.h; path = helper/MUMInterface.h; sourceTree = "<group>"; };
 		BE8B45DF184510B0005D435B /* MunkiMenu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MunkiMenu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE8B45E2184510B0005D435B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		BE8B45E5184510B0005D435B /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -62,7 +96,14 @@
 		BE8B461C18451687005D435B /* MUMMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MUMMenu.m; sourceTree = "<group>"; };
 		BE966FDC184544F4006B3A92 /* MUMLoginItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MUMLoginItem.h; sourceTree = "<group>"; };
 		BE966FDD184544F4006B3A92 /* MUMLoginItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MUMLoginItem.m; sourceTree = "<group>"; };
-		BEB7F5D618451F3700C7ADDB /* Managed Software Update18x18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Managed Software Update18x18.png"; path = "Images.xcassets/AppIcon-2.appiconset/Managed Software Update18x18.png"; sourceTree = "<group>"; };
+		BE96704B18478586006B3A92 /* com.googlecode.MunkiMenu.helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = com.googlecode.MunkiMenu.helper; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE96704C18478586006B3A92 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BE96704F18478586006B3A92 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BE96705218478586006B3A92 /* helper-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "helper-Prefix.pch"; sourceTree = "<group>"; };
+		BE96705C18478689006B3A92 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
+		BE96705E1847896B006B3A92 /* MUMHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MUMHelper.h; sourceTree = "<group>"; };
+		BE96705F1847896B006B3A92 /* MUMHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MUMHelper.m; sourceTree = "<group>"; };
+		BEB7F5D618451F3700C7ADDB /* Managed Software Update18x18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Managed Software Update18x18.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +111,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE2C07391847CF8800DF867A /* Security.framework in Frameworks */,
+				BE96705D18478689006B3A92 /* ServiceManagement.framework in Frameworks */,
 				BE8B45E3184510B0005D435B /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -83,15 +126,33 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BE96704818478586006B3A92 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE96704D18478586006B3A92 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BE69529818491E9C0008CFAA /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				BE2C073A1848FA3400DF867A /* MUMInterface.h */,
+			);
+			name = Shared;
+			sourceTree = "<group>";
+		};
 		BE8B45D6184510B0005D435B = {
 			isa = PBXGroup;
 			children = (
 				BE8B46161845155A005D435B /* Managed Software Update.icns */,
+				BE69529818491E9C0008CFAA /* Shared */,
 				BE8B45E8184510B0005D435B /* MunkiMenu */,
 				BE8B4606184510B0005D435B /* MunkiMenuTests */,
+				BE96704E18478586006B3A92 /* helper */,
 				BE8B45E1184510B0005D435B /* Frameworks */,
 				BE8B45E0184510B0005D435B /* Products */,
 			);
@@ -102,6 +163,7 @@
 			children = (
 				BE8B45DF184510B0005D435B /* MunkiMenu.app */,
 				BE8B4600184510B0005D435B /* MunkiMenuTests.xctest */,
+				BE96704B18478586006B3A92 /* com.googlecode.MunkiMenu.helper */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -109,8 +171,12 @@
 		BE8B45E1184510B0005D435B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BE2C07381847CF8800DF867A /* Security.framework */,
+				BE2C07301847A7CD00DF867A /* CoreServices.framework */,
+				BE96705C18478689006B3A92 /* ServiceManagement.framework */,
 				BE8B45E2184510B0005D435B /* Cocoa.framework */,
 				BE8B4601184510B0005D435B /* XCTest.framework */,
+				BE96704C18478586006B3A92 /* Foundation.framework */,
 				BE8B45E4184510B0005D435B /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -135,9 +201,9 @@
 				BE8B461918451663005D435B /* MUMController.m */,
 				BE8B461B18451687005D435B /* MUMMenu.h */,
 				BE8B461C18451687005D435B /* MUMMenu.m */,
-				BE8B45F7184510B0005D435B /* MainMenu.xib */,
 				BE966FDC184544F4006B3A92 /* MUMLoginItem.h */,
 				BE966FDD184544F4006B3A92 /* MUMLoginItem.m */,
+				BE8B45F7184510B0005D435B /* MainMenu.xib */,
 				BE8B45FA184510B0005D435B /* Images.xcassets */,
 				BE8B45E9184510B0005D435B /* Supporting Files */,
 			);
@@ -148,6 +214,8 @@
 		BE8B45E9184510B0005D435B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				BE2C07351847CE6000DF867A /* SMJobBlesser.h */,
+				BE2C07361847CE6000DF867A /* SMJobBlesser.m */,
 				BEB7F5D618451F3700C7ADDB /* Managed Software Update18x18.png */,
 				BE8B45EA184510B0005D435B /* MunkiMenu-Info.plist */,
 				BE8B45EB184510B0005D435B /* InfoPlist.strings */,
@@ -177,6 +245,27 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		BE96704E18478586006B3A92 /* helper */ = {
+			isa = PBXGroup;
+			children = (
+				BE96704F18478586006B3A92 /* main.m */,
+				BE96705E1847896B006B3A92 /* MUMHelper.h */,
+				BE96705F1847896B006B3A92 /* MUMHelper.m */,
+				BE96705118478586006B3A92 /* Supporting Files */,
+			);
+			path = helper;
+			sourceTree = "<group>";
+		};
+		BE96705118478586006B3A92 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BE2C07341847BB9C00DF867A /* helper-Info.plist */,
+				BE2C07331847AB7400DF867A /* helper-Launchd.plist */,
+				BE96705218478586006B3A92 /* helper-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -187,10 +276,12 @@
 				BE8B45DB184510B0005D435B /* Sources */,
 				BE8B45DC184510B0005D435B /* Frameworks */,
 				BE8B45DD184510B0005D435B /* Resources */,
+				BE96705A184785B7006B3A92 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				BE967059184785AC006B3A92 /* PBXTargetDependency */,
 			);
 			name = MunkiMenu;
 			productName = MunkiMenu;
@@ -214,6 +305,22 @@
 			productName = MunkiMenuTests;
 			productReference = BE8B4600184510B0005D435B /* MunkiMenuTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BE96704A18478586006B3A92 /* com.googlecode.MunkiMenu.helper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BE96705718478587006B3A92 /* Build configuration list for PBXNativeTarget "com.googlecode.MunkiMenu.helper" */;
+			buildPhases = (
+				BE96704718478586006B3A92 /* Sources */,
+				BE96704818478586006B3A92 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = com.googlecode.MunkiMenu.helper;
+			productName = helper;
+			productReference = BE96704B18478586006B3A92 /* com.googlecode.MunkiMenu.helper */;
+			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -244,6 +351,7 @@
 			targets = (
 				BE8B45DE184510B0005D435B /* MunkiMenu */,
 				BE8B45FF184510B0005D435B /* MunkiMenuTests */,
+				BE96704A18478586006B3A92 /* com.googlecode.MunkiMenu.helper */,
 			);
 		};
 /* End PBXProject section */
@@ -279,6 +387,7 @@
 			files = (
 				BE8B461D18451687005D435B /* MUMMenu.m in Sources */,
 				BE8B45F6184510B0005D435B /* MUMDelegate.m in Sources */,
+				BE2C07371847CE6000DF867A /* SMJobBlesser.m in Sources */,
 				BE8B45EF184510B0005D435B /* main.m in Sources */,
 				BE8B461A18451663005D435B /* MUMController.m in Sources */,
 				BE966FDE184544F4006B3A92 /* MUMLoginItem.m in Sources */,
@@ -293,6 +402,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BE96704718478586006B3A92 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE96705018478586006B3A92 /* main.m in Sources */,
+				BE2C07321847A88B00DF867A /* MUMHelper.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -300,6 +418,11 @@
 			isa = PBXTargetDependency;
 			target = BE8B45DE184510B0005D435B /* MunkiMenu */;
 			targetProxy = BE8B4604184510B0005D435B /* PBXContainerItemProxy */;
+		};
+		BE967059184785AC006B3A92 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BE96704A18478586006B3A92 /* com.googlecode.MunkiMenu.helper */;
+			targetProxy = BE967058184785AC006B3A92 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -370,7 +493,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
@@ -402,7 +525,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -410,13 +533,15 @@
 		BE8B4611184510B0005D435B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-2";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MunkiMenu/MunkiMenu-Prefix.pch";
 				INFOPLIST_FILE = "MunkiMenu/MunkiMenu-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.8;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -424,13 +549,15 @@
 		BE8B4612184510B0005D435B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-2";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Developer ID Application: Loyola University New Orleans School of Mass Comm (BUN87F4W87)";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MunkiMenu/MunkiMenu-Prefix.pch";
-				INFOPLIST_FILE = "MunkiMenu/MunkiMenu-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				INFOPLIST_FILE = "release/MunkiMenu-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.8;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -475,6 +602,54 @@
 			};
 			name = Release;
 		};
+		BE96705518478587006B3A92 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "helper/helper-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					"helper/helper-Info.plist",
+					"-sectcreate",
+					__TEXT,
+					__launchd_plist,
+					"helper/helper-Launchd.plist",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.8;
+			};
+			name = Debug;
+		};
+		BE96705618478587006B3A92 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Developer ID Application: Loyola University New Orleans School of Mass Comm (BUN87F4W87)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "helper/helper-Prefix.pch";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					"release/helper-Info.plist",
+					"-sectcreate",
+					__TEXT,
+					__launchd_plist,
+					"helper/helper-Launchd.plist",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.8;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -501,6 +676,15 @@
 			buildConfigurations = (
 				BE8B4614184510B0005D435B /* Debug */,
 				BE8B4615184510B0005D435B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BE96705718478587006B3A92 /* Build configuration list for PBXNativeTarget "com.googlecode.MunkiMenu.helper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE96705518478587006B3A92 /* Debug */,
+				BE96705618478587006B3A92 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

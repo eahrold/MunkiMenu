@@ -9,12 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "MUMMenu.h"
 
-@interface MUMController : NSObject <MUMMenuDelegate>{
+@interface MUMController : NSObject <MUMMenuDelegate,NSUserNotificationCenterDelegate>{
     NSStatusItem* statusItem;
 }
 
-
 @property (strong) IBOutlet MUMMenu* menu;
+
 -(IBAction)runManagedSoftwareUpdate:(id)sender;
 -(IBAction)quitNow:(id)sender;
 @end

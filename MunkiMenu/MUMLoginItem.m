@@ -16,9 +16,14 @@
     NSString * appPath = [[NSBundle mainBundle] bundlePath];
     CFURLRef loginItem = (__bridge CFURLRef)[NSURL fileURLWithPath:appPath];
     LSSharedFileListRef loginItems = LSSharedFileListCreate(NULL, kLSSharedFileListSessionLoginItems, NULL);
-    
+
     if(state){
         //Adding Login Item
+        if([self checkIfAlreadyActive]){
+            CFRelease(loginItems);
+            return YES;
+        }
+        
         if (loginItems) {
             LSSharedFileListItemRef ourLoginItem = LSSharedFileListInsertItemURL(loginItems,
                                                                                  kLSSharedFileListItemLast,
@@ -59,6 +64,31 @@
         CFRelease(loginItems);
     }
     return status;
+}
+
++(BOOL)checkIfAlreadyActive{
+    CFURLRef loginItemCheck = (__bridge CFURLRef)[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
+    LSSharedFileListRef loginItemsCheck = LSSharedFileListCreate(NULL, kLSSharedFileListSessionLoginItems, NULL);
+
+    if (loginItemCheck){
+        UInt32 seedValue;
+        //Retrieve the list of Login Items and cast them to
+        // a NSArray so that it will be easier to iterate.
+        NSArray  *loginItemsArray = CFBridgingRelease(LSSharedFileListCopySnapshot(loginItemsCheck, &seedValue));
+        for( id i in loginItemsArray){
+            LSSharedFileListItemRef itemRef = (__bridge LSSharedFileListItemRef)i;
+            //Resolve the item with URL
+            if (LSSharedFileListItemResolve(itemRef, 0, (CFURLRef*) &loginItemCheck, NULL) == noErr) {
+                NSString * urlPath = [(__bridge NSURL*)loginItemCheck path];
+                if ([urlPath compare:[[NSBundle mainBundle] bundlePath]] == NSOrderedSame){
+                    CFRelease(loginItemCheck);
+                    return YES;
+                }
+            }
+        }
+    }
+    CFRelease(loginItemsCheck);
+    return NO;
 }
 
 @end

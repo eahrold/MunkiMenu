@@ -11,21 +11,29 @@
 @class MUMMenu, MUMController;
 
 @protocol MUMMenuDelegate <NSObject>
--(NSString*)managedSoftwareUpdateURL:(MUMMenu*)menu;
+-(NSString*)repoURL:(MUMMenu*)menu;
+-(NSString*)clientIdentifier:(MUMMenu*)menu;
 -(NSString*)manifestName:(MUMMenu *)menu;
 -(NSArray*)avaliableUpdates:(MUMMenu*)menu;
+-(NSArray*)managedInstalls:(MUMMenu *)menu;
 -(NSArray*)optionalInstalls:(MUMMenu *)menu;
 -(NSArray*)processedInstalls:(MUMMenu *)menu;
 -(NSArray*)installedItems:(MUMMenu *)menu;
 -(NSArray*)itemsToInstall:(MUMMenu *)menu;
 -(NSArray*)itemsToRemove:(MUMMenu *)menu;
 -(NSArray*)warnings:(MUMMenu *)menu;
+
+-(void)runManagedSoftwareUpdate:(id)sender;
+-(void)aboutMunkiMenu:(id)sender;
+-(void)uninstallHelper:(id)sender;
 @end
 
 @interface MUMMenu : NSMenu
 
 @property (weak) id<MUMMenuDelegate>delegate;
--(void)addInfoToMenu;
+-(void)addAlternateItemsToMenu;
+-(void)addSettingsToMenu;
 -(void)addManagedInstallListToMenu;
 -(void)addOptionalInstallListToMenu;
+-(void)refreshAllItems;
 @end

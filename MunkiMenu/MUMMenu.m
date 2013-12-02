@@ -7,15 +7,58 @@
 //
 
 #import "MUMMenu.h"
-@class MUMController;
 
-@implementation MUMMenu
+@implementation MUMMenu{
+    NSMutableSet* currentMenuItems;
+}
 @synthesize delegate;
 
--(void)addInfoToMenu{
-    NSString* url = [delegate managedSoftwareUpdateURL:self];
-    NSString* manifest = [delegate manifestName:self];
 
+
+#pragma mark - Menu Setup
+-(void)awakeFromNib{
+    if(!currentMenuItems){
+        currentMenuItems = [NSMutableSet new];
+    }
+}
+
+-(void)refreshAllItems{
+    for(NSMenuItem* item in currentMenuItems){
+        [self removeItem:item];
+    }
+    [currentMenuItems removeAllObjects];
+    
+    [self addSettingsToMenu];
+    [self addManagedInstallListToMenu];
+    [self addOptionalInstallListToMenu];
+}
+
+-(void)addAlternateItemsToMenu{
+    /*add the about an uninstall here so we can set the selectors programatically*/
+    NSMenuItem* about = [[NSMenuItem alloc]initWithTitle:@"About..."
+                                                  action:@selector(orderFrontStandardAboutPanel:)
+                                           keyEquivalent:@""];
+    
+    [about setKeyEquivalentModifierMask:NSAlternateKeyMask];
+    [about setTarget:[NSApplication sharedApplication]];
+    [about setAlternate:YES];
+    [self insertItem:about atIndex:1];
+    
+    NSMenuItem* uninstall = [[NSMenuItem alloc]initWithTitle:@"Uninstall..."
+                                                      action:@selector(uninstallHelper:)
+                                               keyEquivalent:@""];
+    
+    [uninstall setKeyEquivalentModifierMask:NSAlternateKeyMask];
+    [uninstall setTarget:delegate];
+    [uninstall setAlternate:YES];
+    [self insertItem:uninstall atIndex:[self numberOfItems]];
+}
+
+#pragma mark - Menu Settings
+-(void)addSettingsToMenu{
+    NSString* url = [delegate repoURL:self];
+    NSString* clientID = [delegate clientIdentifier:self];
+    
     NSMenuItem* info = [[NSMenuItem alloc]initWithTitle:@"Settings"
                                                  action:NULL
                                           keyEquivalent:@""];
@@ -25,30 +68,30 @@
     if(url){
         NSMenuItem* menu_url;
         menu_url = [[NSMenuItem alloc]initWithTitle:[NSString stringWithFormat:@"Repo URL: %@",url]
-                                         action:@selector(dud:)
+                                         action:NULL
                                   keyEquivalent:@""];
         [menu_url setTarget:self];
         [details addItem:menu_url];
     }
     
-    if(manifest){
-        NSMenuItem* menu_manifest;
-        menu_manifest = [[NSMenuItem alloc]initWithTitle:[NSString stringWithFormat:@"Using Manifest: %@",manifest]
-                                         action:@selector(dud:)
+    if(clientID){
+        NSMenuItem* menu_cid;
+        menu_cid = [[NSMenuItem alloc]initWithTitle:[NSString stringWithFormat:@"Client Identifier: %@",clientID]
+                                         action:NULL
                                   keyEquivalent:@""];
         
-        [menu_manifest setTarget:self];
-        [details addItem:menu_manifest];
+        [menu_cid setTarget:self];
+        [details addItem:menu_cid];
     }
 
     [info setSubmenu:details];
-    
-    [self insertItem:info atIndex:[self numberOfItems]-1];
-        
+    [self insertItem:info atIndex:[self numberOfItems]-2];
+    [currentMenuItems addObject:info];
 }
 
+#pragma mark - Menu Lists
 -(void)addManagedInstallListToMenu{
-    NSArray* managedInstals = [delegate installedItems:self];
+    NSArray* managedInstals = [delegate managedInstalls:self];
     if(!managedInstals)return;
     
     NSMenuItem* mums = [[NSMenuItem alloc]initWithTitle:@"Managed Installs"
@@ -65,7 +108,8 @@
     }
     
     [self setSubmenu:details forItem:mums];
-    [self insertItem:mums atIndex:[self numberOfItems]-2];
+    [self insertItem:mums atIndex:3];
+    [currentMenuItems addObject:mums];
 }
 
 -(void)addOptionalInstallListToMenu{
@@ -76,10 +120,9 @@
                                                  action:NULL
                                           keyEquivalent:@""];
 
-    
     NSMenu* details = [[NSMenu alloc]init];
     for (NSDictionary* dict in optionalInstals){
-        NSMenuItem* install = [[NSMenuItem alloc]initWithTitle:dict[@"name"] action:NULL keyEquivalent:@""];
+        NSMenuItem* install = [[NSMenuItem alloc]initWithTitle:dict[@"item"] action:NULL keyEquivalent:@""];
         
         if([[dict objectForKey:@"installed"] isEqual:[NSNumber numberWithBool:YES]]){
             [install setState:YES];
@@ -87,15 +130,13 @@
             [install setTarget:delegate];
             [install setAction:@selector(runManagedSoftwareUpdate:)];
         }
-        
         [details addItem:install];
-        
     }
     
     [self setSubmenu:details forItem:mums];
-    [self insertItem:mums atIndex:[self numberOfItems]-2];
+    [self insertItem:mums atIndex:3];
+    [currentMenuItems addObject:mums];
 }
 
--(void)dud:(id)sender{
-}
+
 @end
