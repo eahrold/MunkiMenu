@@ -8,16 +8,20 @@
 
 #import "MUMHelper.h"
 
-const NSString* MSUbundleID = @"ManagedInstalls";
+static NSString* const MSUAppPreferences = @"ManagedInstalls";
+static NSString* const HeperDomain = @"com.googlecode.MunkiMenu.helper";
+
 
 @implementation MUMHelper
-
 
 -(void)getPreferenceDictionary:(void (^)(NSDictionary *, NSError *))reply{
     NSError* error;
     // Convert What we want back in the main app to NSDictionary
     // Entries
     NSDictionary* dict = @{@"SoftwareRepoURL":[self stringFromCFPref:@"SoftwareRepoURL"],
+                           @"ManifestURL":[self stringFromCFPref:@"ManifestURL"],
+                           @"CatalogURL":[self stringFromCFPref:@"CatalogURL"],
+                           @"PackageURL":[self stringFromCFPref:@"PackageURL"],
                            @"ManagedInstallDir":[self stringFromCFPref:@"ManagedInstallDir"],
                            @"InstallAppleSoftwareUpdates":[self stringFromCFPref:@"InstallAppleSoftwareUpdates"],
                            @"LogFile":[self stringFromCFPref:@"LogFile"],
@@ -25,6 +29,32 @@ const NSString* MSUbundleID = @"ManagedInstalls";
                            };
     
     reply(dict,error);
+}
+
+-(void)changeRepoURL:(NSString*)newURL withReply:(void (^)(NSError *))reply{
+    NSError* error;
+    CFPreferencesSetAppValue((__bridge CFStringRef)(@"SoftwareRepoURL"), (__bridge CFStringRef)(newURL), (__bridge CFStringRef)(MSUAppPreferences));
+    
+    BOOL status = CFPreferencesAppSynchronize((__bridge CFStringRef)(MSUAppPreferences));
+    
+    if(!status){
+        error = [NSError errorWithDomain:HeperDomain code:1 userInfo:@{NSLocalizedDescriptionKey:@"error setting repo url"}];
+    }
+    
+    reply(error);
+}
+
+-(void)changeClientManifest:(NSString*)newManifest withReply:(void (^)(NSError *))reply{
+    NSError* error;
+    CFPreferencesSetAppValue((__bridge CFStringRef)(@"ClientIdentifier"), (__bridge CFStringRef)(newManifest), (__bridge CFStringRef)(MSUAppPreferences));
+    
+    BOOL status = CFPreferencesAppSynchronize((__bridge CFStringRef)(MSUAppPreferences));
+
+    if(!status){
+        error = [NSError errorWithDomain:HeperDomain code:1 userInfo:@{NSLocalizedDescriptionKey:@"error setting client manifest"}];
+    }
+    
+    reply(error);
 }
 
 -(void)quitHelper{
@@ -57,7 +87,7 @@ const NSString* MSUbundleID = @"ManagedInstalls";
 }
 
 -(NSString*)stringFromCFPref:(NSString*)pref{
-    NSString* string = CFBridgingRelease(CFPreferencesCopyAppValue((__bridge CFStringRef)(pref), (__bridge CFStringRef)(MSUbundleID)));
+    NSString* string = CFBridgingRelease(CFPreferencesCopyAppValue((__bridge CFStringRef)(pref), (__bridge CFStringRef)(MSUAppPreferences)));
     if(string){
         return string;
     }else{

@@ -12,8 +12,10 @@
 
 @protocol MUMMenuDelegate <NSObject>
 -(NSString*)repoURL:(MUMMenu*)menu;
+-(NSString*)manifestURL:(MUMMenu*)menu;
+-(NSString*)catalogURL:(MUMMenu*)menu;
+-(NSString*)packageURL:(MUMMenu*)menu;
 -(NSString*)clientIdentifier:(MUMMenu*)menu;
--(NSString*)manifestName:(MUMMenu *)menu;
 -(NSArray*)avaliableUpdates:(MUMMenu*)menu;
 -(NSArray*)managedInstalls:(MUMMenu *)menu;
 -(NSArray*)optionalInstalls:(MUMMenu *)menu;

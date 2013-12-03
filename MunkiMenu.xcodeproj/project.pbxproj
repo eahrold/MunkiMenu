@@ -30,6 +30,7 @@
 		BE96705B184785C2006B3A92 /* com.googlecode.MunkiMenu.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = BE96704B18478586006B3A92 /* com.googlecode.MunkiMenu.helper */; };
 		BE96705D18478689006B3A92 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE96705C18478689006B3A92 /* ServiceManagement.framework */; };
 		BEB7F5D718451F3700C7ADDB /* Managed Software Update18x18.png in Resources */ = {isa = PBXBuildFile; fileRef = BEB7F5D618451F3700C7ADDB /* Managed Software Update18x18.png */; };
+		BEE3B712184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m in Sources */ = {isa = PBXBuildFile; fileRef = BEE3B711184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,6 +105,8 @@
 		BE96705E1847896B006B3A92 /* MUMHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MUMHelper.h; sourceTree = "<group>"; };
 		BE96705F1847896B006B3A92 /* MUMHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MUMHelper.m; sourceTree = "<group>"; };
 		BEB7F5D618451F3700C7ADDB /* Managed Software Update18x18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Managed Software Update18x18.png"; sourceTree = "<group>"; };
+		BEE3B710184D85B700E19FF7 /* NSString(TextField)+isNotBlank.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString(TextField)+isNotBlank.h"; sourceTree = "<group>"; };
+		BEE3B711184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString(TextField)+isNotBlank.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -214,6 +217,8 @@
 		BE8B45E9184510B0005D435B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				BEE3B710184D85B700E19FF7 /* NSString(TextField)+isNotBlank.h */,
+				BEE3B711184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m */,
 				BE2C07351847CE6000DF867A /* SMJobBlesser.h */,
 				BE2C07361847CE6000DF867A /* SMJobBlesser.m */,
 				BEB7F5D618451F3700C7ADDB /* Managed Software Update18x18.png */,
@@ -386,6 +391,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE8B461D18451687005D435B /* MUMMenu.m in Sources */,
+				BEE3B712184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m in Sources */,
 				BE8B45F6184510B0005D435B /* MUMDelegate.m in Sources */,
 				BE2C07371847CE6000DF867A /* SMJobBlesser.m in Sources */,
 				BE8B45EF184510B0005D435B /* main.m in Sources */,

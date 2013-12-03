@@ -12,7 +12,6 @@
 #import "SMJobBlesser.h"
 #import "MUMDelegate.h"
 
-static NSString* const MSUbundleID = @"ManagedInstalls";
 static NSString* const MSUUpdate = @"com.googlecode.munki.ManagedSoftwareUpdate.complete";
 static NSString* const MSUUpdateComplete = @"com.googlecode.munki.ManagedSoftwareUpdate.update";
 static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwareUpdate.avaliableupdates";
@@ -23,6 +22,8 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     NSDictionary *msuSelfService;
     NSDictionary *msuReport;
     NSDictionary *msuInventory;
+    AuthorizationRef _authRef;
+    BOOL setupDone;
 }
 @synthesize menu;
 
@@ -48,6 +49,7 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     [menu addSettingsToMenu];
     [menu addManagedInstallListToMenu];
     [menu addOptionalInstallListToMenu];
+    setupDone=YES;
 }
 
 -(void)refreshMenu{
@@ -57,10 +59,9 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
 
 #pragma mark - IBActions
 -(IBAction)runManagedSoftwareUpdate:(id)sender{
-    NSTask* task = [[NSTask alloc]init];
-    [task setLaunchPath:@"/Applications/Utilities/Managed Software Update.app/Contents/MacOS/Managed Software Update"];
-    [task launch];
+    [[NSWorkspace sharedWorkspace] launchApplication:@"/Applications/Utilities/Managed Software Update.app"];
 }
+
 
 -(IBAction)quitNow:(id)sender{
     [NSApp terminate:self];
@@ -70,16 +71,18 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     [[NSApplication sharedApplication]orderFrontStandardAboutPanel:self];
 }
 
-
 #pragma mark - NSXPC
 -(void)getMSUPlistFromHelper{
     // This gets the MSU details from the helper app.  We use a helper app
     // here to handle the situation where the ManagedInstall.plist is
     // in the root's ~/Library/Preferences/ folder.  Since the helper app
     // runs as root it can read the values and pass it back to us.
-    NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName options:NSXPCConnectionPrivileged];
+    NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName
+                                                                                    options:NSXPCConnectionPrivileged];
+    
     helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
     [helperXPCConnection resume];
+    
     [[helperXPCConnection remoteObjectProxy] getPreferenceDictionary:^(NSDictionary * dict, NSError * error)
      {[[NSOperationQueue mainQueue] addOperationWithBlock:^{
              if(error){
@@ -87,7 +90,9 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
                  [NSApp presentError:error];
              }else{
                  msuPrefs = dict;
-                 [self configureMenu];
+                 if(!setupDone){
+                     [self configureMenu];
+                 }
              }
          }];
          [helperXPCConnection invalidate];
@@ -95,6 +100,7 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
 }
 
 -(void)uninstallHelper:(MUMMenu *)menu{
+    //Uninstall the Helper app and launchD files, then unload the launchd job.
     NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName options:NSXPCConnectionPrivileged];
     
     helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
@@ -169,14 +175,36 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     if(!msuDir)return;
     
     NSString *manifest = [NSString stringWithFormat:@"%@/manifests/client_manifest.plist",msuDir];
-    NSString *inventory = [NSString stringWithFormat:@"%@/ApplicationInventory.plist",msuDir];
-    NSString *reports = [NSString stringWithFormat:@"%@/ManagedInstallReport.plist",msuDir];
-    NSString *ssinfo = [NSString stringWithFormat:@"%@/manifests/SelfServeManifest",msuDir];
-    
     msuClientManifest = [NSDictionary dictionaryWithContentsOfFile:manifest];
+
+    NSString *inventory = [NSString stringWithFormat:@"%@/ApplicationInventory.plist",msuDir];
     msuInventory = [NSDictionary dictionaryWithContentsOfFile:inventory];
+
+    NSString *reports = [NSString stringWithFormat:@"%@/ManagedInstallReport.plist",msuDir];
     msuReport = [NSDictionary dictionaryWithContentsOfFile:reports];
+
+    NSString *ssinfo = [NSString stringWithFormat:@"%@/manifests/SelfServeManifest",msuDir];
     msuSelfService = [NSDictionary dictionaryWithContentsOfFile:ssinfo];
+}
+
+-(BOOL)authorizeHelper{
+    NSLog(@"Authorizing");
+    AuthorizationRef authRef = NULL;
+	AuthorizationItem authItem		= { kAuthorizationRuleAuthenticateAsAdmin, 0, NULL, 0 };
+	AuthorizationRights authRights	= { 1, &authItem };
+    AuthorizationEnvironment environment = {0, NULL};
+    
+    AuthorizationFlags authFlags =  kAuthorizationFlagDefaults              |
+                                    kAuthorizationFlagInteractionAllowed    |
+                                    kAuthorizationFlagPreAuthorize          |
+                                    kAuthorizationFlagExtendRights;
+        
+    OSStatus status = AuthorizationCreate(&authRights, &environment, authFlags, &authRef);
+    if (status != errAuthorizationSuccess){
+        NSLog(@"Not Authorized");
+        return NO;
+    }
+    return YES;
 }
 
 #pragma mark - Menu Delegate
@@ -184,12 +212,20 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     return msuPrefs[@"SoftwareRepoURL"];
 }
 
--(NSString *)clientIdentifier:(MUMMenu *)menu{
-    return msuPrefs[@"ClientIdentifier"];
+-(NSString*)manifestURL:(MUMMenu *)menu{
+    return msuPrefs[@"ManifestURL"];
 }
 
--(NSString *)manifestName:(MUMMenu *)menu{
-    return msuReport[@"ManifestName"];
+-(NSString *)catalogURL:(MUMMenu *)menu{
+    return msuPrefs[@"CatalogURL"];
+}
+
+-(NSString*)packageURL:(MUMMenu*)menu{
+    return msuPrefs[@"PackageURL"];
+}
+
+-(NSString *)clientIdentifier:(MUMMenu *)menu{
+    return msuPrefs[@"ClientIdentifier"];
 }
 
 -(NSArray *)avaliableUpdates:(MUMMenu *)menu{

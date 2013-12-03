@@ -7,6 +7,7 @@
 //
 
 #import "MUMMenu.h"
+#import "NSString(TextField)+isNotBlank.h"
 
 @implementation MUMMenu{
     NSMutableSet* currentMenuItems;
@@ -56,7 +57,11 @@
 
 #pragma mark - Menu Settings
 -(void)addSettingsToMenu{
-    NSString* url = [delegate repoURL:self];
+    NSString* repoURL = [delegate repoURL:self];
+    NSString* manifestURL = [delegate manifestURL:self];
+    NSString* catalogURL = [delegate catalogURL:self];
+    NSString* packageURL = [delegate packageURL:self];
+
     NSString* clientID = [delegate clientIdentifier:self];
     
     NSMenuItem* info = [[NSMenuItem alloc]initWithTitle:@"Settings"
@@ -65,16 +70,43 @@
     
     NSMenu* details = [[NSMenu alloc]init];
     
-    if(url){
+    if(repoURL.isNotBlank){
         NSMenuItem* menu_url;
-        menu_url = [[NSMenuItem alloc]initWithTitle:[NSString stringWithFormat:@"Repo URL: %@",url]
+        menu_url = [[NSMenuItem alloc]initWithTitle:[NSString stringWithFormat:@"Repo URL: %@",repoURL]
                                          action:NULL
                                   keyEquivalent:@""];
         [menu_url setTarget:self];
         [details addItem:menu_url];
     }
     
-    if(clientID){
+    if(manifestURL.isNotBlank){
+        NSMenuItem* menu_url;
+        menu_url = [[NSMenuItem alloc]initWithTitle:[NSString stringWithFormat:@"Manifest URL: %@",manifestURL]
+                                             action:NULL
+                                      keyEquivalent:@""];
+        [menu_url setTarget:self];
+        [details addItem:menu_url];
+    }
+    
+    if(catalogURL.isNotBlank){
+        NSMenuItem* menu_url;
+        menu_url = [[NSMenuItem alloc]initWithTitle:[NSString stringWithFormat:@"Catalog URL: %@",catalogURL]
+                                             action:NULL
+                                      keyEquivalent:@""];
+        [menu_url setTarget:self];
+        [details addItem:menu_url];
+    }
+    
+    if(packageURL.isNotBlank){
+        NSMenuItem* menu_url;
+        menu_url = [[NSMenuItem alloc]initWithTitle:[NSString stringWithFormat:@"Package URL: %@",packageURL]
+                                             action:NULL
+                                      keyEquivalent:@""];
+        [menu_url setTarget:self];
+        [details addItem:menu_url];
+    }
+    
+    if(clientID.isNotBlank){
         NSMenuItem* menu_cid;
         menu_cid = [[NSMenuItem alloc]initWithTitle:[NSString stringWithFormat:@"Client Identifier: %@",clientID]
                                          action:NULL
@@ -85,8 +117,10 @@
     }
 
     [info setSubmenu:details];
-    [self insertItem:info atIndex:[self numberOfItems]-2];
+    [info setAlternate:YES];
+    [self insertItem:info atIndex:1];
     [currentMenuItems addObject:info];
+    
 }
 
 #pragma mark - Menu Lists
@@ -108,7 +142,7 @@
     }
     
     [self setSubmenu:details forItem:mums];
-    [self insertItem:mums atIndex:3];
+    [self insertItem:mums atIndex:[self numberOfItems]-3];
     [currentMenuItems addObject:mums];
 }
 
@@ -134,7 +168,7 @@
     }
     
     [self setSubmenu:details forItem:mums];
-    [self insertItem:mums atIndex:3];
+    [self insertItem:mums atIndex:[self numberOfItems]-3];
     [currentMenuItems addObject:mums];
 }
 
