@@ -3,7 +3,12 @@ MunkiMenu makes Managed Software Update easily accessible.  It lives in the stat
 
 When pressing the command key It also shows some at a glance information that is useful to administrators when trying to diagnose client misconfiguration. It also brings up the Quit item.
 
+
 [Visit the Release Page](https://github.com/eahrold/MunkiMenu/releases)
+
+![default][default] ![Command Key Pressed][commandKey] ![Option Key Pressed][optionKey]
+
+
 
 ----
 ### Technical Details 
@@ -78,3 +83,8 @@ You can download either type on the [release page](https://github.com/eahrold/Mu
 
 ### Other Info 
 To uninstall the helper tool and associated files, click the option key while the menu is selected.
+
+
+[default]:./tree/master/docs/default.png
+[commandKey]:./tree/master/docs/commandKey.png
+[optionKey]:./tree/master/docs/optionKey.png
