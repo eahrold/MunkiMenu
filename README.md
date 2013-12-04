@@ -6,7 +6,7 @@ When pressing the command key It also shows some at a glance information that is
 
 [Visit the Release Page](https://github.com/eahrold/MunkiMenu/releases)
 
-![default][default] ![Command Key Pressed][commandKey] ![Option Key Pressed][optionKey]
+![default][default]&nbsp;&nbsp;![Command Key Pressed][commandKey]&nbsp;&nbsp;![Option Key Pressed][optionKey]
 
 
 
