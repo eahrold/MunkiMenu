@@ -16,6 +16,7 @@
 -(NSString*)catalogURL:(MUMMenu*)menu;
 -(NSString*)packageURL:(MUMMenu*)menu;
 -(NSString*)clientIdentifier:(MUMMenu*)menu;
+-(NSString*)logFile:(MUMMenu *)menu;
 -(NSArray*)avaliableUpdates:(MUMMenu*)menu;
 -(NSArray*)managedInstalls:(MUMMenu *)menu;
 -(NSArray*)optionalInstalls:(MUMMenu *)menu;
@@ -26,8 +27,10 @@
 -(NSArray*)warnings:(MUMMenu *)menu;
 
 -(void)runManagedSoftwareUpdate:(id)sender;
--(void)aboutMunkiMenu:(id)sender;
+-(void)openLogFile:(id)sender;
 -(void)uninstallHelper:(id)sender;
+-(void)quitNow:(id)sender;
+
 @end
 
 @interface MUMMenu : NSMenu

@@ -53,6 +53,14 @@
     [uninstall setTarget:delegate];
     [uninstall setAlternate:YES];
     [self insertItem:uninstall atIndex:[self numberOfItems]];
+    
+    NSMenuItem* quit = [[NSMenuItem alloc]initWithTitle:@"Quit..."
+                                                      action:@selector(quitNow:)
+                                               keyEquivalent:@""];
+    
+    [quit setTarget:delegate];
+    [quit setAlternate:YES];
+    [self insertItem:quit atIndex:[self numberOfItems]];
 }
 
 #pragma mark - Menu Settings
@@ -115,7 +123,15 @@
         [menu_cid setTarget:self];
         [details addItem:menu_cid];
     }
-
+    
+    NSMenuItem* menu_logfile;
+    menu_logfile = [[NSMenuItem alloc]initWithTitle:[NSString stringWithFormat:@"Open Log: %@",[delegate logFile:self]]
+                                         action:@selector(openLogFile:)
+                                  keyEquivalent:@""];
+    
+    [menu_logfile setTarget:delegate];
+    [details addItem:menu_logfile];
+    
     [info setSubmenu:details];
     [info setAlternate:YES];
     [self insertItem:info atIndex:1];
@@ -126,12 +142,11 @@
 #pragma mark - Menu Lists
 -(void)addManagedInstallListToMenu{
     NSArray* managedInstals = [delegate managedInstalls:self];
-    if(!managedInstals)return;
+    if(!managedInstals.count)return;
     
     NSMenuItem* mums = [[NSMenuItem alloc]initWithTitle:@"Managed Installs"
                                                  action:NULL
                                           keyEquivalent:@""];
-    
     
     NSMenu* details = [[NSMenu alloc]init];
     for (NSString* item in managedInstals){
@@ -142,13 +157,13 @@
     }
     
     [self setSubmenu:details forItem:mums];
-    [self insertItem:mums atIndex:[self numberOfItems]-3];
+    [self insertItem:mums atIndex:[self numberOfItems]-4];
     [currentMenuItems addObject:mums];
 }
 
 -(void)addOptionalInstallListToMenu{
     NSArray* optionalInstals = [delegate optionalInstalls:self];
-    if(!optionalInstals)return;
+    if(!optionalInstals.count)return;
 
     NSMenuItem* mums = [[NSMenuItem alloc]initWithTitle:@"Optional Installs"
                                                  action:NULL
@@ -168,7 +183,7 @@
     }
     
     [self setSubmenu:details forItem:mums];
-    [self insertItem:mums atIndex:[self numberOfItems]-3];
+    [self insertItem:mums atIndex:[self numberOfItems]-4];
     [currentMenuItems addObject:mums];
 }
 

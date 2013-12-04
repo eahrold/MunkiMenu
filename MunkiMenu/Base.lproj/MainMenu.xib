@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment defaultVersion="1070" identifier="macosx"/>
+        <deployment defaultVersion="1080" identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
     </dependencies>
     <objects>
@@ -664,10 +664,10 @@
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="HXC-A9-Rvn"/>
                 <menuItem isSeparatorItem="YES" id="Zd8-7l-yAz"/>
-                <menuItem title="Quit" id="ODF-6p-6Ww">
+                <menuItem title="Enable Notifications" id="ODF-6p-6Ww">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
-                        <action selector="quitNow:" target="BXY-M4-cSs" id="Kvf-nK-23C"/>
+                        <action selector="enableNotifications:" target="BXY-M4-cSs" id="ZR4-Gb-q8f"/>
                     </connections>
                 </menuItem>
             </items>

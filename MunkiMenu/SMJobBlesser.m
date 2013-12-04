@@ -103,7 +103,6 @@ NSString* const JBRemoveError = @"There Was a problem removing the Helper Tool."
         localError = [JobBlesser jobBlessError:JBAuthError withReturnCode:1];
         
 	}else {
-        NSLog(@"Trying to remove helper tool");
         CFErrorRef  cfError;
         result = SMJobRemove(kSMDomainSystemLaunchd, (__bridge CFStringRef)helperID, authRef,NO, &cfError);
         

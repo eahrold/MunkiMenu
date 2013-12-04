@@ -31,6 +31,7 @@
 		BE96705D18478689006B3A92 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE96705C18478689006B3A92 /* ServiceManagement.framework */; };
 		BEB7F5D718451F3700C7ADDB /* Managed Software Update18x18.png in Resources */ = {isa = PBXBuildFile; fileRef = BEB7F5D618451F3700C7ADDB /* Managed Software Update18x18.png */; };
 		BEE3B712184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m in Sources */ = {isa = PBXBuildFile; fileRef = BEE3B711184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m */; };
+		BEE3B718184E2B0D00E19FF7 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE2C07301847A7CD00DF867A /* CoreServices.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,6 +108,7 @@
 		BEB7F5D618451F3700C7ADDB /* Managed Software Update18x18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Managed Software Update18x18.png"; sourceTree = "<group>"; };
 		BEE3B710184D85B700E19FF7 /* NSString(TextField)+isNotBlank.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString(TextField)+isNotBlank.h"; sourceTree = "<group>"; };
 		BEE3B711184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString(TextField)+isNotBlank.m"; sourceTree = "<group>"; };
+		BEE3B716184E2AF600E19FF7 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/ServiceManagement.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +135,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BEE3B718184E2B0D00E19FF7 /* CoreServices.framework in Frameworks */,
 				BE96704D18478586006B3A92 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -174,6 +177,7 @@
 		BE8B45E1184510B0005D435B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BEE3B716184E2AF600E19FF7 /* ServiceManagement.framework */,
 				BE2C07381847CF8800DF867A /* Security.framework */,
 				BE2C07301847A7CD00DF867A /* CoreServices.framework */,
 				BE96705C18478689006B3A92 /* ServiceManagement.framework */,

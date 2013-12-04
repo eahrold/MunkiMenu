@@ -16,5 +16,4 @@
 @property (strong) IBOutlet MUMMenu* menu;
 
 -(IBAction)runManagedSoftwareUpdate:(id)sender;
--(IBAction)quitNow:(id)sender;
 @end

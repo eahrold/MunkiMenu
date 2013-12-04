@@ -11,5 +11,5 @@
 extern NSString* const MUMFinishedLaunching;
 
 @interface MUMDelegate : NSObject <NSApplicationDelegate>
--(void)setupDidEndWithTerminalError:(NSAlert *)alert;
+-(void)setupDidEndWithUninstallRequest;
 @end

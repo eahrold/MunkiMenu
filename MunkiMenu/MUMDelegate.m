@@ -15,9 +15,7 @@ NSString* const MUMFinishedLaunching = @"com.google.code.munkimenu.didfinishlaun
 
 @implementation MUMDelegate
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
-    [MUMLoginItem installLoginItem:YES];
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification{
     NSError* error;
     
     if(![JobBlesser blessHelperWithLabel:kHelperName
@@ -38,14 +36,18 @@ NSString* const MUMFinishedLaunching = @"com.google.code.munkimenu.didfinishlaun
     [NSApp terminate:self];
 }
 
+- (void)setupDidEndWithUninstallRequest{
+    [JobBlesser removeHelperWithLabel:kHelperName];
+    [NSApp presentError:[NSError errorWithDomain:@"" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Helper Tool and associated files have been removed.  You can safely remove MunkiMenu from the Applications folder.  We will now quit"}] modalForWindow:NULL delegate:[NSApp delegate]
+     didPresentSelector:@selector(setupDidEndWithTerminalError:) contextInfo:nil];
+}
+
 -(void)applicationWillTerminate:(NSNotification *)notification{
     NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName options:NSXPCConnectionPrivileged];
-    
     helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
     [helperXPCConnection resume];
-    
     [[helperXPCConnection remoteObjectProxy] quitHelper];
-
+    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"previouslyRun"];
 }
 
 @end
