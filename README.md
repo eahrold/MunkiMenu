@@ -9,14 +9,14 @@ When pressing the command key It also shows some at a glance information that is
 ### Technical Details 
 Munki menu includes a helper app for accessing ManagedInstalls preferences that may exist in the root domain.  
 
-
 It uses NSXPC to communicate between the main app and the helper app so this will only run on 10.8 or greater.
 
 It uses SMJobBless to install the helper app so if building this yourself you will need to adjust the Code Signing components. Please refer to [https://developer.apple.com/library/mac/samplecode/SMJobBless/Listings/ReadMe_txt.html  Apple's SMJobBless example code]
 
 however if you want to install this in a way that will not require user interaction (i.e using munki) you can do one of two things.  
 
-Create a Munki pkg with just the App and add this Post-Install script  to the munki pkginfo
+1. Create a copy-file dmg with only the MunkiMenu.app and add this Post-Install script  to the munki pkginfo
+
 ```
 #!/usr/bin/python
 import subprocess
@@ -74,5 +74,5 @@ if __name__ == '__main__':
 
 2. make a package that installs the launchD file and the helper tool and loads the launchD in it's postflight script, You can download this type of installer package, ready for deployment [https://github.com/eahrold/MunkiMenu/releases/download/1.1/MunkiMenu.dmg here.] 
 
-=== Other Info ===
+### Other Info 
 To uninstall the helper tool and associated files, click the option key while the menu is selected.
