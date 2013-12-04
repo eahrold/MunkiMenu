@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>autoremove</key>
+	<true/>
+	<key>catalogs</key>
+	<array>
+		<string>testing</string>
+		<string>All</string>
+	</array>
+	<key>installer_item_hash</key>
+	<string>045074a2e9716179d0ac48ec89fa0179e6db55fa7e554995ae1f5c09dbaf3ac8</string>
+	<key>installer_item_location</key>
+	<string>management/MunkiMenu.dmg</string>
+	<key>installer_item_size</key>
+	<integer>1209</integer>
+	<key>installer_type</key>
+	<string>copy_from_dmg</string>
+	<key>installs</key>
+	<array>
+		<dict>
+			<key>CFBundleIdentifier</key>
+			<string>com.googlecode.MunkiMenu</string>
+			<key>CFBundleName</key>
+			<string>MunkiMenu</string>
+			<key>CFBundleShortVersionString</key>
+			<string>1.1</string>
+			<key>minosversion</key>
+			<string>10.8</string>
+			<key>path</key>
+			<string>/Applications/MunkiMenu.app</string>
+			<key>type</key>
+			<string>application</string>
+			<key>version_comparison_key</key>
+			<string>CFBundleShortVersionString</string>
+		</dict>
+	</array>
+	<key>items_to_copy</key>
+	<array>
+		<dict>
+			<key>destination_path</key>
+			<string>/Applications</string>
+			<key>group</key>
+			<string>admin</string>
+			<key>mode</key>
+			<string>og-w</string>
+			<key>source_item</key>
+			<string>MunkiMenu.app</string>
+			<key>user</key>
+			<string>root</string>
+		</dict>
+	</array>
+	<key>minimum_os_version</key>
+	<string>10.8</string>
+	<key>name</key>
+	<string>MunkiMenu</string>
+	<key>postinstall_script</key>
+	<string>#!/usr/bin/python
+import subprocess
+
+app_path = '/Applications/MunkiMenu.app'
+helper_id = 'com.googlecode.MunkiMenu.helper'
+
+def writeHelperLaunchD():
+    import plistlib
+
+    #write out the LaunchDaemon Plist
+    launchd_file = '/Library/LaunchDaemons/'+helper_id+'.plist'
+
+    mach_service = {helper_id:True}
+    prog_args = ['/Library/PrivilegedHelperTools/'+helper_id ]
+
+    launchd_plist = {'Label':helper_id,'MachServices':mach_service,'ProgramArguments':prog_args}
+    plistlib.writePlist(launchd_plist,launchd_file )
+
+    #fix the permissions 
+    subprocess.call(['/usr/sbin/chown','root:wheel',launchd_file])
+    subprocess.call(['/bin/chmod','0644',launchd_file])
+
+    #load the launchD job
+    subprocess.call(['/bin/launchctl','load',launchd_file])
+
+def copyHelper():
+    import shutil
+    import os
+    src = os.path.join(app_path,'Contents/Library/LaunchServices',helper_id)
+    dst = os.path.join('/Library/PrivilegedHelperTools/',helper_id)
+    shutil.copyfile(src, dst)
+
+    subprocess.call(['/usr/sbin/chown','root:wheel',dst])
+    subprocess.call(['/bin/chmod','544',dst])
+
+def launchApp():
+    from SystemConfiguration import SCDynamicStoreCopyConsoleUser
+    from AppKit import NSWorkspace
+
+    #if there is a logged in user launch MunkiMenu
+    cfuser = SCDynamicStoreCopyConsoleUser( None, None, None )
+    if cfuser[0]:
+        wksp = NSWorkspace.sharedWorkspace()
+        wksp.launchApplication_(app_path)
+
+def main():
+    writeHelperLaunchD()
+    copyHelper()
+    launchApp()
+
+if __name__ == '__main__':
+    main()</string>
+	<key>postuninstall_script</key>
+	<string>#!/usr/bin/python
+import subprocess
+from os import remove
+
+helper_id = 'com.googlecode.MunkiMenu.helper'
+
+def removeHelperApp():
+    helper_file = '/Library/PrivilegedHelperTools/'+helper_id
+    try:
+        remove(helper_file)
+    except:
+        print "helper app already removed"
+
+def removeLaunchD():
+    launchd_file = '/Library/LaunchDaemons/'+helper_id+'.plist'
+    subprocess.call(['/bin/launchctl','unload',launchd_file])
+    try:
+        remove(launchd_file)
+    except:
+        print "launchD file already removed"
+
+def main():
+    removeLaunchD()
+    removeHelperApp()
+
+if __name__ == '__main__':
+    main()
+</string>
+	<key>unattended_install</key>
+	<true/>
+	<key>unattended_uninstall</key>
+	<true/>
+	<key>uninstall_method</key>
+	<string>remove_copied_items</string>
+	<key>uninstallable</key>
+	<true/>
+	<key>version</key>
+	<string>1.1</string>
+</dict>
+</plist>
