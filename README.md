@@ -72,7 +72,9 @@ if __name__ == '__main__':
     main()
 ```
 
-2. make a package that installs the launchD file and the helper tool and loads the launchD in it's postflight script, You can download this type of installer package, ready for deployment [https://github.com/eahrold/MunkiMenu/releases/download/1.1/MunkiMenu.dmg here.] 
+2. make a package that installs the launchD file and the helper tool and loads the launchD in it's postflight script, You can download this type of installer package, ready for deployment.
+
+You can download either type on the [release page](https://github.com/eahrold/MunkiMenu/releases)
 
 ### Other Info 
 To uninstall the helper tool and associated files, click the option key while the menu is selected.
