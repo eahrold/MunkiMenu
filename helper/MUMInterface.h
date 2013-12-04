@@ -13,5 +13,6 @@ static NSString* const kHelperName = @"com.googlecode.MunkiMenu.helper";
 @protocol HelperAgent
 -(void)getPreferenceDictionary:(void (^)(NSDictionary *, NSError *))reply;
 -(void)quitHelper;
--(void)uninstall:(void (^)(NSError*))reply;
+-(void)installGlobalLoginItem:(NSURL*)loginItem withReply:(void (^)(NSError*))reply;
+-(void)uninstall:(NSURL*)mainAppURL withReply:(void (^)(NSError*))reply;
 @end

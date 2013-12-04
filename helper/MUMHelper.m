@@ -31,29 +31,33 @@ static NSString* const HeperDomain = @"com.googlecode.MunkiMenu.helper";
     reply(dict,error);
 }
 
--(void)changeRepoURL:(NSString*)newURL withReply:(void (^)(NSError *))reply{
+-(void)installGlobalLoginItem:(NSURL*)loginItem withReply:(void (^)(NSError*))reply{
     NSError* error;
-    CFPreferencesSetAppValue((__bridge CFStringRef)(@"SoftwareRepoURL"), (__bridge CFStringRef)(newURL), (__bridge CFStringRef)(MSUAppPreferences));
+    AuthorizationRef auth = NULL;
+    LSSharedFileListRef globalLoginItems = LSSharedFileListCreate(NULL, kLSSharedFileListGlobalLoginItems, NULL);
+    LSSharedFileListSetAuthorization(globalLoginItems, auth);
     
-    BOOL status = CFPreferencesAppSynchronize((__bridge CFStringRef)(MSUAppPreferences));
-    
-    if(!status){
-        error = [NSError errorWithDomain:HeperDomain code:1 userInfo:@{NSLocalizedDescriptionKey:@"error setting repo url"}];
+    if([self checkIfAlreadyActive:loginItem]){
+        CFRelease(globalLoginItems);
+        reply(error);
+        return;
     }
     
-    reply(error);
-}
-
--(void)changeClientManifest:(NSString*)newManifest withReply:(void (^)(NSError *))reply{
-    NSError* error;
-    CFPreferencesSetAppValue((__bridge CFStringRef)(@"ClientIdentifier"), (__bridge CFStringRef)(newManifest), (__bridge CFStringRef)(MSUAppPreferences));
-    
-    BOOL status = CFPreferencesAppSynchronize((__bridge CFStringRef)(MSUAppPreferences));
-
-    if(!status){
-        error = [NSError errorWithDomain:HeperDomain code:1 userInfo:@{NSLocalizedDescriptionKey:@"error setting client manifest"}];
+    if (globalLoginItems) {
+        LSSharedFileListItemRef ourLoginItem = LSSharedFileListInsertItemURL(globalLoginItems,
+                                                                             kLSSharedFileListItemLast,
+                                                                             NULL, NULL,
+                                                                             (__bridge CFURLRef)loginItem,
+                                                                             NULL, NULL);
+        if (ourLoginItem) {
+            CFRelease(ourLoginItem);
+        } else {
+            error = [NSError errorWithDomain:HeperDomain code:1 userInfo:@{NSLocalizedDescriptionKey:@"Could not insert ourselves as a global login item"}];
+        }
+        CFRelease(globalLoginItems);
+    } else {
+        error = [NSError errorWithDomain:HeperDomain code:1 userInfo:@{NSLocalizedDescriptionKey:@"Could not get the global login items"}];
     }
-    
     reply(error);
 }
 
@@ -63,7 +67,7 @@ static NSString* const HeperDomain = @"com.googlecode.MunkiMenu.helper";
     self.helperToolShouldQuit = YES;
 }
 
--(void)uninstall:(void (^)(NSError *))reply{
+-(void)uninstall:(NSURL*)mainAppURL withReply:(void (^)(NSError*))reply{
     NSError* error;
     NSError* retunError;
     
@@ -83,6 +87,7 @@ static NSString* const HeperDomain = @"com.googlecode.MunkiMenu.helper";
         retunError = error;
         error = nil;
     }
+    [self removeGlobalLoginItem:mainAppURL];
     reply(retunError);
 }
 
@@ -94,6 +99,56 @@ static NSString* const HeperDomain = @"com.googlecode.MunkiMenu.helper";
         return @"";
     }
 }
+
+-(void)removeGlobalLoginItem:(NSURL*)app{
+    CFURLRef loginItem = (__bridge CFURLRef)app;
+    LSSharedFileListRef loginItems = LSSharedFileListCreate(NULL, kLSSharedFileListGlobalLoginItems, NULL);
+    
+    if (loginItem){
+        UInt32 seedValue;
+        //Retrieve the list of Login Items and cast them to
+        // a NSArray so that it will be easier to iterate.
+        NSArray  *loginItemsArray = CFBridgingRelease(LSSharedFileListCopySnapshot(loginItems, &seedValue));
+        for( id i in loginItemsArray){
+            LSSharedFileListItemRef itemRef = (__bridge LSSharedFileListItemRef)i;
+            //Resolve the item with URL
+            if (LSSharedFileListItemResolve(itemRef, 0, (CFURLRef*) &loginItem, NULL) == noErr) {
+                NSString * urlPath = app.path;
+                if ([urlPath compare:app.path] == NSOrderedSame){
+                    CFRelease(loginItem);
+                    LSSharedFileListItemRemove(loginItems,itemRef);
+                }
+            }
+        }
+    }
+    CFRelease(loginItems);
+}
+
+-(BOOL)checkIfAlreadyActive:(NSURL*)app{
+    CFURLRef loginItemCheck = (__bridge CFURLRef)app;
+    LSSharedFileListRef loginItemsCheck = LSSharedFileListCreate(NULL, kLSSharedFileListGlobalLoginItems, NULL);
+    
+    if (loginItemCheck){
+        UInt32 seedValue;
+        //Retrieve the list of Login Items and cast them to
+        // a NSArray so that it will be easier to iterate.
+        NSArray  *loginItemsArray = CFBridgingRelease(LSSharedFileListCopySnapshot(loginItemsCheck, &seedValue));
+        for( id i in loginItemsArray){
+            LSSharedFileListItemRef itemRef = (__bridge LSSharedFileListItemRef)i;
+            //Resolve the item with URL
+            if (LSSharedFileListItemResolve(itemRef, 0, (CFURLRef*) &loginItemCheck, NULL) == noErr) {
+                NSString * urlPath = [(__bridge NSURL*)loginItemCheck path];
+                if ([urlPath compare:app.path] == NSOrderedSame){
+                    CFRelease(loginItemCheck);
+                    return YES;
+                }
+            }
+        }
+    }
+    CFRelease(loginItemsCheck);
+    return NO;
+}
+
 
 //----------------------------------------
 // Helper Singleton
