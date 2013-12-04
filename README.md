@@ -12,7 +12,6 @@ When pressing the command key It also shows some at a glance information that is
 
 
 
-----
 ### Technical Details 
 Munki menu includes a helper app for accessing ManagedInstalls preferences that may exist in the root domain.  
 
@@ -24,7 +23,7 @@ Using SMJobBless also means that  if building this yourself you will need a vali
 
 If you want to install this in a way that will not require user interaction (i.e using munki) you can do one of two things.  
 
-1. (Prefered) Create a copy-file dmg with only the MunkiMenu.app and add this Post-Install script  to the munki pkginfo
+1. (Prefered) Create a copy-file dmg with only the MunkiMenu.app and add this Post-Install script  to the munki pkginfo.  An example of a pkginfo plist located in the docs directory of the source code, or can be [donwloaded here][examplePlist].
 
 ```
 #!/usr/bin/python
@@ -124,3 +123,4 @@ if __name__ == '__main__':
 [default]:./docs/default.png
 [commandKey]:./docs/commandKey.png
 [optionKey]:./docs/optionKey.png
+[examplePlist]:./docs/MunkiMenu-Example_Munki_Pkginfo.plist
