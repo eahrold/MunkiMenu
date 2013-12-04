@@ -6,7 +6,9 @@ When pressing the command key It also shows some at a glance information that is
 
 [Visit the Release Page](https://github.com/eahrold/MunkiMenu/releases)
 
-![default][default]&nbsp;&nbsp;![Command Key Pressed][commandKey]&nbsp;&nbsp;![Option Key Pressed][optionKey]
+![default][default] Default  
+![Command Key Pressed][commandKey] Command Key Pressed  
+![Option Key Pressed][optionKey] Option Key Pressed  
 
 
 
@@ -16,11 +18,13 @@ Munki menu includes a helper app for accessing ManagedInstalls preferences that 
 
 It uses NSXPC to communicate between the main app and the helper app so this will only run on 10.8 or greater.
 
-It uses SMJobBless to install the helper app so if building this yourself you will need to adjust the Code Signing components. Please refer to [https://developer.apple.com/library/mac/samplecode/SMJobBless/Listings/ReadMe_txt.html  Apple's SMJobBless example code]
+It uses SMJobBless to install the helper app and by default will prompt the user for authorization as admin. 
 
-however if you want to install this in a way that will not require user interaction (i.e using munki) you can do one of two things.  
+Using SMJobBless also means that  if building this yourself you will need a valid Code Signing Identity and make adjustments to the App, Helper App and their info.plists respectivly. Please refer to [Apple's SMJobBless example code](https://developer.apple.com/library/mac/samplecode/SMJobBless/Listings/ReadMe_txt.html  ) for more information.
 
-1. Create a copy-file dmg with only the MunkiMenu.app and add this Post-Install script  to the munki pkginfo
+If you want to install this in a way that will not require user interaction (i.e using munki) you can do one of two things.  
+
+1. (Prefered) Create a copy-file dmg with only the MunkiMenu.app and add this Post-Install script  to the munki pkginfo
 
 ```
 #!/usr/bin/python
@@ -77,12 +81,44 @@ if __name__ == '__main__':
     main()
 ```
 
-2. make a package that installs the launchD file and the helper tool and loads the launchD in it's postflight script, You can download this type of installer package, ready for deployment.
+2. make a package that includes the above code as a postflight script.
 
 You can download either type on the [release page](https://github.com/eahrold/MunkiMenu/releases)
 
 ### Other Info 
-To uninstall the helper tool and associated files, click the option key while the menu is selected.
+To uninstall the helper tool and associated files, click the option key while the menu is selected, it will prompt for admin privilidges.
+
+Also to remove the helper app using Munki, you'll want to add this as the Uninstall Scrip in the pkginfo
+```
+#!/usr/bin/python
+import subprocess
+from os import remove
+
+helper_id = 'com.googlecode.MunkiMenu.helper'
+
+def removeHelperApp():
+    helper_file = '/Library/PrivilegedHelperTools/'+helper_id
+    try:
+        remove(helper_file)
+    except:
+        print "helper app already removed"
+        
+def removeLaunchD():
+    launchd_file = '/Library/LaunchDaemons/'+helper_id+'.plist'
+    subprocess.call(['/bin/launchctl','unload',launchd_file])
+    try:
+        remove(launchd_file)
+    except:
+        print "launchD file already removed"
+        
+def main():
+    removeLaunchD()
+    removeHelperApp()
+
+if __name__ == '__main__':
+    main()
+    
+```
 
 
 [default]:./docs/default.png
