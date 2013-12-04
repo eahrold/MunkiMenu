@@ -85,6 +85,6 @@ You can download either type on the [release page](https://github.com/eahrold/Mu
 To uninstall the helper tool and associated files, click the option key while the menu is selected.
 
 
-[default]:./tree/master/docs/default.png
-[commandKey]:./tree/master/docs/commandKey.png
-[optionKey]:./tree/master/docs/optionKey.png
+[default]:./docs/default.png
+[commandKey]:./docs/commandKey.png
+[optionKey]:./docs/optionKey.png
