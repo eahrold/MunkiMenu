@@ -13,7 +13,20 @@
     NSStatusItem* statusItem;
 }
 
+//Status Menu
 @property (strong) IBOutlet MUMMenu* menu;
 
--(IBAction)runManagedSoftwareUpdate:(id)sender;
+//Config Sheet
+@property (assign) IBOutlet NSWindow* configSheet;
+@property (assign) IBOutlet NSTextField* repoURLTF;
+@property (assign) IBOutlet NSTextField* clientIDTF;
+@property (assign) IBOutlet NSTextField* logFileTF;
+@property (assign) IBOutlet NSTextField* manifestURLTF;
+@property (assign) IBOutlet NSTextField* catalogURLTF;
+@property (assign) IBOutlet NSTextField* packageURLTF;
+
+@property (assign) IBOutlet NSButton* ASUEnabledCB;
+
+-(IBAction)configureMunki:(id)sender;  //set button pressed
+
 @end

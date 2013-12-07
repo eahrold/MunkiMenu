@@ -12,7 +12,7 @@
 @implementation MUMMenu{
     NSMutableSet* currentMenuItems;
 }
-@synthesize delegate;
+@synthesize delegate,notificationMenuItem;
 
 
 
@@ -131,12 +131,24 @@
     
     [menu_logfile setTarget:delegate];
     [details addItem:menu_logfile];
+
+    // If the computer is managed using MCX there's no use editing the ManagedInsalls.plist
+    // so we won't bother adding this to the menu
+    BOOL mcxManaged = [[NSFileManager defaultManager] fileExistsAtPath:@"/Library/Managed Preferences/ManagedInstalls.plist"];
+    
+    if(!mcxManaged){
+        NSMenuItem* menu_configure = [[NSMenuItem alloc]initWithTitle:@"Configure..."
+                                                          action:@selector(openConfigSheet)
+                                                   keyEquivalent:@""];
+        
+        [menu_configure setTarget:delegate];
+        [details addItem:menu_configure];
+    }
     
     [info setSubmenu:details];
     [info setAlternate:YES];
     [self insertItem:info atIndex:1];
     [currentMenuItems addObject:info];
-    
 }
 
 #pragma mark - Menu Lists
@@ -157,7 +169,7 @@
     }
     
     [self setSubmenu:details forItem:mums];
-    [self insertItem:mums atIndex:[self numberOfItems]-4];
+    [self insertItem:mums atIndex:4];
     [currentMenuItems addObject:mums];
 }
 
@@ -183,7 +195,7 @@
     }
     
     [self setSubmenu:details forItem:mums];
-    [self insertItem:mums atIndex:[self numberOfItems]-4];
+    [self insertItem:mums atIndex:4];
     [currentMenuItems addObject:mums];
 }
 

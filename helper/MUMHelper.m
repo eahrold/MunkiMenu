@@ -7,30 +7,154 @@
 //
 
 #import "MUMHelper.h"
+#import "Authorizer.h"
 
 static NSString* const MSUAppPreferences = @"ManagedInstalls";
-static NSString* const HeperDomain = @"com.googlecode.MunkiMenu.helper";
-
 
 @implementation MUMHelper
 
+#pragma mark - ManagedInstall.plist Methods
 -(void)getPreferenceDictionary:(void (^)(NSDictionary *, NSError *))reply{
     NSError* error;
     // Convert What we want back in the main app to NSDictionary
     // Entries
-    NSDictionary* dict = @{@"SoftwareRepoURL":[self stringFromCFPref:@"SoftwareRepoURL"],
-                           @"ManifestURL":[self stringFromCFPref:@"ManifestURL"],
-                           @"CatalogURL":[self stringFromCFPref:@"CatalogURL"],
-                           @"PackageURL":[self stringFromCFPref:@"PackageURL"],
-                           @"ManagedInstallDir":[self stringFromCFPref:@"ManagedInstallDir"],
-                           @"InstallAppleSoftwareUpdates":[self stringFromCFPref:@"InstallAppleSoftwareUpdates"],
-                           @"LogFile":[self stringFromCFPref:@"LogFile"],
-                           @"ClientIdentifier":[self stringFromCFPref:@"ClientIdentifier"]
+    NSDictionary* dict = @{kSoftwareRepoURL:[self stringFromCFPref:kSoftwareRepoURL],
+                           kManifestURL:[self stringFromCFPref:kManifestURL],
+                           kCatalogURL:[self stringFromCFPref:kCatalogURL],
+                           kPackageURL:[self stringFromCFPref:kPackageURL],
+                           kManagedInstallDir:[self stringFromCFPref:kManagedInstallDir],
+                           kInstallAppleSoftwareUpdates:[self stringFromCFPref:kInstallAppleSoftwareUpdates],
+                           kLogFile:[self stringFromCFPref:kLogFile],
+                           kClientIdentifier:[self stringFromCFPref:kClientIdentifier]
                            };
-    
+    if(!dict)error = [NSError errorWithDomain:kHelperName
+                                         code:1
+                                     userInfo:@{NSLocalizedDescriptionKey:@"Therer were problems getting the preferences for Managed Software Update."}];
     reply(dict,error);
 }
 
+-(void)getMSUSettings:(NSString*)msuDir withReply:(void (^)(NSArray *))reply{
+    if(!msuDir)return;
+    NSMutableArray* array = [NSMutableArray new];
+    NSString *manifest = [NSString stringWithFormat:@"%@/manifests/client_manifest.plist",msuDir];
+    array[kManifestFile] = [NSDictionary dictionaryWithContentsOfFile:manifest];
+    
+    NSString *inventory = [NSString stringWithFormat:@"%@/ApplicationInventory.plist",msuDir];
+    array[kInventoryFile] = [NSDictionary dictionaryWithContentsOfFile:inventory];
+    
+    NSString *reports = [NSString stringWithFormat:@"%@/ManagedInstallReport.plist",msuDir];
+    array[kReportsFile] = [NSDictionary dictionaryWithContentsOfFile:reports];
+    
+    NSString *ssinfo = [NSString stringWithFormat:@"%@/manifests/SelfServeManifest",msuDir];
+    array[kSelfServiceFile] = [NSDictionary dictionaryWithContentsOfFile:ssinfo];
+    
+    reply(array);
+}
+
+-(void)configureMunki:(NSDictionary*)settings authorization:(NSData*)authData withReply:(void (^)(NSDictionary *,NSError*))reply{
+    NSError* error;
+    
+    error = [self checkAuthorization:authData command:_cmd];
+    if(error != nil){
+        reply(nil,error);
+        return;
+    }
+    error = nil;
+
+    for(id key in settings) {
+        id value = [settings objectForKey:key];
+        [self writeToCFPref:value key:key];
+    }
+    
+    [self getPreferenceDictionary:^(NSDictionary *dict, NSError *rerror) {
+        // launch managed software update cli in order to trigger a refresh
+        // of Managed / Optional installs files
+        
+        NSTask* task = [NSTask new];
+        [task setLaunchPath:@"/usr/local/munki/managedsoftwareupdate"];
+        [task setArguments:@[@"--checkonly"]];
+        [task launch];
+        
+        reply(dict,rerror);
+        return;
+    }];
+}
+
+#pragma mark - Clean Up
+-(void)uninstall:(NSURL*)mainAppURL authorization:(NSData*)authData withReply:(void (^)(NSError*))reply{
+    NSError* error;
+    NSError* returnError;
+    
+    error = [self checkAuthorization:authData command:_cmd];
+    if(error == nil){
+        
+        NSString *launchD = [NSString stringWithFormat:@"/Library/LaunchDaemons/%@.plist",kHelperName];
+        NSString *helperTool = [NSString stringWithFormat:@"/Library/PrivilegedHelperTools/%@",kHelperName];
+
+        [[NSFileManager defaultManager] removeItemAtPath:launchD error:&error];
+        if (error.code != NSFileNoSuchFileError) {
+            NSLog(@"%@", error);
+            returnError = error;
+            error = nil;
+        }
+        
+        [[NSFileManager defaultManager] removeItemAtPath:helperTool error:&error];
+        if (error.code != NSFileNoSuchFileError) {
+            NSLog(@"%@", error);
+            returnError = error;
+            error = nil;
+        }
+        [self removeGlobalLoginItem:mainAppURL];
+    }else{
+        returnError = error;
+    }
+    
+    reply(returnError);
+}
+
+-(void)quitHelper{
+    // this will cause the run-loop to exit;
+    // you should call it via NSXPCConnection during the applicationShouldTerminate routine
+    self.helperToolShouldQuit = YES;
+}
+
+#pragma mark - CFPrefs
+-(NSString*)stringFromCFPref:(NSString*)key{
+    NSString* string = CFBridgingRelease(CFPreferencesCopyAppValue((__bridge CFStringRef)(key), (__bridge CFStringRef)(MSUAppPreferences)));
+    if(string){
+        return string;
+    }else{
+        return @"";
+    }
+}
+
+-(NSError*)writeToCFPref:(NSString*)value key:(NSString*)key{
+    NSError* error;
+    BOOL rc = NO;
+    if(value && key){
+        CFPreferencesSetValue((__bridge CFStringRef)(key),
+                              (__bridge CFPropertyListRef)(value),
+                              (__bridge CFStringRef)(MSUAppPreferences),
+                              kCFPreferencesAnyUser,
+                              kCFPreferencesCurrentHost);
+        
+        rc = CFPreferencesSynchronize((__bridge CFStringRef)(MSUAppPreferences),kCFPreferencesAnyUser,
+                                 kCFPreferencesCurrentHost);
+    }
+    
+    if(!rc){
+        NSString* msg;
+        if(!key){
+            msg = @"The key was not specified";
+        }else{
+            msg = [NSString stringWithFormat:@"Couldn't write the %@ key to specified domain",key];
+        }
+        error = [NSError errorWithDomain:kHelperName code:1 userInfo:@{NSLocalizedDescriptionKey:msg}];
+    }
+    return error;
+}
+
+#pragma mark - Global Login Items
 -(void)installGlobalLoginItem:(NSURL*)loginItem withReply:(void (^)(NSError*))reply{
     NSError* error;
     AuthorizationRef auth = NULL;
@@ -52,52 +176,14 @@ static NSString* const HeperDomain = @"com.googlecode.MunkiMenu.helper";
         if (ourLoginItem) {
             CFRelease(ourLoginItem);
         } else {
-            error = [NSError errorWithDomain:HeperDomain code:1 userInfo:@{NSLocalizedDescriptionKey:@"Could not insert ourselves as a global login item"}];
+            error = [NSError errorWithDomain:kHelperName code:1 userInfo:@{NSLocalizedDescriptionKey:@"Could not insert ourselves as a global login item"}];
         }
         CFRelease(globalLoginItems);
     } else {
-        error = [NSError errorWithDomain:HeperDomain code:1 userInfo:@{NSLocalizedDescriptionKey:@"Could not get the global login items"}];
+        error = [NSError errorWithDomain:kHelperName code:1 userInfo:@{NSLocalizedDescriptionKey:@"Could not get the global login items"}];
     }
+    
     reply(error);
-}
-
--(void)quitHelper{
-    // this will cause the run-loop to exit;
-    // you should call it via NSXPCConnection during the applicationShouldTerminate routine
-    self.helperToolShouldQuit = YES;
-}
-
--(void)uninstall:(NSURL*)mainAppURL withReply:(void (^)(NSError*))reply{
-    NSError* error;
-    NSError* retunError;
-    
-    NSString *launchD = [NSString stringWithFormat:@"/Library/LaunchDaemons/%@.plist",kHelperName];
-    NSString *helperTool = [NSString stringWithFormat:@"/Library/PrivilegedHelperTools/%@",kHelperName];
-
-    [[NSFileManager defaultManager] removeItemAtPath:launchD error:&error];
-    if (error.code != NSFileNoSuchFileError) {
-        NSLog(@"%@", error);
-        retunError = error;
-        error = nil;
-    }
-    
-    [[NSFileManager defaultManager] removeItemAtPath:helperTool error:&error];
-    if (error.code != NSFileNoSuchFileError) {
-        NSLog(@"%@", error);
-        retunError = error;
-        error = nil;
-    }
-    [self removeGlobalLoginItem:mainAppURL];
-    reply(retunError);
-}
-
--(NSString*)stringFromCFPref:(NSString*)pref{
-    NSString* string = CFBridgingRelease(CFPreferencesCopyAppValue((__bridge CFStringRef)(pref), (__bridge CFStringRef)(MSUAppPreferences)));
-    if(string){
-        return string;
-    }else{
-        return @"";
-    }
 }
 
 -(void)removeGlobalLoginItem:(NSURL*)app{
@@ -149,7 +235,64 @@ static NSString* const HeperDomain = @"com.googlecode.MunkiMenu.helper";
     return NO;
 }
 
+#pragma mark - Authorization
+- (NSError *)checkAuthorization:(NSData *)authData command:(SEL)command
+// Check that the client denoted by authData is allowed to run the specified command.
+// authData is expected to be an NSData with an AuthorizationExternalForm embedded inside.
+{
+#pragma unused(authData)
+    NSError *                   error;
+    OSStatus                    err;
+    OSStatus                    junk;
+    AuthorizationRef            authRef;
+    
+    assert(command != nil);
+    
+    authRef = NULL;
+    
+    // First check that authData looks reasonable.
+    
+    error = nil;
+    if ( (authData == nil) || ([authData length] != sizeof(AuthorizationExternalForm)) ) {
+        error = [NSError errorWithDomain:NSOSStatusErrorDomain code:paramErr userInfo:nil];
+    }
+    
+    // Create an authorization ref from that the external form data contained within.
+    
+    if (error == nil) {
+        err = AuthorizationCreateFromExternalForm([authData bytes], &authRef);
+        
+        // Authorize the right associated with the command.
+        
+        if (err == errAuthorizationSuccess) {
+            AuthorizationItem   oneRight = { NULL, 0, NULL, 0 };
+            AuthorizationRights rights   = { 1, &oneRight };
+            
+            oneRight.name = [[Authorizer authorizationRightForCommand:command] UTF8String];
+            assert(oneRight.name != NULL);
+            
+            err = AuthorizationCopyRights(
+                                          authRef,
+                                          &rights,
+                                          NULL,
+                                          kAuthorizationFlagExtendRights | kAuthorizationFlagInteractionAllowed,
+                                          NULL
+                                          );
+        }
+        if (err != errAuthorizationSuccess) {
+            error = [NSError errorWithDomain:NSOSStatusErrorDomain code:err userInfo:@{NSLocalizedDescriptionKey:@"You are not authorized to perform this action."}];
+        }
+    }
+    
+    if (authRef != NULL) {
+        junk = AuthorizationFree(authRef, 0);
+        assert(junk == errAuthorizationSuccess);
+    }
+    
+    return error;
+}
 
+#pragma mark - NSXPC Delegate
 //----------------------------------------
 // Helper Singleton
 //----------------------------------------

@@ -664,7 +664,7 @@
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="HXC-A9-Rvn"/>
                 <menuItem isSeparatorItem="YES" id="Zd8-7l-yAz"/>
-                <menuItem title="Enable Notifications" id="ODF-6p-6Ww">
+                <menuItem title="Notifications" id="ODF-6p-6Ww">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="enableNotifications:" target="BXY-M4-cSs" id="ZR4-Gb-q8f"/>

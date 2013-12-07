@@ -10,7 +10,7 @@
 #import "MUMHelper.h"
 #import "MUMInterface.h"
 #import "MUMDelegate.h"
-
+#import "Authorizer.h"
 
 
 static NSString* const MSUUpdateComplete = @"com.googlecode.munki.ManagedSoftwareUpdate.complete";
@@ -26,7 +26,7 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     BOOL notificationsEnabled;
     BOOL setupDone;
 }
-@synthesize menu;
+@synthesize menu,configSheet;
 
 -(void)awakeFromNib{
     [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
@@ -45,7 +45,7 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
         notificationsEnabled = [defaults boolForKey:@"notificationsEnabled"];
     }
  
-    [self enableNotifications:[menu itemAtIndex:[menu numberOfItems]-1]];
+   [[menu itemWithTitle:@"Notifications"] setState:notificationsEnabled];
 }
 
 -(void)dealloc{
@@ -72,31 +72,91 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     [[NSWorkspace sharedWorkspace] launchApplication:@"/Applications/Utilities/Managed Software Update.app"];
 }
 
--(void)openLogFile:(id)sender{
-    [[NSWorkspace sharedWorkspace]openFile:msuPrefs[@"LogFile"] withApplication:@"/Applications/Utilities/Console.app"];
+-(IBAction)configureMunki:(id)sender{
+    NSData* authorization = [self authorizeHelper];
+    assert(authorization != nil);
+    
+    NSDictionary* newValues = @{kSoftwareRepoURL:_repoURLTF.stringValue,
+                                kClientIdentifier:_clientIDTF.stringValue,
+                                kLogFile:_logFileTF.stringValue,
+                                kManifestURL:_manifestURLTF.stringValue,
+                                kCatalogURL:_catalogURLTF.stringValue,
+                                kPackageURL:_packageURLTF.stringValue,
+                                kInstallAppleSoftwareUpdates:[NSNumber numberWithBool:_ASUEnabledCB.state]};
+    
+    [self closeConfigSheet:nil];
+    
+    NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName
+                                                                                    options:NSXPCConnectionPrivileged];
+    
+    helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
+    [helperXPCConnection resume];
+    
+    [[helperXPCConnection remoteObjectProxy] configureMunki:newValues authorization:authorization withReply:^(NSDictionary *dict,NSError * error)
+     {[[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if(error){
+            NSLog(@"%@",[error localizedDescription]);
+            [NSApp presentError:error];
+        }else{
+            msuPrefs = dict;
+            [self refreshMenu];
+        }
+    }];
+         [helperXPCConnection invalidate];
+         // we don't need to keep the helper app alive so send the quit signal.
+         // when needed we'll just launch it later.
+         [self quitHelper];
+     }];
+
+}
+
+-(IBAction)enableNotifications:(id)sender{
+    notificationsEnabled = !notificationsEnabled;
+    if(notificationsEnabled){
+        [(NSMenuItem*)sender setState:NSOnState];
+    }else{
+        [(NSMenuItem*)sender setState:NSOffState];
+    }
+    [[NSUserDefaults standardUserDefaults]setBool:notificationsEnabled forKey:@"notificationsEnabled"];
 }
 
 -(void)quitNow:(id)sender{
     [NSApp terminate:self];
 }
 
--(IBAction)enableNotifications:(id)sender{
-    if(setupDone){
-        notificationsEnabled = !notificationsEnabled;
-    }
-    
-    if(notificationsEnabled){
-        [(NSMenuItem*)sender setTitle:@"Disable Notifications"];
-    }else{
-        [(NSMenuItem*)sender setTitle:@"Enable Notifications"];
-    }
-    [[NSUserDefaults standardUserDefaults]setBool:notificationsEnabled forKey:@"notificationsEnabled"];
+-(void)openLogFile:(id)sender{
+    [[NSWorkspace sharedWorkspace]openFile:msuPrefs[@"LogFile"] withApplication:@"/Applications/Utilities/Console.app"];
 }
+
 -(void)aboutMunkiMenu:(id)sender{
     [[NSApplication sharedApplication]orderFrontStandardAboutPanel:self];
 }
 
+-(void)openConfigSheet{
+    if(!configSheet){
+       [NSBundle loadNibNamed:@"ConfigSheet" owner:self];
+    }
+    
+    _repoURLTF.stringValue = msuPrefs[kSoftwareRepoURL];
+    _clientIDTF.stringValue = msuPrefs[kClientIdentifier];
+    _logFileTF.stringValue = msuPrefs[kLogFile];
+    _manifestURLTF.stringValue = msuPrefs[kManifestURL];
+    _catalogURLTF.stringValue = msuPrefs[kCatalogURL];
+    _packageURLTF.stringValue = msuPrefs[kPackageURL];
+    _ASUEnabledCB.state = [msuPrefs[kInstallAppleSoftwareUpdates] boolValue];
 
+    [NSApp beginSheet:configSheet
+       modalForWindow:nil
+        modalDelegate:self
+       didEndSelector:NULL
+          contextInfo:NULL];
+}
+
+-(IBAction)closeConfigSheet:(id)sender{
+    [NSApp endSheet:configSheet];
+    [self.configSheet close];
+    self.configSheet = nil;
+}
 
 #pragma mark - Helper Agent (NSXPC)
 -(void)getMSUPlistFromHelper{
@@ -131,15 +191,17 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
 }
 
 -(void)uninstallHelper:(MUMMenu *)menu{
-    if(![self authorizeHelper])return;
+    NSData* authorization = [self authorizeHelper];
+    assert(authorization != nil);
+    
     //Uninstall the Helper app and launchD files, then unload the launchd job.
     NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName options:NSXPCConnectionPrivileged];
     helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
     [helperXPCConnection resume];
-    [[helperXPCConnection remoteObjectProxy] uninstall:[[NSBundle mainBundle] bundleURL] withReply:^(NSError *error) {
+    [[helperXPCConnection remoteObjectProxy] uninstall:[[NSBundle mainBundle] bundleURL] authorization:authorization withReply:^(NSError *error) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         if(error){
-            NSLog(@"error: %@", error.localizedDescription);
+            NSLog(@"error from helper: %@", error.localizedDescription);
         }else{
             [[NSApp delegate] performSelector:@selector(setupDidEndWithUninstallRequest) withObject:nil];
             }
@@ -224,7 +286,7 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
 
 #pragma mark - utils
 -(void)getMSUSettings{
-    NSString* msuDir = msuPrefs[@"ManagedInstallDir"];
+    NSString* msuDir = msuPrefs[kManagedInstallDir];
     if(!msuDir)return;
     
     NSString *manifest = [NSString stringWithFormat:@"%@/manifests/client_manifest.plist",msuDir];
@@ -240,48 +302,55 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     msuSelfService = [NSDictionary dictionaryWithContentsOfFile:ssinfo];
 }
 
--(BOOL)authorizeHelper{
-    AuthorizationRef authRef = NULL;
-	AuthorizationItem authItem		= { kAuthorizationRuleAuthenticateAsAdmin, 0, NULL, 0 };
-	AuthorizationRights authRights	= { 1, &authItem };
-    AuthorizationEnvironment environment = {0, NULL};
+-(NSData*)authorizeHelper{
+    //TODO:  Pass AuthRef to helper external form
+    OSStatus                    err;
+    AuthorizationExternalForm   extForm;
+    AuthorizationRef            authRef;
+    NSData*                     authorization;
+    // cause all authorized operations to fail.
     
-    AuthorizationFlags authFlags =  kAuthorizationFlagDefaults              |
-                                    kAuthorizationFlagInteractionAllowed    |
-                                    kAuthorizationFlagPreAuthorize          |
-                                    kAuthorizationFlagExtendRights;
-        
-    OSStatus status = AuthorizationCreate(&authRights, &environment, authFlags, &authRef);
-    if (status != errAuthorizationSuccess){
-        NSLog(@"Not Authorized");
-        return NO;
+    err = AuthorizationCreate(NULL, NULL, 0, &authRef);
+    if (err == errAuthorizationSuccess) {
+        err = AuthorizationMakeExternalForm(authRef, &extForm);
     }
-    return YES;
+    if (err == errAuthorizationSuccess) {
+        authorization = [[NSData alloc] initWithBytes:&extForm length:sizeof(extForm)];
+    }
+    assert(err == errAuthorizationSuccess);
+    
+    // If we successfully connected to Authorization Services, add definitions for our default
+    // rights (unless they're already in the database).
+    
+    if (authRef) {
+        [Authorizer setupAuthorizationRights:authRef];
+    }
+    return authorization;
 }
 
 #pragma mark - Menu Delegate
 -(NSString*)repoURL:(MUMMenu*)menu{
-    return msuPrefs[@"SoftwareRepoURL"];
+    return msuPrefs[kSoftwareRepoURL];
 }
 
 -(NSString*)manifestURL:(MUMMenu *)menu{
-    return msuPrefs[@"ManifestURL"];
+    return msuPrefs[kManifestURL];
 }
 
 -(NSString*)catalogURL:(MUMMenu *)menu{
-    return msuPrefs[@"CatalogURL"];
+    return msuPrefs[kCatalogURL];
 }
 
 -(NSString*)packageURL:(MUMMenu*)menu{
-    return msuPrefs[@"PackageURL"];
+    return msuPrefs[kPackageURL];
 }
 
 -(NSString *)clientIdentifier:(MUMMenu *)menu{
-    return msuPrefs[@"ClientIdentifier"];
+    return msuPrefs[kClientIdentifier];
 }
 
 -(NSString*)logFile:(MUMMenu *)menu{
-    return msuPrefs[@"LogFile"];
+    return msuPrefs[kLogFile];
 }
 
 -(NSArray *)avaliableUpdates:(MUMMenu *)menu{
@@ -297,8 +366,8 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
 }
 
 -(NSArray*)optionalInstalls:(MUMMenu *)menu{
-    // We need to check the ManagedInstall's info against the self service
-    //  to determing what's installed
+    // We need to check the client manifest against the SelfService file
+    // to determing which of the optional installs are actually installed
     NSMutableArray *array = [NSMutableArray new];
     for(NSString* item in msuClientManifest[@"optional_installs"]){
         if([msuSelfService[@"managed_installs"] containsObject:item]){

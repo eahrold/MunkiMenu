@@ -26,16 +26,18 @@
 -(NSArray*)itemsToRemove:(MUMMenu *)menu;
 -(NSArray*)warnings:(MUMMenu *)menu;
 
--(void)runManagedSoftwareUpdate:(id)sender;
+-(IBAction)runManagedSoftwareUpdate:(id)sender;
 -(void)openLogFile:(id)sender;
 -(void)uninstallHelper:(id)sender;
 -(void)quitNow:(id)sender;
+-(void)openConfigSheet;
 
 @end
 
 @interface MUMMenu : NSMenu
 
 @property (weak) id<MUMMenuDelegate>delegate;
+@property (weak) NSMenuItem* notificationMenuItem;
 -(void)addAlternateItemsToMenu;
 -(void)addSettingsToMenu;
 -(void)addManagedInstallListToMenu;
