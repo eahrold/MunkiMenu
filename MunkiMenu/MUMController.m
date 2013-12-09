@@ -12,20 +12,12 @@
 #import "MUMDelegate.h"
 #import "Authorizer.h"
 
-
-static NSString* const MSUUpdateComplete = @"com.googlecode.munki.ManagedSoftwareUpdate.complete";
-static NSString* const MSUUpdate= @"com.googlecode.munki.ManagedSoftwareUpdate.update";
-static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwareUpdate.avaliableupdates";
-
 @implementation MUMController{
-    NSDictionary *msuPrefs;
-    NSDictionary *msuClientManifest;
-    NSDictionary *msuSelfService;
-    NSDictionary *msuReport;
-    NSDictionary *msuInventory;
+    MSUSettings *msuSettings;
     BOOL notificationsEnabled;
     BOOL setupDone;
 }
+
 @synthesize menu,configSheet;
 
 -(void)awakeFromNib{
@@ -38,13 +30,8 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     [statusItem setHighlightMode:YES];
     [statusItem setMenu:menu];
     
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-    if(![defaults boolForKey:@"previouslyRun"]){
-        notificationsEnabled = YES;
-    }else{
-        notificationsEnabled = [defaults boolForKey:@"notificationsEnabled"];
-    }
- 
+    notificationsEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationsEnabled];
+    
    [[menu itemWithTitle:@"Notifications"] setState:notificationsEnabled];
 }
 
@@ -54,16 +41,21 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
 
 #pragma mark - Set Menu Items
 -(void)configureMenu{
-    [self getMSUSettings];
     [menu addAlternateItemsToMenu];
     [menu addSettingsToMenu];
     [menu addManagedInstallListToMenu];
     [menu addOptionalInstallListToMenu];
+    [menu addItemsToInstallListToMenu];
+    [menu addItemsToRemoveListToMenu];
+    [menu addManagedUpdateListToMenu];
     setupDone=YES;
 }
 
 -(void)refreshMenu{
-    [self getMSUSettings];
+    [self getMSUSettingsFromHelper];
+}
+
+-(void)defaultsChanged:(id)sender{
     [menu refreshAllItems];
 }
 
@@ -76,13 +68,13 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     NSData* authorization = [self authorizeHelper];
     assert(authorization != nil);
     
-    NSDictionary* newValues = @{kSoftwareRepoURL:_repoURLTF.stringValue,
-                                kClientIdentifier:_clientIDTF.stringValue,
-                                kLogFile:_logFileTF.stringValue,
-                                kManifestURL:_manifestURLTF.stringValue,
-                                kCatalogURL:_catalogURLTF.stringValue,
-                                kPackageURL:_packageURLTF.stringValue,
-                                kInstallAppleSoftwareUpdates:[NSNumber numberWithBool:_ASUEnabledCB.state]};
+    msuSettings.softwareRepoURL  = _repoURLTF.stringValue;
+    msuSettings.clientIdentifier = _clientIDTF.stringValue;
+    msuSettings.logFile = _logFileTF.stringValue;
+    msuSettings.manifestURL = _manifestURLTF.stringValue;
+    msuSettings.catalogURL = _catalogURLTF.stringValue;
+    msuSettings.packageURL = _packageURLTF.stringValue;
+    msuSettings.installASU = _ASUEnabledCB.state;
     
     [self closeConfigSheet:nil];
     
@@ -92,14 +84,15 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
     [helperXPCConnection resume];
     
-    [[helperXPCConnection remoteObjectProxy] configureMunki:newValues authorization:authorization withReply:^(NSDictionary *dict,NSError * error)
+    [[helperXPCConnection remoteObjectProxyWithErrorHandler:^(NSError *error) {
+        NSLog(@"MSU Configuration Error: %@",error.localizedDescription);
+    }] configureMunki:msuSettings authorization:authorization withReply:^(NSError * error)
      {[[NSOperationQueue mainQueue] addOperationWithBlock:^{
         if(error){
             NSLog(@"%@",[error localizedDescription]);
             [NSApp presentError:error];
         }else{
-            msuPrefs = dict;
-            [self refreshMenu];
+            [menu refreshing];
         }
     }];
          [helperXPCConnection invalidate];
@@ -117,7 +110,7 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     }else{
         [(NSMenuItem*)sender setState:NSOffState];
     }
-    [[NSUserDefaults standardUserDefaults]setBool:notificationsEnabled forKey:@"notificationsEnabled"];
+    [[NSUserDefaults standardUserDefaults]setBool:notificationsEnabled forKey:kNotificationsEnabled];
 }
 
 -(void)quitNow:(id)sender{
@@ -125,7 +118,7 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
 }
 
 -(void)openLogFile:(id)sender{
-    [[NSWorkspace sharedWorkspace]openFile:msuPrefs[@"LogFile"] withApplication:@"/Applications/Utilities/Console.app"];
+    [[NSWorkspace sharedWorkspace]openFile:msuSettings.logFile withApplication:@"/Applications/Utilities/Console.app"];
 }
 
 -(void)aboutMunkiMenu:(id)sender{
@@ -137,13 +130,13 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
        [NSBundle loadNibNamed:@"ConfigSheet" owner:self];
     }
     
-    _repoURLTF.stringValue = msuPrefs[kSoftwareRepoURL];
-    _clientIDTF.stringValue = msuPrefs[kClientIdentifier];
-    _logFileTF.stringValue = msuPrefs[kLogFile];
-    _manifestURLTF.stringValue = msuPrefs[kManifestURL];
-    _catalogURLTF.stringValue = msuPrefs[kCatalogURL];
-    _packageURLTF.stringValue = msuPrefs[kPackageURL];
-    _ASUEnabledCB.state = [msuPrefs[kInstallAppleSoftwareUpdates] boolValue];
+    _repoURLTF.stringValue = msuSettings.softwareRepoURL;
+    _clientIDTF.stringValue = msuSettings.clientIdentifier;
+    _logFileTF.stringValue = msuSettings.logFile;
+    _manifestURLTF.stringValue = msuSettings.manifestURL;
+    _catalogURLTF.stringValue = msuSettings.catalogURL;
+    _packageURLTF.stringValue = msuSettings.packageURL;
+    _ASUEnabledCB.state = msuSettings.installASU;
 
     [NSApp beginSheet:configSheet
        modalForWindow:nil
@@ -159,7 +152,7 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
 }
 
 #pragma mark - Helper Agent (NSXPC)
--(void)getMSUPlistFromHelper{
+-(void)getMSUSettingsFromHelper{
     // This gets the MSU details from the helper app.  We use a helper app
     // here to handle the situation where the ManagedInstall.plist is
     // in the root's ~/Library/Preferences/ folder.  Since the helper app
@@ -170,23 +163,27 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
     [helperXPCConnection resume];
     
-    [[helperXPCConnection remoteObjectProxy] getPreferenceDictionary:^(NSDictionary * dict, NSError * error)
+    [[helperXPCConnection remoteObjectProxyWithErrorHandler:^(NSError *error) {
+        NSLog(@"%@",[error localizedDescription]);
+    }] getPreferenceDictionary:^(MSUSettings * settings, NSError * error)
      {[[NSOperationQueue mainQueue] addOperationWithBlock:^{
              if(error){
                  NSLog(@"%@",[error localizedDescription]);
                  [NSApp presentError:error];
              }else{
-                 msuPrefs = dict;
+                 msuSettings = settings;
                  if(!setupDone){
                      [self configureMenu];
                      [self installGlobalLogin];
+                 }else{
+                     [menu refreshAllItems];
                  }
              }
          }];
          [helperXPCConnection invalidate];
          // we don't need to keep the helper app alive so send the quit signal.
          // when needed we'll just launch it later.
-         [self quitHelper];
+       [self quitHelper];
      }];
 }
 
@@ -194,11 +191,15 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     NSData* authorization = [self authorizeHelper];
     assert(authorization != nil);
     
-    //Uninstall the Helper app and launchD files, then unload the launchd job.
+    // Uninstall the Helper app and launchD files, then unload the launchd job.
+    // The Helper App removes the files then we call a selector on the App delegate
+    // To do the SMJob Unblessing
     NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName options:NSXPCConnectionPrivileged];
     helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
     [helperXPCConnection resume];
-    [[helperXPCConnection remoteObjectProxy] uninstall:[[NSBundle mainBundle] bundleURL] authorization:authorization withReply:^(NSError *error) {
+    [[helperXPCConnection remoteObjectProxyWithErrorHandler:^(NSError *error) {
+        NSLog(@"%@",[error localizedDescription]);
+    }] uninstall:[[NSBundle mainBundle] bundleURL] authorization:authorization withReply:^(NSError *error) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         if(error){
             NSLog(@"error from helper: %@", error.localizedDescription);
@@ -214,7 +215,9 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName options:NSXPCConnectionPrivileged];
     helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
     [helperXPCConnection resume];
-    [[helperXPCConnection remoteObjectProxy] installGlobalLoginItem:[[NSBundle mainBundle]bundleURL] withReply:^(NSError *error) {
+    [[helperXPCConnection remoteObjectProxyWithErrorHandler:^(NSError *error) {
+        NSLog(@"%@",[error localizedDescription]);
+    }] installGlobalLoginItem:[[NSBundle mainBundle]bundleURL] withReply:^(NSError *error) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             if(error){
                 NSLog(@"%@",error.localizedDescription);
@@ -272,10 +275,14 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
 
 #pragma mark - Observing/Observers
 -(void)addAllObservers{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(getMSUPlistFromHelper) name:MUMFinishedLaunching object:NULL];
-    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshMenu) name:MSUUpdate object:nil];
-    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshMenu) name:MSUUpdateComplete object:nil];
-    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(msuNeedsRunNotify) name:MSUUpdateAvaliable object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(getMSUSettingsFromHelper) name:MUMFinishedLaunching object:NULL];
+    
+    NSDistributedNotificationCenter *dndc = [NSDistributedNotificationCenter defaultCenter];
+    [dndc addObserver:self selector:@selector(refreshMenu) name:MSUUpdate object:nil];
+    [dndc addObserver:self selector:@selector(refreshMenu) name:MSUUpdateComplete object:nil];
+    [dndc addObserver:self selector:@selector(msuNeedsRunNotify) name:MSUUpdateAvaliable object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(defaultsChanged:) name:NSUserDefaultsDidChangeNotification object:nil];
 }
 
 -(void)removeAllObservers{
@@ -285,30 +292,12 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
 
 
 #pragma mark - utils
--(void)getMSUSettings{
-    NSString* msuDir = msuPrefs[kManagedInstallDir];
-    if(!msuDir)return;
-    
-    NSString *manifest = [NSString stringWithFormat:@"%@/manifests/client_manifest.plist",msuDir];
-    msuClientManifest = [NSDictionary dictionaryWithContentsOfFile:manifest];
-
-    NSString *inventory = [NSString stringWithFormat:@"%@/ApplicationInventory.plist",msuDir];
-    msuInventory = [NSDictionary dictionaryWithContentsOfFile:inventory];
-
-    NSString *reports = [NSString stringWithFormat:@"%@/ManagedInstallReport.plist",msuDir];
-    msuReport = [NSDictionary dictionaryWithContentsOfFile:reports];
-
-    NSString *ssinfo = [NSString stringWithFormat:@"%@/manifests/SelfServeManifest",msuDir];
-    msuSelfService = [NSDictionary dictionaryWithContentsOfFile:ssinfo];
-}
 
 -(NSData*)authorizeHelper{
-    //TODO:  Pass AuthRef to helper external form
     OSStatus                    err;
     AuthorizationExternalForm   extForm;
     AuthorizationRef            authRef;
     NSData*                     authorization;
-    // cause all authorized operations to fail.
     
     err = AuthorizationCreate(NULL, NULL, 0, &authRef);
     if (err == errAuthorizationSuccess) {
@@ -319,9 +308,6 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
     }
     assert(err == errAuthorizationSuccess);
     
-    // If we successfully connected to Authorization Services, add definitions for our default
-    // rights (unless they're already in the database).
-    
     if (authRef) {
         [Authorizer setupAuthorizationRights:authRef];
     }
@@ -330,69 +316,63 @@ static NSString* const MSUUpdateAvaliable = @"com.googlecode.munki.ManagedSoftwa
 
 #pragma mark - Menu Delegate
 -(NSString*)repoURL:(MUMMenu*)menu{
-    return msuPrefs[kSoftwareRepoURL];
+    return msuSettings.softwareRepoURL;
 }
 
 -(NSString*)manifestURL:(MUMMenu *)menu{
-    return msuPrefs[kManifestURL];
+    return msuSettings.manifestURL;
 }
 
 -(NSString*)catalogURL:(MUMMenu *)menu{
-    return msuPrefs[kCatalogURL];
+    return msuSettings.catalogURL;
 }
 
 -(NSString*)packageURL:(MUMMenu*)menu{
-    return msuPrefs[kPackageURL];
+    return msuSettings.packageURL;
 }
 
 -(NSString *)clientIdentifier:(MUMMenu *)menu{
-    return msuPrefs[kClientIdentifier];
+    return msuSettings.clientIdentifier;
 }
 
 -(NSString*)logFile:(MUMMenu *)menu{
-    return msuPrefs[kLogFile];
-}
-
--(NSArray *)avaliableUpdates:(MUMMenu *)menu{
-    return msuClientManifest[@"managed_installs"];
+    return msuSettings.logFile;
 }
 
 -(NSArray *)managedInstalls:(MUMMenu *)menu{
-    return msuClientManifest[@"managed_installs"];
+    return msuSettings.managedInstalls;
+}
+
+-(NSArray *)managedUpdates:(MUMMenu *)menu{
+    return msuSettings.managedUpdates;
+}
+
+-(NSArray*)managedUninstalls:(MUMMenu*)menu{
+    return msuSettings.managedUninstalls;
 }
 
 -(NSArray*)processedInstalls:(MUMMenu *)menu{
-    return msuClientManifest[@"processed_installs"];
+    return msuSettings.processedInstalls;
 }
 
 -(NSArray*)optionalInstalls:(MUMMenu *)menu{
-    // We need to check the client manifest against the SelfService file
-    // to determing which of the optional installs are actually installed
-    NSMutableArray *array = [NSMutableArray new];
-    for(NSString* item in msuClientManifest[@"optional_installs"]){
-        if([msuSelfService[@"managed_installs"] containsObject:item]){
-            [array addObject:@{@"item":item,@"installed":@YES}];
-        }else{
-            [array addObject:@{@"item":item,@"installed":@NO}];
-        }
-    }
-    return array;
+   return msuSettings.optionalInstalls;
 }
 
 -(NSArray *)installedItems:(MUMMenu *)menu{
-    return msuReport[@"InstalledItems"];
+    return msuSettings.installedItems;
 }
 
 -(NSArray *)itemsToInstall:(MUMMenu *)menu{
-    return msuReport[@"ItemsToInstall"];
+    return msuSettings.itemsToInstall;
 }
 
 -(NSArray *)itemsToRemove:(MUMMenu *)menu{
-    return msuReport[@"ItemsToRemove"];
+    return msuSettings.itemsToRemove;
 }
 
 -(NSArray *)warnings:(MUMMenu *)menu{
-    return msuReport[@"Warnings"];
+    return msuSettings.msuWarnings;
 }
 
 

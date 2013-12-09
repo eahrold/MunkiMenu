@@ -8,8 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-extern NSString* const MUMFinishedLaunching;
-
 @interface MUMDelegate : NSObject <NSApplicationDelegate>
 -(void)setupDidEndWithUninstallRequest;
 @end

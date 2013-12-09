@@ -14,70 +14,90 @@ static NSString* const MSUAppPreferences = @"ManagedInstalls";
 @implementation MUMHelper
 
 #pragma mark - ManagedInstall.plist Methods
--(void)getPreferenceDictionary:(void (^)(NSDictionary *, NSError *))reply{
+-(void)getPreferenceDictionary:(void (^)(MSUSettings *, NSError *))reply{
     NSError* error;
-    // Convert What we want back in the main app to NSDictionary
-    // Entries
-    NSDictionary* dict = @{kSoftwareRepoURL:[self stringFromCFPref:kSoftwareRepoURL],
-                           kManifestURL:[self stringFromCFPref:kManifestURL],
-                           kCatalogURL:[self stringFromCFPref:kCatalogURL],
-                           kPackageURL:[self stringFromCFPref:kPackageURL],
-                           kManagedInstallDir:[self stringFromCFPref:kManagedInstallDir],
-                           kInstallAppleSoftwareUpdates:[self stringFromCFPref:kInstallAppleSoftwareUpdates],
-                           kLogFile:[self stringFromCFPref:kLogFile],
-                           kClientIdentifier:[self stringFromCFPref:kClientIdentifier]
-                           };
-    if(!dict)error = [NSError errorWithDomain:kHelperName
+    MSUSettings* settings = [MSUSettings new];
+    
+    settings.managedInstallDir = [self stringFromCFPref:kManagedInstallDir];
+
+    NSString *reports = [NSString stringWithFormat:@"%@/ManagedInstallReport.plist",settings.managedInstallDir];
+    NSDictionary *msuReport = [NSDictionary dictionaryWithContentsOfFile:reports];
+    
+    NSString *info = [NSString stringWithFormat:@"%@/InstallInfo.plist",settings.managedInstallDir];
+    NSDictionary *msuInstallInfo = [NSDictionary dictionaryWithContentsOfFile:info];
+  
+    // Set up a dictionary of with BOOL values for the Optional Install items
+    NSMutableArray* msuOptionalInstalls = [NSMutableArray new];
+    for(NSDictionary* dict in msuInstallInfo[kOptionalInstalls]){
+        [msuOptionalInstalls addObject:@{@"item":dict[@"name"],@"installed":dict[@"installed"]}];
+    }
+    
+    // Pull out the name of the item to install from the dictionary
+    NSMutableSet *itemsToInstall = [NSMutableSet new];
+    for(NSDictionary* dict in msuReport[kItemsToInstall]){
+        [itemsToInstall addObject:dict[@"name"]];
+    }
+    
+    // Pull out the name of the item to remove from the dictionary
+    NSMutableSet *itemsToRemove  = [NSMutableSet new];
+    for(NSDictionary* dict in msuReport[kItemsToRemove]){
+        [itemsToRemove addObject:dict[@"name"]];
+    }
+   
+    settings.softwareRepoURL    = [self stringFromCFPref:kSoftwareRepoURL];
+    settings.manifestURL        = [self stringFromCFPref:kManifestURL];
+    settings.catalogURL         = [self stringFromCFPref:kCatalogURL];
+    settings.packageURL         = [self stringFromCFPref:kPackageURL];
+    settings.logFile            = [self stringFromCFPref:kLogFile];
+    settings.clientIdentifier   = [self stringFromCFPref:kClientIdentifier];
+    
+    settings.managedInstalls    = msuReport[kManagedInstalls];
+    settings.managedUpdates     = msuReport[kManagedUpdates];
+    settings.managedUninstalls  = msuReport[kManagedUninstalls];
+    
+    settings.installedItems     = msuReport[kInstalledItems];
+    settings.msuWarnings        = msuReport[kMSUWarnings];
+    settings.processedInstalls  = msuInstallInfo[kProcessedInstalls];
+
+    settings.optionalInstalls   = msuOptionalInstalls;
+
+    settings.itemsToInstall     = [itemsToInstall allObjects];
+    settings.itemsToRemove      = [itemsToRemove allObjects];
+    
+    
+    settings.installASU         = [[self stringFromCFPref:kInstallASU]boolValue];
+
+
+    if(!settings)error = [NSError errorWithDomain:kHelperName
                                          code:1
                                      userInfo:@{NSLocalizedDescriptionKey:@"Therer were problems getting the preferences for Managed Software Update."}];
-    reply(dict,error);
+    reply(settings,error);
 }
 
--(void)getMSUSettings:(NSString*)msuDir withReply:(void (^)(NSArray *))reply{
-    if(!msuDir)return;
-    NSMutableArray* array = [NSMutableArray new];
-    NSString *manifest = [NSString stringWithFormat:@"%@/manifests/client_manifest.plist",msuDir];
-    array[kManifestFile] = [NSDictionary dictionaryWithContentsOfFile:manifest];
-    
-    NSString *inventory = [NSString stringWithFormat:@"%@/ApplicationInventory.plist",msuDir];
-    array[kInventoryFile] = [NSDictionary dictionaryWithContentsOfFile:inventory];
-    
-    NSString *reports = [NSString stringWithFormat:@"%@/ManagedInstallReport.plist",msuDir];
-    array[kReportsFile] = [NSDictionary dictionaryWithContentsOfFile:reports];
-    
-    NSString *ssinfo = [NSString stringWithFormat:@"%@/manifests/SelfServeManifest",msuDir];
-    array[kSelfServiceFile] = [NSDictionary dictionaryWithContentsOfFile:ssinfo];
-    
-    reply(array);
-}
-
--(void)configureMunki:(NSDictionary*)settings authorization:(NSData*)authData withReply:(void (^)(NSDictionary *,NSError*))reply{
+-(void)configureMunki:(MSUSettings*)settings authorization:(NSData*)authData withReply:(void (^)(NSError*))reply{
     NSError* error;
     
     error = [self checkAuthorization:authData command:_cmd];
     if(error != nil){
-        reply(nil,error);
+        reply(error);
         return;
-    }
-    error = nil;
-
-    for(id key in settings) {
-        id value = [settings objectForKey:key];
-        [self writeToCFPref:value key:key];
     }
     
-    [self getPreferenceDictionary:^(NSDictionary *dict, NSError *rerror) {
-        // launch managed software update cli in order to trigger a refresh
-        // of Managed / Optional installs files
-        
-        NSTask* task = [NSTask new];
-        [task setLaunchPath:@"/usr/local/munki/managedsoftwareupdate"];
-        [task setArguments:@[@"--checkonly"]];
-        [task launch];
-        
-        reply(dict,rerror);
-        return;
-    }];
+    [self writeToCFPref:settings.softwareRepoURL key:kSoftwareRepoURL];
+    [self writeToCFPref:settings.packageURL key:kPackageURL];
+    [self writeToCFPref:settings.manifestURL key:kManifestURL];
+    [self writeToCFPref:settings.catalogURL key:kCatalogURL];
+    [self writeToCFPref:settings.logFile key:kLogFile];
+    [self writeToCFPref:settings.clientIdentifier key:kClientIdentifier];
+    
+    NSTask* task = [NSTask new];
+    [task setLaunchPath:@"/usr/local/munki/managedsoftwareupdate"];
+    
+    // use --munkipkgsonly here for to help speed things up...
+    [task setArguments:@[@"--checkonly",@"--munkipkgsonly"]];
+    [task launch];
+
+    reply(error);
 }
 
 #pragma mark - Clean Up

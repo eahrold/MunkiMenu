@@ -17,8 +17,9 @@
 -(NSString*)packageURL:(MUMMenu*)menu;
 -(NSString*)clientIdentifier:(MUMMenu*)menu;
 -(NSString*)logFile:(MUMMenu *)menu;
--(NSArray*)avaliableUpdates:(MUMMenu*)menu;
 -(NSArray*)managedInstalls:(MUMMenu *)menu;
+-(NSArray*)managedUpdates:(MUMMenu*)menu;
+-(NSArray*)managedUninstalls:(MUMMenu*)menu;
 -(NSArray*)optionalInstalls:(MUMMenu *)menu;
 -(NSArray*)processedInstalls:(MUMMenu *)menu;
 -(NSArray*)installedItems:(MUMMenu *)menu;
@@ -42,5 +43,9 @@
 -(void)addSettingsToMenu;
 -(void)addManagedInstallListToMenu;
 -(void)addOptionalInstallListToMenu;
+-(void)addItemsToInstallListToMenu;
+-(void)addItemsToRemoveListToMenu;
+-(void)addManagedUpdateListToMenu;
 -(void)refreshAllItems;
+-(void)refreshing;
 @end

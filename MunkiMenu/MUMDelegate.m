@@ -11,15 +11,21 @@
 #import "SMJobBlesser.h"
 #import "MUMInterface.h"
 
-NSString* const MUMFinishedLaunching = @"com.google.code.munkimenu.didfinishlaunching";
-
 @implementation MUMDelegate
-
+-(void)awakeFromNib{
+    [[NSUserDefaults standardUserDefaults]registerDefaults:@{kShowManagedInstalls:@NO,
+                                                             kShowOptionalInstalls:@YES,
+                                                             kShowManagedUpdates:@NO,
+                                                             kShowItemsToInsatll:@YES,
+                                                             kShowItemsToRemove:@YES,
+                                                             kNotificationsEnabled:@YES}];
+    
+}
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification{
     NSError* error;
     
     if(![JobBlesser blessHelperWithLabel:kHelperName
-                               andPrompt:@"To add Managed Software Update to Menu Bar"
+                               andPrompt:@"To add Managed Software Update to the Status Bar"
                                    error:&error]){
         
         if(error){
@@ -38,7 +44,7 @@ NSString* const MUMFinishedLaunching = @"com.google.code.munkimenu.didfinishlaun
 
 - (void)setupDidEndWithUninstallRequest{
     [JobBlesser removeHelperWithLabel:kHelperName];
-    [NSApp presentError:[NSError errorWithDomain:@"" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Helper Tool and associated files have been removed.  You can safely remove MunkiMenu from the Applications folder.  We will now quit"}] modalForWindow:NULL delegate:[NSApp delegate]
+    [NSApp presentError:[NSError errorWithDomain:@"" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Helper Tool and associated files have been removed.  You can safely remove MunkiMenu from the Applications folder.  We will now quit"}] modalForWindow:NULL delegate:self
      didPresentSelector:@selector(setupDidEndWithTerminalError:) contextInfo:nil];
 }
 
@@ -47,7 +53,6 @@ NSString* const MUMFinishedLaunching = @"com.google.code.munkimenu.didfinishlaun
     helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
     [helperXPCConnection resume];
     [[helperXPCConnection remoteObjectProxy] quitHelper];
-    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"previouslyRun"];
 }
 
 @end
