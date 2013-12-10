@@ -15,7 +15,7 @@
 		BE56DDCE1850E31D00FCF55F /* Authorizer.m in Sources */ = {isa = PBXBuildFile; fileRef = BE56DDCD1850E31D00FCF55F /* Authorizer.m */; };
 		BE56DDCF1850E31D00FCF55F /* Authorizer.m in Sources */ = {isa = PBXBuildFile; fileRef = BE56DDCD1850E31D00FCF55F /* Authorizer.m */; };
 		BE56DDD01850EAC400FCF55F /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE2C07381847CF8800DF867A /* Security.framework */; };
-		BE6A737818578DD500A4DA71 /* NSWindow+canBecomeKeyWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = BE6A737718578DD500A4DA71 /* NSWindow+canBecomeKeyWindow.m */; };
+		BE6A737C1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = BE6A737B1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.m */; };
 		BE8B45E3184510B0005D435B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE8B45E2184510B0005D435B /* Cocoa.framework */; };
 		BE8B45ED184510B0005D435B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BE8B45EB184510B0005D435B /* InfoPlist.strings */; };
 		BE8B45EF184510B0005D435B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BE8B45EE184510B0005D435B /* main.m */; };
@@ -84,8 +84,8 @@
 		BE2C073A1848FA3400DF867A /* MUMInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MUMInterface.h; path = helper/MUMInterface.h; sourceTree = "<group>"; };
 		BE56DDCC1850E31D00FCF55F /* Authorizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Authorizer.h; sourceTree = "<group>"; };
 		BE56DDCD1850E31D00FCF55F /* Authorizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Authorizer.m; sourceTree = "<group>"; };
-		BE6A737618578DD500A4DA71 /* NSWindow+canBecomeKeyWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSWindow+canBecomeKeyWindow.h"; sourceTree = "<group>"; };
-		BE6A737718578DD500A4DA71 /* NSWindow+canBecomeKeyWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSWindow+canBecomeKeyWindow.m"; sourceTree = "<group>"; };
+		BE6A737A1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSWindow+canBecomeKeyWindow.h"; sourceTree = "<group>"; };
+		BE6A737B1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSWindow+canBecomeKeyWindow.m"; sourceTree = "<group>"; };
 		BE8B45DF184510B0005D435B /* MunkiMenu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MunkiMenu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE8B45E2184510B0005D435B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		BE8B45E5184510B0005D435B /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -172,6 +172,17 @@
 			name = Shared;
 			sourceTree = "<group>";
 		};
+		BE6A737D1857AAFE00A4DA71 /* Custom Catagories */ = {
+			isa = PBXGroup;
+			children = (
+				BE6A737A1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.h */,
+				BE6A737B1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.m */,
+				BEE3B710184D85B700E19FF7 /* NSString(TextField)+isNotBlank.h */,
+				BEE3B711184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m */,
+			);
+			name = "Custom Catagories";
+			sourceTree = "<group>";
+		};
 		BE8B45D6184510B0005D435B = {
 			isa = PBXGroup;
 			children = (
@@ -229,16 +240,15 @@
 				BE8B461918451663005D435B /* MUMController.m */,
 				BE8B461B18451687005D435B /* MUMMenu.h */,
 				BE8B461C18451687005D435B /* MUMMenu.m */,
-				BE966FDC184544F4006B3A92 /* MUMLoginItem.h */,
-				BE966FDD184544F4006B3A92 /* MUMLoginItem.m */,
 				BECD1E95185761CD009BEB9F /* MUMMenuView.h */,
 				BECD1E96185761CD009BEB9F /* MUMMenuView.m */,
 				BECD1E9018576006009BEB9F /* MUMConfigView.h */,
 				BECD1E9118576006009BEB9F /* MUMConfigView.m */,
 				BECD1E9218576006009BEB9F /* MUMConfigView.xib */,
 				BE8B45F7184510B0005D435B /* MainMenu.xib */,
-				BE8B45FA184510B0005D435B /* Images.xcassets */,
+				BE6A737D1857AAFE00A4DA71 /* Custom Catagories */,
 				BE8B45E9184510B0005D435B /* Supporting Files */,
+				BE8B45FA184510B0005D435B /* Images.xcassets */,
 			);
 			name = MunkiMenu;
 			path = ../munkimenu/MunkiMenu;
@@ -247,10 +257,8 @@
 		BE8B45E9184510B0005D435B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				BE6A737618578DD500A4DA71 /* NSWindow+canBecomeKeyWindow.h */,
-				BE6A737718578DD500A4DA71 /* NSWindow+canBecomeKeyWindow.m */,
-				BEE3B710184D85B700E19FF7 /* NSString(TextField)+isNotBlank.h */,
-				BEE3B711184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m */,
+				BE966FDC184544F4006B3A92 /* MUMLoginItem.h */,
+				BE966FDD184544F4006B3A92 /* MUMLoginItem.m */,
 				BE56DDCC1850E31D00FCF55F /* Authorizer.h */,
 				BE56DDCD1850E31D00FCF55F /* Authorizer.m */,
 				BE2C07351847CE6000DF867A /* SMJobBlesser.h */,
@@ -431,7 +439,7 @@
 				BE18A4241853FEF9008ED3AA /* MUMInterface.m in Sources */,
 				BECD1E9318576006009BEB9F /* MUMConfigView.m in Sources */,
 				BE2C07371847CE6000DF867A /* SMJobBlesser.m in Sources */,
-				BE6A737818578DD500A4DA71 /* NSWindow+canBecomeKeyWindow.m in Sources */,
+				BE6A737C1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.m in Sources */,
 				BE56DDCE1850E31D00FCF55F /* Authorizer.m in Sources */,
 				BE8B45EF184510B0005D435B /* main.m in Sources */,
 				BE8B461A18451663005D435B /* MUMController.m in Sources */,

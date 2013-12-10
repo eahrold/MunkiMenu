@@ -11,9 +11,9 @@
 #import "NSString(TextField)+isNotBlank.h"
 
 @implementation MUMMenu{
-    NSMutableSet* currentMenuItems;
+    NSMutableSet* _currentMenuItems;
 }
-@synthesize delegate,notificationMenuItem;
+@synthesize delegate;
 
 
 
@@ -21,8 +21,8 @@
 -(void)awakeFromNib{
     // we use the currentMenuItems NSSet to hold the All of
     // the NSMenu items for easy removal during the menu refresh
-    if(!currentMenuItems){
-        currentMenuItems = [NSMutableSet new];
+    if(!_currentMenuItems){
+        _currentMenuItems = [NSMutableSet new];
     }
 }
 
@@ -31,11 +31,11 @@
 }
 
 -(void)refreshAllItems{
-    for(NSMenuItem* item in currentMenuItems){
+    for(NSMenuItem* item in _currentMenuItems){
         [self removeItem:item];
     }
     
-    [currentMenuItems removeAllObjects];
+    [_currentMenuItems removeAllObjects];
     
     [self addSettingsToMenu];
     [self addManagedInstallListToMenu];
@@ -46,18 +46,18 @@
 }
 
 -(void)refreshing{
-    for(NSMenuItem* item in currentMenuItems){
+    for(NSMenuItem* item in _currentMenuItems){
         [self removeItem:item];
     }
     
-    [currentMenuItems removeAllObjects];
+    [_currentMenuItems removeAllObjects];
     [self addSettingsToMenu];
     
     NSMenuItem* refreshing = [NSMenuItem new];
     [refreshing setTitle:@"Refreshing Menu..."];
     
     [self insertItem:refreshing atIndex:[self insertIndex]];
-    [currentMenuItems addObject:refreshing];    
+    [_currentMenuItems addObject:refreshing];    
 }
 
 -(void)addAlternateItemsToMenu{
@@ -154,7 +154,7 @@
     [details addItem:config_menu];
    
     [self insertItem:settings atIndex:1];
-    [currentMenuItems addObject:settings];
+    [_currentMenuItems addObject:settings];
 }
 
 #pragma mark - Menu Lists
@@ -178,7 +178,7 @@
         
         [self setSubmenu:details forItem:menu_item];
         [self insertItem:menu_item atIndex:[self insertIndex]];
-        [currentMenuItems addObject:menu_item];
+        [_currentMenuItems addObject:menu_item];
     }
 }
 
@@ -201,7 +201,7 @@
         
         [self setSubmenu:details forItem:menu_item];
         [self insertItem:menu_item atIndex:[self insertIndex]];
-        [currentMenuItems addObject:menu_item];
+        [_currentMenuItems addObject:menu_item];
     }
 }
 
@@ -231,7 +231,7 @@
         
         [self setSubmenu:details forItem:menu_item];
         [self insertItem:menu_item atIndex:[self insertIndex]];
-        [currentMenuItems addObject:menu_item];
+        [_currentMenuItems addObject:menu_item];
     }
 }
 
@@ -253,7 +253,7 @@
         
         [self setSubmenu:details forItem:menu_item];
         [self insertItem:menu_item atIndex:[self insertIndex]];
-        [currentMenuItems addObject:menu_item];
+        [_currentMenuItems addObject:menu_item];
     }
 }
 
@@ -276,7 +276,7 @@
         
         [self setSubmenu:details forItem:menu_item];
         [self insertItem:menu_item atIndex:[self insertIndex]];
-        [currentMenuItems addObject:menu_item];
+        [_currentMenuItems addObject:menu_item];
     }
 }
 

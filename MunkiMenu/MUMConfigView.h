@@ -12,6 +12,7 @@
 
 -(void)closeConfigView;
 -(void)configureMunki;
+-(BOOL)popoverIsShown;
 
 @end
 @interface MUMConfigView : NSViewController

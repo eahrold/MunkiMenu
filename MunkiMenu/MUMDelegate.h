@@ -10,4 +10,7 @@
 
 @interface MUMDelegate : NSObject <NSApplicationDelegate>
 -(void)setupDidEndWithUninstallRequest;
+
+@property BOOL popupIsActive;
+
 @end

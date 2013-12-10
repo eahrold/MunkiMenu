@@ -15,7 +15,8 @@
     NSStatusItem *_statusItem;
     NSMenu *_statusItemMenu;
 }
-- (void)updateUI;
+
+- (void)refreshView;
 - (void)setActive:(BOOL)active;
 @end
 
@@ -34,7 +35,7 @@
         _active = NO;
         _imageView = [[NSImageView alloc] initWithFrame:NSMakeRect(0, 0, ImageViewWidth, height)];
         [self addSubview:_imageView];
-        [self updateUI];
+        [self refreshView];
     }
     _imageView.image = [NSImage imageNamed:@"Managed Software Update18x18"];
 
@@ -63,14 +64,14 @@
     }
 }
 
--(void)updateUI{
+-(void)refreshView{
     [self setNeedsDisplay:YES];
 }
 
 - (void)setActive:(BOOL)active
 {
     _active = active;
-    [self updateUI];
+    [self refreshView];
 }
 
 @end

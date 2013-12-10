@@ -10,9 +10,7 @@
 #import "MUMMenu.h"
 #import "MUMConfigView.h"
 
-@interface MUMController : NSObject <MUMMenuDelegate,NSUserNotificationCenterDelegate,MUMViewControllerDelegate>{
-    NSStatusItem* statusItem;
-}
+@interface MUMController : NSObject <MUMMenuDelegate,NSUserNotificationCenterDelegate,MUMViewControllerDelegate>
 
 //Status Menu
 @property (strong) IBOutlet MUMMenu* menu;

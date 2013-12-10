@@ -37,7 +37,6 @@
 @interface MUMMenu : NSMenu
 
 @property (weak) id<MUMMenuDelegate>delegate;
-@property (weak) NSMenuItem* notificationMenuItem;
 -(void)addAlternateItemsToMenu;
 -(void)addSettingsToMenu;
 -(void)addManagedInstallListToMenu;

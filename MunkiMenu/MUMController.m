@@ -13,22 +13,26 @@
 #import "MUMMenuView.h"
 
 #import "Authorizer.h"
+@interface MUMController ()
+{
+@private
+    NSStatusItem* _statusItem;
+    MSUSettings *_msuSettings;
+    MUMMenuView* _menuView;
+    
+    NSPopover *_popover;
+    BOOL _notificationsEnabled;
+    BOOL _setupDone;
+}
+@end
 
 @implementation MUMController{
-    MSUSettings *msuSettings;
-    MUMMenuView* menuView;
-    MUMConfigView* configView;
-
-    NSPopover *popover;
-    BOOL notificationsEnabled;
-    BOOL setupDone;
+    MUMConfigView* _configView;
 }
 
 @synthesize menu;
 
 -(void)awakeFromNib{
-    // We don't want to do too much here, because the MUMController is the file owner of
-    // the Config View and everything here gets reloaded
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(configureStatusBar) name:MUMFinishedLaunching object:NULL];
 }
 
@@ -38,35 +42,35 @@
 
 #pragma mark - Setup Menu Items / Status Bar
 -(void)configureStatusBar{
-    notificationsEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationsEnabled];
+    _notificationsEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationsEnabled];
     [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
 
-    statusItem = [[NSStatusBar systemStatusBar]statusItemWithLength:NSVariableStatusItemLength];
-    [statusItem setImage:[NSImage imageNamed:@"Managed Software Update18x18"]];
-    [statusItem setHighlightMode:YES];
-    [statusItem setMenu:menu];
+    _statusItem = [[NSStatusBar systemStatusBar]statusItemWithLength:NSVariableStatusItemLength];
+    [_statusItem setHighlightMode:YES];
+    [_statusItem setMenu:menu];
     
-    if(!menuView){
-        menuView = [[MUMMenuView alloc]initWithStatusItem:statusItem andMenu:menu];
+    if(!_menuView){
+        _menuView = [[MUMMenuView alloc]initWithStatusItem:_statusItem andMenu:menu];
     }
     
-    statusItem.view = menuView;
+    _statusItem.view = _menuView;
+    
+    [menu setDelegate:self];
+    [menu addAlternateItemsToMenu];
     
     [self addAllObservers];
     [self getMSUSettingsFromHelper];
 }
 
 -(void)configureMenu{
-    [menu setDelegate:self];
-    [menu addAlternateItemsToMenu];
     [menu addSettingsToMenu];
     [menu addManagedInstallListToMenu];
     [menu addOptionalInstallListToMenu];
     [menu addItemsToInstallListToMenu];
     [menu addItemsToRemoveListToMenu];
     [menu addManagedUpdateListToMenu];
-    [[menu itemWithTitle:@"Notifications"] setState:notificationsEnabled];
-    setupDone=YES;
+    [[menu itemWithTitle:@"Notifications"] setState:_notificationsEnabled];
+    _setupDone=YES;
 }
 
 -(void)refreshMenu{
@@ -83,13 +87,9 @@
 }
 
 -(IBAction)enableNotifications:(id)sender{
-    notificationsEnabled = !notificationsEnabled;
-    if(notificationsEnabled){
-        [(NSMenuItem*)sender setState:NSOnState];
-    }else{
-        [(NSMenuItem*)sender setState:NSOffState];
-    }
-    [[NSUserDefaults standardUserDefaults]setBool:notificationsEnabled forKey:kNotificationsEnabled];
+    _notificationsEnabled = !_notificationsEnabled;
+    [(NSMenuItem*)sender setState:_notificationsEnabled ? NSOnState:NSOffState];
+    [[NSUserDefaults standardUserDefaults]setBool:_notificationsEnabled forKey:kNotificationsEnabled];
 }
 
 -(void)quitNow:(id)sender{
@@ -97,7 +97,7 @@
 }
 
 -(void)openLogFile:(id)sender{
-    [[NSWorkspace sharedWorkspace]openFile:msuSettings.logFile withApplication:@"/Applications/Utilities/Console.app"];
+    [[NSWorkspace sharedWorkspace]openFile:_msuSettings.logFile withApplication:@"/Applications/Utilities/Console.app"];
 }
 
 -(void)aboutMunkiMenu:(id)sender{
@@ -106,67 +106,75 @@
 
 #pragma mark - Config View
 -(void)openConfigView{
-    if(!configView){
-        configView = [[MUMConfigView alloc]initWithNibName:@"MUMConfigView" bundle:nil];
-        [configView setDelegate:self];
+    // We use the popupIsActive in the AppDelegate to bridge over to
+    // the canBecomeKeyWindow Catagory in order to allow the statudItemView
+    // to become a key view.
+    
+    if(!_configView){
+        _configView = [[MUMConfigView alloc]initWithNibName:@"MUMConfigView" bundle:nil];
+        [_configView setDelegate:self];
     }
     
-    if (popover == nil) {
-        popover = [[NSPopover alloc] init];
-        popover.contentViewController = configView;
+    if (_popover == nil) {
+        _popover = [[NSPopover alloc] init];
+        _popover.contentViewController = _configView;
     }
     
     
-    if (!popover.isShown) {
-        [popover showRelativeToRect:menuView.frame
-                              ofView:menuView
+    if (!_popover.isShown) {
+        [_popover showRelativeToRect:_menuView.frame
+                              ofView:_menuView
                        preferredEdge:NSMinYEdge];
     }
+    ((MUMDelegate*)[NSApp delegate]).popupIsActive = YES;
+
     
     // If the computer is managed using MCX there's no use editing
     // the ManagedInsalls.plist, so we won't bother adding this to the menu
     BOOL mcxManaged = [[NSFileManager defaultManager] fileExistsAtPath:@"/Library/Managed Preferences/ManagedInstalls.plist"];
     
     if(mcxManaged){
-        [configView.repoURLTF setEnabled:NO];
-        [configView.clientIDTF setEnabled:NO];
-        [configView.logFileTF setEnabled:NO];
-        [configView.manifestURLTF setEnabled:NO];
-        [configView.catalogURLTF setEnabled:NO];
-        [configView.packageURLTF setEnabled:NO];
-        [configView.ASUEnabledCB setEnabled:NO];
-        [configView.setButton setEnabled:NO];
-        [configView.managedByMCX setHidden:NO];
+        [_configView.repoURLTF setEnabled:NO];
+        [_configView.clientIDTF setEnabled:NO];
+        [_configView.logFileTF setEnabled:NO];
+        [_configView.manifestURLTF setEnabled:NO];
+        [_configView.catalogURLTF setEnabled:NO];
+        [_configView.packageURLTF setEnabled:NO];
+        [_configView.ASUEnabledCB setEnabled:NO];
+        [_configView.setButton setEnabled:NO];
+        [_configView.managedByMCX setHidden:NO];
     }
     
-    configView.repoURLTF.stringValue = msuSettings.softwareRepoURL;
-    configView.clientIDTF.stringValue = msuSettings.clientIdentifier;
-    configView.logFileTF.stringValue = msuSettings.logFile;
-    configView.manifestURLTF.stringValue = msuSettings.manifestURL;
-    configView.catalogURLTF.stringValue = msuSettings.catalogURL;
-    configView.packageURLTF.stringValue = msuSettings.packageURL;
-    configView.ASUEnabledCB.state = msuSettings.installASU;
+    _configView.repoURLTF.stringValue = _msuSettings.softwareRepoURL;
+    _configView.clientIDTF.stringValue = _msuSettings.clientIdentifier;
+    _configView.logFileTF.stringValue = _msuSettings.logFile;
+    _configView.manifestURLTF.stringValue = _msuSettings.manifestURL;
+    _configView.catalogURLTF.stringValue = _msuSettings.catalogURL;
+    _configView.packageURLTF.stringValue = _msuSettings.packageURL;
+    _configView.ASUEnabledCB.state = _msuSettings.installASU;
 }
 
 -(void)closeConfigView{
-    if (popover != nil && popover.isShown) {
-        [popover close];
+    if (_popover != nil && _popover.isShown) {
+        [_popover close];
     }
     
-    configView = nil;
+    ((MUMDelegate*)[NSApp delegate]).popupIsActive = NO;
+
+    _configView = nil;
 }
 
 -(void)configureMunki{
     NSData* authorization = [self authorizeHelper];
     assert(authorization != nil);
     
-    msuSettings.softwareRepoURL  = configView.repoURLTF.stringValue;
-    msuSettings.clientIdentifier = configView.clientIDTF.stringValue;
-    msuSettings.logFile          = configView.logFileTF.stringValue;
-    msuSettings.manifestURL      = configView.manifestURLTF.stringValue;
-    msuSettings.catalogURL       = configView.catalogURLTF.stringValue;
-    msuSettings.packageURL       = configView.packageURLTF.stringValue;
-    msuSettings.installASU       = configView.ASUEnabledCB.state;
+    _msuSettings.softwareRepoURL  = _configView.repoURLTF.stringValue;
+    _msuSettings.clientIdentifier = _configView.clientIDTF.stringValue;
+    _msuSettings.logFile          = _configView.logFileTF.stringValue;
+    _msuSettings.manifestURL      = _configView.manifestURLTF.stringValue;
+    _msuSettings.catalogURL       = _configView.catalogURLTF.stringValue;
+    _msuSettings.packageURL       = _configView.packageURLTF.stringValue;
+    _msuSettings.installASU       = _configView.ASUEnabledCB.state;
     
     [self closeConfigView];
     
@@ -178,7 +186,7 @@
     
     [[helperXPCConnection remoteObjectProxyWithErrorHandler:^(NSError *error) {
         NSLog(@"MSU Configuration Error: %@",error.localizedDescription);
-    }] configureMunki:msuSettings authorization:authorization withReply:^(NSError * error)
+    }] configureMunki:_msuSettings authorization:authorization withReply:^(NSError * error)
      {[[NSOperationQueue mainQueue] addOperationWithBlock:^{
         if(error){
             NSLog(@"%@",[error localizedDescription]);
@@ -216,8 +224,8 @@
                  NSLog(@"%@",[error localizedDescription]);
                  [NSApp presentError:error];
              }else{
-                 msuSettings = settings;
-                 if(!setupDone){
+                 _msuSettings = settings;
+                 if(!_setupDone){
                      [self configureMenu];
                      [self installGlobalLogin];
                  }else{
@@ -298,7 +306,7 @@
 
 #pragma mark -
 -(void)msuCompletNotify{
-    if(notificationsEnabled){
+    if(_notificationsEnabled){
         NSUserNotification *notification = [[NSUserNotification alloc] init];
         notification.title = @"Updates Complete!";
         notification.informativeText = [NSString stringWithFormat:@"All managed software updates have been completed"];
@@ -309,7 +317,7 @@
 }
 
 -(void)msuNeedsRunNotify{
-    if(notificationsEnabled){
+    if(_notificationsEnabled){
         NSUserNotification *notification = [[NSUserNotification alloc] init];
         notification.title = @"Avaliable Software Updates";
         notification.informativeText = [NSString stringWithFormat:@"There are software updates that need installed."];
@@ -365,70 +373,74 @@
 
 #pragma mark - Menu Delegate
 -(NSString*)repoURL:(MUMMenu*)menu{
-    return msuSettings.softwareRepoURL;
+    return _msuSettings.softwareRepoURL;
 }
 
 -(NSString*)manifestURL:(MUMMenu *)menu{
-    return msuSettings.manifestURL;
+    return _msuSettings.manifestURL;
 }
 
 -(NSString*)catalogURL:(MUMMenu *)menu{
-    return msuSettings.catalogURL;
+    return _msuSettings.catalogURL;
 }
 
 -(NSString*)packageURL:(MUMMenu*)menu{
-    return msuSettings.packageURL;
+    return _msuSettings.packageURL;
 }
 
 -(NSString *)clientIdentifier:(MUMMenu *)menu{
-    return msuSettings.clientIdentifier;
+    return _msuSettings.clientIdentifier;
 }
 
 -(NSString*)logFile:(MUMMenu *)menu{
-    return msuSettings.logFile;
+    return _msuSettings.logFile;
 }
 
 -(NSArray *)managedInstalls:(MUMMenu *)menu{
-    return msuSettings.managedInstalls;
+    return _msuSettings.managedInstalls;
 }
 
 -(NSArray *)managedUpdates:(MUMMenu *)menu{
-    return msuSettings.managedUpdates;
+    return _msuSettings.managedUpdates;
 }
 
 -(NSArray*)managedUninstalls:(MUMMenu*)menu{
-    return msuSettings.managedUninstalls;
+    return _msuSettings.managedUninstalls;
 }
 
 -(NSArray*)processedInstalls:(MUMMenu *)menu{
-    return msuSettings.processedInstalls;
+    return _msuSettings.processedInstalls;
 }
 
 -(NSArray*)optionalInstalls:(MUMMenu *)menu{
-   return msuSettings.optionalInstalls;
+   return _msuSettings.optionalInstalls;
 }
 
 -(NSArray *)installedItems:(MUMMenu *)menu{
-    return msuSettings.installedItems;
+    return _msuSettings.installedItems;
 }
 
 -(NSArray *)itemsToInstall:(MUMMenu *)menu{
-    return msuSettings.itemsToInstall;
+    return _msuSettings.itemsToInstall;
 }
 
 -(NSArray *)itemsToRemove:(MUMMenu *)menu{
-    return msuSettings.itemsToRemove;
+    return _msuSettings.itemsToRemove;
 }
 
 -(NSArray *)warnings:(MUMMenu *)menu{
-    return msuSettings.msuWarnings;
+    return _msuSettings.msuWarnings;
 }
 
 #pragma mark - NSMenuDelegate
 - (void)menuDidClose:(NSMenu *)menu
 {
-    [menuView setActive:NO];
+    [_menuView setActive:NO];
 }
 
+#pragma mark - ConfigView Delegate
+-(BOOL)popoverIsShown{
+    return _popover.isShown;
+}
 
 @end

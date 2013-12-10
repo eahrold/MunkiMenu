@@ -27,4 +27,17 @@
     [_delegate configureMunki];
 }
 
+- (BOOL)canBecomeKeyWindow
+{
+    NSLog(@"Checking on key");
+    if([self class]==NSClassFromString(@"NSStatusBarWindow"))
+    {
+        
+        if([_delegate popoverIsShown])
+            return NO;
+    }
+    
+    return YES;
+}
+
 @end
