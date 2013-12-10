@@ -21,26 +21,31 @@
 @synthesize menu,configSheet;
 
 -(void)awakeFromNib{
-    [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
-    [menu setDelegate:self];
-    [self addAllObservers];
-    
-    statusItem = [[NSStatusBar systemStatusBar]statusItemWithLength:NSVariableStatusItemLength];
-    [statusItem setImage:[NSImage imageNamed:@"Managed Software Update18x18"]];
-    [statusItem setHighlightMode:YES];
-    [statusItem setMenu:menu];
-    
-    notificationsEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationsEnabled];
-    
-   [[menu itemWithTitle:@"Notifications"] setState:notificationsEnabled];
+    // We don't want to do too much here, because the MUMController is the file owner of
+    // the Config View and everything here gets reloaded
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(configureStatusBar) name:MUMFinishedLaunching object:NULL];
 }
 
 -(void)dealloc{
     [self removeAllObservers];
 }
 
-#pragma mark - Set Menu Items
+#pragma mark - Setup Menu Items / Status Bar
+-(void)configureStatusBar{
+    notificationsEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationsEnabled];
+    [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
+
+    statusItem = [[NSStatusBar systemStatusBar]statusItemWithLength:NSVariableStatusItemLength];
+    [statusItem setImage:[NSImage imageNamed:@"Managed Software Update18x18"]];
+    [statusItem setHighlightMode:YES];
+    [statusItem setMenu:menu];
+    
+    [self addAllObservers];
+    [self getMSUSettingsFromHelper];
+}
+
 -(void)configureMenu{
+    [menu setDelegate:self];
     [menu addAlternateItemsToMenu];
     [menu addSettingsToMenu];
     [menu addManagedInstallListToMenu];
@@ -48,6 +53,7 @@
     [menu addItemsToInstallListToMenu];
     [menu addItemsToRemoveListToMenu];
     [menu addManagedUpdateListToMenu];
+    [[menu itemWithTitle:@"Notifications"] setState:notificationsEnabled];
     setupDone=YES;
 }
 
@@ -59,11 +65,34 @@
     [menu refreshAllItems];
 }
 
-#pragma mark - IBActions
+#pragma mark - Controller IBActions / Selectors
 -(IBAction)runManagedSoftwareUpdate:(id)sender{
     [[NSWorkspace sharedWorkspace] launchApplication:@"/Applications/Utilities/Managed Software Update.app"];
 }
 
+-(IBAction)enableNotifications:(id)sender{
+    notificationsEnabled = !notificationsEnabled;
+    if(notificationsEnabled){
+        [(NSMenuItem*)sender setState:NSOnState];
+    }else{
+        [(NSMenuItem*)sender setState:NSOffState];
+    }
+    [[NSUserDefaults standardUserDefaults]setBool:notificationsEnabled forKey:kNotificationsEnabled];
+}
+
+-(void)quitNow:(id)sender{
+    [NSApp terminate:self];
+}
+
+-(void)openLogFile:(id)sender{
+    [[NSWorkspace sharedWorkspace]openFile:msuSettings.logFile withApplication:@"/Applications/Utilities/Console.app"];
+}
+
+-(void)aboutMunkiMenu:(id)sender{
+    [[NSApplication sharedApplication]orderFrontStandardAboutPanel:self];
+}
+
+#pragma mark - Config Sheet
 -(IBAction)configureMunki:(id)sender{
     NSData* authorization = [self authorizeHelper];
     assert(authorization != nil);
@@ -100,29 +129,7 @@
          // when needed we'll just launch it later.
          [self quitHelper];
      }];
-
-}
-
--(IBAction)enableNotifications:(id)sender{
-    notificationsEnabled = !notificationsEnabled;
-    if(notificationsEnabled){
-        [(NSMenuItem*)sender setState:NSOnState];
-    }else{
-        [(NSMenuItem*)sender setState:NSOffState];
-    }
-    [[NSUserDefaults standardUserDefaults]setBool:notificationsEnabled forKey:kNotificationsEnabled];
-}
-
--(void)quitNow:(id)sender{
-    [NSApp terminate:self];
-}
-
--(void)openLogFile:(id)sender{
-    [[NSWorkspace sharedWorkspace]openFile:msuSettings.logFile withApplication:@"/Applications/Utilities/Console.app"];
-}
-
--(void)aboutMunkiMenu:(id)sender{
-    [[NSApplication sharedApplication]orderFrontStandardAboutPanel:self];
+    
 }
 
 -(void)openConfigSheet{
@@ -140,9 +147,9 @@
 
     [NSApp beginSheet:configSheet
        modalForWindow:nil
-        modalDelegate:self
-       didEndSelector:NULL
-          contextInfo:NULL];
+        modalDelegate:nil
+       didEndSelector:nil
+          contextInfo:nil];
 }
 
 -(IBAction)closeConfigSheet:(id)sender{
@@ -187,29 +194,6 @@
      }];
 }
 
--(void)uninstallHelper:(MUMMenu *)menu{
-    NSData* authorization = [self authorizeHelper];
-    assert(authorization != nil);
-    
-    // Uninstall the Helper app and launchD files, then unload the launchd job.
-    // The Helper App removes the files then we call a selector on the App delegate
-    // To do the SMJob Unblessing
-    NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName options:NSXPCConnectionPrivileged];
-    helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
-    [helperXPCConnection resume];
-    [[helperXPCConnection remoteObjectProxyWithErrorHandler:^(NSError *error) {
-        NSLog(@"%@",[error localizedDescription]);
-    }] uninstall:[[NSBundle mainBundle] bundleURL] authorization:authorization withReply:^(NSError *error) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if(error){
-            NSLog(@"error from helper: %@", error.localizedDescription);
-        }else{
-            [[NSApp delegate] performSelector:@selector(setupDidEndWithUninstallRequest) withObject:nil];
-            }
-        }];
-        [helperXPCConnection invalidate];
-    }];
-}
 
 -(void)installGlobalLogin{
     NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName options:NSXPCConnectionPrivileged];
@@ -227,12 +211,38 @@
     }];
 }
 
+-(void)uninstallHelper:(MUMMenu *)menu{
+    NSData* authorization = [self authorizeHelper];
+    assert(authorization != nil);
+    
+    // Uninstall the Helper app and launchD files, then unload the launchd job.
+    // The Helper App removes the files then we call a selector on the App delegate
+    // To do the SMJob Unblessing
+    NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName options:NSXPCConnectionPrivileged];
+    helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
+    [helperXPCConnection resume];
+    [[helperXPCConnection remoteObjectProxyWithErrorHandler:^(NSError *error) {
+        NSLog(@"%@",[error localizedDescription]);
+    }] uninstall:[[NSBundle mainBundle] bundleURL] authorization:authorization withReply:^(NSError *error) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if(error){
+                NSLog(@"error from helper: %@", error.localizedDescription);
+            }else{
+                [[NSApp delegate] performSelector:@selector(setupDidEndWithUninstallRequest) withObject:nil];
+            }
+        }];
+        [helperXPCConnection invalidate];
+    }];
+}
+
 -(void)quitHelper{
     NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName options:NSXPCConnectionPrivileged];
     helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
     [helperXPCConnection resume];
     [[helperXPCConnection remoteObjectProxy] quitHelper];
 }
+
+
 
 #pragma mark - UserNotifications Delegate/Methods
 - (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center shouldPresentNotification:(NSUserNotification *)notification
@@ -275,8 +285,6 @@
 
 #pragma mark - Observing/Observers
 -(void)addAllObservers{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(getMSUSettingsFromHelper) name:MUMFinishedLaunching object:NULL];
-    
     NSDistributedNotificationCenter *dndc = [NSDistributedNotificationCenter defaultCenter];
     [dndc addObserver:self selector:@selector(refreshMenu) name:MSUUpdate object:nil];
     [dndc addObserver:self selector:@selector(refreshMenu) name:MSUUpdateComplete object:nil];
