@@ -147,18 +147,12 @@
         [details addItem:menu_item];
     }
     
-    // If the computer is managed using MCX there's no use editing
-    // the ManagedInsalls.plist, so we won't bother adding this to the menu
-    BOOL mcxManaged = [[NSFileManager defaultManager] fileExistsAtPath:@"/Library/Managed Preferences/ManagedInstalls.plist"];
-    
-    if(!mcxManaged){
-        NSMenuItem* menu_item = [NSMenuItem new];
-        [menu_item setTitle:@"Configure..."];
-        [menu_item setAction:@selector(openConfigSheet)];
-        [menu_item setTarget:delegate];
-        [details addItem:menu_item];
-    }
-    
+    NSMenuItem* config_menu = [NSMenuItem new];
+    [config_menu setTitle:@"Configure..."];
+    [config_menu setAction:@selector(openConfigView)];
+    [config_menu setTarget:delegate];
+    [details addItem:config_menu];
+   
     [self insertItem:settings atIndex:1];
     [currentMenuItems addObject:settings];
 }
@@ -285,7 +279,5 @@
         [currentMenuItems addObject:menu_item];
     }
 }
-
-
 
 @end

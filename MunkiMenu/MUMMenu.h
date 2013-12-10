@@ -10,7 +10,7 @@
 
 @class MUMMenu, MUMController;
 
-@protocol MUMMenuDelegate <NSObject>
+@protocol MUMMenuDelegate <NSObject,NSMenuDelegate>
 -(NSString*)repoURL:(MUMMenu*)menu;
 -(NSString*)manifestURL:(MUMMenu*)menu;
 -(NSString*)catalogURL:(MUMMenu*)menu;
@@ -31,8 +31,7 @@
 -(void)openLogFile:(id)sender;
 -(void)uninstallHelper:(id)sender;
 -(void)quitNow:(id)sender;
--(void)openConfigSheet;
-
+-(void)openConfigView;
 @end
 
 @interface MUMMenu : NSMenu
