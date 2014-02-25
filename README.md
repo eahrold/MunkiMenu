@@ -17,16 +17,107 @@ Munki menu includes a helper app for accessing ManagedInstalls preferences that 
 
 It uses NSXPC to communicate between the main app and the helper app so this will only run on 10.8 or greater.
 
-It uses SMJobBless to install the helper app and by default will prompt the user for authorization as admin. 
+It's coded to use SMJobBless to install the helper app and by default will prompt the user for authorization as admin. 
+However, if you want to install this in a way that will not require user interaction (i.e using munki) you can do one of two things.  
 
-Using SMJobBless also means that  if building this yourself you will need a valid Code Signing Identity and make adjustments to the App, Helper App and their info.plists respectivly. Please refer to [Apple's SMJobBless example code](https://developer.apple.com/library/mac/samplecode/SMJobBless/Listings/ReadMe_txt.html  ) for more information.
+1. (Prefered) Create a copy-file dmg with only the MunkiMenu.app and add these Pre-Install and Post-Install script to the munki pkginfo.
+    __Also you'll want to have a single item in blocking_applications array of the pkginfo.plist to "none"__
 
-If you want to install this in a way that will not require user interaction (i.e using munki) you can do one of two things.  
-
-1. (Prefered) Create a copy-file dmg with only the MunkiMenu.app and add this Post-Install script  to the munki pkginfo.  An example of a pkginfo plist located in the docs directory of the source code, or can be [donwloaded here][examplePlist].
-
+###Pre-Install
 ```python
 #!/usr/bin/python
+
+'''
+Pre-Install Script for MunkiMenu or any other app
+that has a global login managed by LaunchD.  It will quit the app
+and attempt to unload the Launch Agent so installation can procede.
+It assumes the launchd.plist file is in the form of the App's 
+bundleID followed by a ".launcher" extension 
+for example com.your.app.launcher.plist 
+'''
+##########################################################
+########  Edit These Based on Installation ###############
+##########################################################
+
+app_name    = 'MunkiMenu'
+install_dir = 'Applications'
+
+##########################################################
+########  End Editing ####################################
+##########################################################
+
+import os
+import plistlib
+import subprocess, signal
+
+from SystemConfiguration import SCDynamicStoreCopyConsoleUser
+
+
+def quitRunningApp(bundle_id):
+    print("trying to quit MUM")
+    p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE)
+    out, err = p.communicate()    
+
+    for line in out.splitlines():
+        if app_name in line:
+            pid = int(line.split(None, 1)[0])
+            os.kill(pid, signal.SIGKILL)
+
+
+def unloadJob(launcher):
+    launch_plist = os.path.join('/Library','LaunchAgents',launcher)
+        
+    cfuser = SCDynamicStoreCopyConsoleUser( None, None, None )
+    if cfuser[0]:
+        os.seteuid(cfuser[1])
+        print "unloading %s for %s" %  launch_plist,cfuser[0])
+        try:
+            subprocess.call(['/bin/launchctl','unload', launch_plist])
+        except:
+            pass
+
+def getBundleID(app_path):
+    info_plist = os.path.join(app_path,'Contents','Info.plist')
+    p = plistlib.readPlist(info_plist)
+    bundle_id = p['CFBundleIdentifier']
+    return bundle_id
+    
+def main():
+    app_path = os.path.join(install_dir,app_name+'.app')
+
+    bundle_id = getBundleID(app_path)
+    launcher = bundle_id+'.launcher'
+
+    unloadJob(launcher)
+    quitRunningApp(app_name)
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+###Post-Install
+```python
+#!/usr/bin/python
+
+'''
+Post Install Script to Install an app with embedded helper tool and register
+the helper tool with LaunchD
+
+'''
+
+##########################################################
+########  Edit These Based on Installation ###############
+##########################################################
+
+app_name    = 'MunkiMenu'
+install_dir = 'Applications'
+
+##########################################################
+########  End Editing ####################################
+##########################################################
+
 
 import os
 import subprocess
@@ -35,9 +126,6 @@ import plistlib
 
 from SystemConfiguration import SCDynamicStoreCopyConsoleUser
 from AppKit import NSWorkspace
-
-app_name    = 'MunkiMenu'
-install_dir = 'Applications'
 
 def writeLaunchAgent(launch_agent,app_path):
     #write out the LaunchDaemon Plist
@@ -85,6 +173,10 @@ def copyHelper(helper_id,app_path):
     subprocess.call(['/usr/sbin/chown','root:wheel',dst])
     subprocess.call(['/bin/chmod','544',dst])
 
+    ### try and kill the helper tool here in case it's still open
+    subprocess.call(['/usr/bin/killall',helper_id])
+
+
 def launchApp(app_path):
     #if there is a logged in user launch MunkiMenu
     cfuser = SCDynamicStoreCopyConsoleUser( None, None, None )
@@ -112,7 +204,8 @@ def main():
 
 if __name__ == "__main__":
     main()
-```
+
+ ```
 
 2. make a package that includes the above code as a postflight script.
 

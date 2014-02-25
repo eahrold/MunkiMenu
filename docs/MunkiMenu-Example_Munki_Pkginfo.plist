@@ -133,7 +133,7 @@ def main():
 
     bundle_id = getBundleID(app_path)
     helper_id = bundle_id+'.helper'
-    launch_agent = bundle_id+'launcher'
+    launch_agent = bundle_id+'.launcher'
 
     copyHelper(helper_id,app_path)
     writeHelperLaunchD(helper_id)
