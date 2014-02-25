@@ -23,7 +23,7 @@ However, if you want to install this in a way that will not require user interac
 1. (Prefered) Create a copy-file dmg with only the MunkiMenu.app and add these Pre-Install and Post-Install script to the munki pkginfo.
     __Also you'll want to have a single item in blocking_applications array of the pkginfo.plist to "none"__
 
-###Pre-Install
+####Pre-Install
 ```python
 #!/usr/bin/python
 
@@ -40,6 +40,7 @@ for example com.your.app.launcher.plist
 ##########################################################
 
 app_name    = 'MunkiMenu'
+bundle_id   = 'com.googlecode.MunkiMenu'
 install_dir = 'Applications'
 
 ##########################################################
@@ -76,16 +77,10 @@ def unloadJob(launcher):
         except:
             pass
 
-def getBundleID(app_path):
-    info_plist = os.path.join(app_path,'Contents','Info.plist')
-    p = plistlib.readPlist(info_plist)
-    bundle_id = p['CFBundleIdentifier']
-    return bundle_id
     
 def main():
     app_path = os.path.join(install_dir,app_name+'.app')
 
-    bundle_id = getBundleID(app_path)
     launcher = bundle_id+'.launcher'
 
     unloadJob(launcher)
@@ -97,7 +92,7 @@ if __name__ == "__main__":
 
 ```
 
-###Post-Install
+####Post-Install
 ```python
 #!/usr/bin/python
 
@@ -214,7 +209,9 @@ You can download either type on the [release page](https://github.com/eahrold/Mu
 ### Other Info 
 To uninstall the helper tool and associated files, click the option key while the menu is selected, it will prompt for admin privilidges.
 
-Also to remove the helper app using Munki, you'll want to add this as the Uninstall Scrip in the pkginfo
+You can also remove the helper app and it's components using Munki.  Just add this as the Post-Uninstall Scrip in the pkginfo
+
+####Post-Uninstall
 ```python
 #!/usr/bin/python
 import subprocess
