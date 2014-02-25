@@ -11,7 +11,7 @@
 #import "NSString(TextField)+isNotBlank.h"
 
 @implementation MUMMenu{
-    NSMutableSet* _currentMenuItems;
+    NSMutableSet *_currentMenuItems;
 }
 @synthesize delegate;
 
@@ -30,30 +30,30 @@
     return [self numberOfItems]-4;
 }
 
--(void)refreshAllItems{
-    for(NSMenuItem* item in _currentMenuItems){
+-(void)refreshAllItems:(MUMSettings*)settings{
+    for(NSMenuItem *item in _currentMenuItems){
         [self removeItem:item];
     }
     
     [_currentMenuItems removeAllObjects];
     
-    [self addSettingsToMenu];
-    [self addManagedInstallListToMenu];
-    [self addOptionalInstallListToMenu];
-    [self addItemsToInstallListToMenu];
-    [self addItemsToRemoveListToMenu];
-    [self addManagedUpdateListToMenu];
+    [self addSettingsToMenu:settings];
+    [self addManagedInstallListToMenu:settings];
+    [self addOptionalInstallListToMenu:settings];
+    [self addItemsToInstallListToMenu:settings];
+    [self addItemsToRemoveListToMenu:settings];
+    [self addManagedUpdateListToMenu:settings];
 }
 
--(void)refreshing{
-    for(NSMenuItem* item in _currentMenuItems){
+-(void)refreshing:(MUMSettings*)settings{
+    for(NSMenuItem *item in _currentMenuItems){
         [self removeItem:item];
     }
     
     [_currentMenuItems removeAllObjects];
-    [self addSettingsToMenu];
+    [self addSettingsToMenu:settings];
     
-    NSMenuItem* refreshing = [NSMenuItem new];
+    NSMenuItem *refreshing = [NSMenuItem new];
     [refreshing setTitle:@"Refreshing Menu..."];
     
     [self insertItem:refreshing atIndex:[self insertIndex]];
@@ -62,7 +62,7 @@
 
 -(void)addAlternateItemsToMenu{
     /*add the about an uninstall here so we can set the selectors programatically*/
-    NSMenuItem* about = [[NSMenuItem alloc]initWithTitle:@"About..."
+    NSMenuItem *about = [[NSMenuItem alloc]initWithTitle:@"About..."
                                                   action:@selector(orderFrontStandardAboutPanel:)
                                            keyEquivalent:@""];
     
@@ -71,7 +71,7 @@
     [about setTarget:[NSApplication sharedApplication]];
     [self insertItem:about atIndex:1];
     
-    NSMenuItem* uninstall = [[NSMenuItem alloc]initWithTitle:@"Uninstall..."
+    NSMenuItem *uninstall = [[NSMenuItem alloc]initWithTitle:@"Uninstall..."
                                                       action:@selector(uninstallHelper:)
                                                keyEquivalent:@""];
     [uninstall setAlternate:YES];
@@ -79,7 +79,7 @@
     [uninstall setTarget:delegate];
     [self insertItem:uninstall atIndex:[self numberOfItems]];
     
-    NSMenuItem* quit = [[NSMenuItem alloc]initWithTitle:@"Quit..."
+    NSMenuItem *quit = [[NSMenuItem alloc]initWithTitle:@"Quit..."
                                                       action:@selector(quitNow:)
                                                keyEquivalent:@""];
     [quit setAlternate:YES];
@@ -88,90 +88,95 @@
 }
 
 #pragma mark - Menu Settings
--(void)addSettingsToMenu{
-    NSString* repoURL       = [delegate repoURL:self];
-    NSString* manifestURL   = [delegate manifestURL:self];
-    NSString* catalogURL    = [delegate catalogURL:self];
-    NSString* packageURL    = [delegate packageURL:self];
-    NSString* clientID      = [delegate clientIdentifier:self];
-    NSString* logFile       = [delegate logFile:self];
+-(void)addSettingsToMenu:(MUMSettings *)settings{
+    NSString *repoURL       = settings.softwareRepoURL;
+    NSString *manifestURL   = settings.manifestURL;
+    NSString *catalogURL    = settings.catalogURL;
+    NSString *packageURL    = settings.packageURL;
+    NSString *clientID      = settings.clientIdentifier;
+    NSString *logFile       = settings.logFile;
     
-    NSMenuItem* settings = [NSMenuItem new];
-    [settings setTitle:@"Settings"];
-    [settings setAlternate:YES];
+    NSMenuItem *settingsMenu = [NSMenuItem new];
+    [settingsMenu setTitle:@"Settings"];
+    [settingsMenu setAlternate:YES];
 
-    NSMenu* details = [[NSMenu alloc]init];
-    [settings setSubmenu:details];
+    NSMenu *details = [[NSMenu alloc]init];
+    [settingsMenu setSubmenu:details];
    
     // Build out the details Menu
     if(repoURL.isNotBlank){
-        NSMenuItem* menu_item = [NSMenuItem new];
+        NSMenuItem *menu_item = [NSMenuItem new];
         [menu_item setTitle:[NSString stringWithFormat:@"Repo URL: %@",repoURL]];
         [menu_item setTarget:self];
         [details addItem:menu_item];
     }
     
     if(manifestURL.isNotBlank){
-        NSMenuItem* menu_item = [NSMenuItem new];
+        NSMenuItem *menu_item = [NSMenuItem new];
         [menu_item setTitle:[NSString stringWithFormat:@"Manifest URL: %@",manifestURL]];
         [menu_item setTarget:self];
         [details addItem:menu_item];
     }
     
     if(catalogURL.isNotBlank){
-        NSMenuItem* menu_item = [NSMenuItem new];
+        NSMenuItem *menu_item = [NSMenuItem new];
         [menu_item setTitle:[NSString stringWithFormat:@"Catalog URL: %@",catalogURL]];
         [menu_item setTarget:self];
         [details addItem:menu_item];
     }
     
     if(packageURL.isNotBlank){
-        NSMenuItem* menu_item = [NSMenuItem new];
+        NSMenuItem *menu_item = [NSMenuItem new];
         [menu_item setTitle:[NSString stringWithFormat:@"Package URL: %@",packageURL]];
         [menu_item setTarget:self];
         [details addItem:menu_item];
     }
     
     if(clientID.isNotBlank){
-        NSMenuItem* menu_item = [NSMenuItem new];
+        NSMenuItem *menu_item = [NSMenuItem new];
         [menu_item setTitle:[NSString stringWithFormat:@"Client Identifier: %@",clientID]];
         [menu_item setTarget:self];
         [details addItem:menu_item];
     }
     
     if(logFile.isNotBlank){
-        NSMenuItem* menu_item = [NSMenuItem new];
+        NSMenuItem *menu_item = [NSMenuItem new];
         [menu_item setTitle:[NSString stringWithFormat:@"Open Log: %@",logFile]];
         [menu_item setAction:@selector(openLogFile:)];
         [menu_item setTarget:delegate];
         [details addItem:menu_item];
     }
     
-    NSMenuItem* config_menu = [NSMenuItem new];
+    NSMenuItem *config_menu = [NSMenuItem new];
     [config_menu setTitle:@"Configure..."];
     [config_menu setAction:@selector(openConfigView)];
     [config_menu setTarget:delegate];
     [details addItem:config_menu];
    
-    [self insertItem:settings atIndex:1];
-    [_currentMenuItems addObject:settings];
+    [self insertItem:settingsMenu atIndex:1];
+    [_currentMenuItems addObject:settingsMenu];
 }
 
 #pragma mark - Menu Lists
-/* Right now there are 4 lists we add to the menu, Managed Installs, Optionals Installs, Items to Install, and Items to Remove.  The delegate is wired up to get more values, but this seems to be a good amount without getting excessive */
--(void)addManagedInstallListToMenu{
-    BOOL show = [[NSUserDefaults standardUserDefaults] boolForKey:kShowManagedInstalls];
+/** Right now there are 4 lists we add to the menu, Managed Installs,
+ *  Optionals Installs, Items to Install, and Items to Remove.
+ *  The delegate is wired up to get more values,
+ *  but this seems to be a good amount without getting excessive
+ */
+
+-(void)addManagedInstallListToMenu:(MUMSettings*)settings{
+    BOOL show = [[NSUserDefaults standardUserDefaults] boolForKey:kMUMShowManagedInstalls];
     
     if(show){
-        NSArray* managedInstals = [delegate managedInstalls:self];
+        NSArray *managedInstals = settings.managedInstalls;
         if(!managedInstals.count)return;
         
-        NSMenuItem* menu_item = [NSMenuItem new];
+        NSMenuItem *menu_item = [NSMenuItem new];
         [menu_item setTitle:@"Managed Installs"];
         
-        NSMenu* details = [NSMenu new];
-        for (NSString* item in managedInstals){
-            NSMenuItem* install = [NSMenuItem new];
+        NSMenu *details = [NSMenu new];
+        for (NSString *item in managedInstals){
+            NSMenuItem *install = [NSMenuItem new];
             [install setTitle:item];
             [details addItem:install];
         }
@@ -182,19 +187,19 @@
     }
 }
 
--(void)addManagedUpdateListToMenu{
-    BOOL show = [[NSUserDefaults standardUserDefaults] boolForKey:kShowManagedUpdates];
+-(void)addManagedUpdateListToMenu:(MUMSettings*)settings{
+    BOOL show = [[NSUserDefaults standardUserDefaults] boolForKey:kMUMShowManagedUpdates];
     
     if(show){
-        NSArray* updates = [delegate managedUpdates:self];
+        NSArray *updates = settings.managedUpdates;
         if(!updates.count)return;
         
-        NSMenuItem* menu_item = [NSMenuItem new];
+        NSMenuItem *menu_item = [NSMenuItem new];
         [menu_item setTitle:@"Managed Updates"];
         
-        NSMenu* details = [[NSMenu alloc]init];
-        for (NSString* item in updates){
-            NSMenuItem* install = [NSMenuItem new];
+        NSMenu *details = [[NSMenu alloc]init];
+        for (NSString *item in updates){
+            NSMenuItem *install = [NSMenuItem new];
             [install setTitle:item];
             [details addItem:install];
         }
@@ -205,19 +210,19 @@
     }
 }
 
--(void)addOptionalInstallListToMenu{
-    BOOL show = [[NSUserDefaults standardUserDefaults] boolForKey:kShowOptionalInstalls];
+-(void)addOptionalInstallListToMenu:(MUMSettings*)settings{
+    BOOL show = [[NSUserDefaults standardUserDefaults] boolForKey:kMUMShowOptionalInstalls];
     
     if(show){
-        NSArray* optionalInstals = [delegate optionalInstalls:self];
+        NSArray *optionalInstals = settings.optionalInstalls;
         if(!optionalInstals.count)return;
 
-        NSMenuItem* menu_item = [NSMenuItem new];
+        NSMenuItem *menu_item = [NSMenuItem new];
         [menu_item setTitle:@"Optional Installs"];
         
-        NSMenu* details = [[NSMenu alloc]init];
-        for (NSDictionary* dict in optionalInstals){
-            NSMenuItem* install = [NSMenuItem new];
+        NSMenu *details = [[NSMenu alloc]init];
+        for (NSDictionary *dict in optionalInstals){
+            NSMenuItem *install = [NSMenuItem new];
             [install setTitle:dict[@"item"]];
             
             if([[dict valueForKey:@"installed"] boolValue]){
@@ -235,18 +240,18 @@
     }
 }
 
--(void)addItemsToInstallListToMenu{
-    BOOL show = [[NSUserDefaults standardUserDefaults] boolForKey:kShowItemsToInsatll];
+-(void)addItemsToInstallListToMenu:(MUMSettings*)settings{
+    BOOL show = [[NSUserDefaults standardUserDefaults] boolForKey:kMUMShowItemsToInsatll];
     if(show){
-        NSArray* installs = [delegate itemsToInstall:self];
+        NSArray *installs = settings.itemsToInstall;
         if(!installs.count)return;
         
-        NSMenuItem* menu_item = [NSMenuItem new];
+        NSMenuItem *menu_item = [NSMenuItem new];
         [menu_item setTitle:@"Items To Install"];
         
-        NSMenu* details = [[NSMenu alloc]init];
-        for (NSString* item in installs){
-            NSMenuItem* install = [NSMenuItem new];
+        NSMenu *details = [[NSMenu alloc]init];
+        for (NSString *item in installs){
+            NSMenuItem *install = [NSMenuItem new];
             [install setTitle:item];
             [details addItem:install];
         }
@@ -257,19 +262,19 @@
     }
 }
 
--(void)addItemsToRemoveListToMenu{
-    BOOL show = [[NSUserDefaults standardUserDefaults] boolForKey:kShowItemsToRemove];
+-(void)addItemsToRemoveListToMenu:(MUMSettings*)settings{
+    BOOL show = [[NSUserDefaults standardUserDefaults] boolForKey:kMUMShowItemsToRemove];
     
     if(show){
-        NSArray* removals = [delegate itemsToRemove:self];
+        NSArray *removals = settings.itemsToRemove;
         if(!removals.count)return;
         
-        NSMenuItem* menu_item = [NSMenuItem new];
+        NSMenuItem *menu_item = [NSMenuItem new];
         [menu_item setTitle:@"Items To Remove"];
         
-        NSMenu* details = [[NSMenu alloc]init];
-        for (NSString* item in removals){
-            NSMenuItem* install = [NSMenuItem new];
+        NSMenu *details = [[NSMenu alloc]init];
+        for (NSString *item in removals){
+            NSMenuItem *install = [NSMenuItem new];
             [install setTitle:item];
             [details addItem:install];
         }
@@ -278,6 +283,9 @@
         [self insertItem:menu_item atIndex:[self insertIndex]];
         [_currentMenuItems addObject:menu_item];
     }
+}
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
 }
 
 @end

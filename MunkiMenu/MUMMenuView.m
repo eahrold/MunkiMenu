@@ -22,7 +22,7 @@
 
 @implementation MUMMenuView
 
--(id)initWithStatusItem:(NSStatusItem*)statusItem andMenu:(NSMenu *)menu
+-(instancetype)initWithStatusItem:(NSStatusItem*)statusItem andMenu:(NSMenu *)menu
 {
     float ImageViewWidth = 22;
     CGFloat height = [NSStatusBar systemStatusBar].thickness;

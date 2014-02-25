@@ -11,29 +11,33 @@
 #import "MUMInterface.h"
 #import "MUMDelegate.h"
 #import "MUMMenuView.h"
+#import "MUMHelperConnection.h"
+#import "MUMAuthorizer.h"
+#import "NSString(TextField)+isNotBlank.h"
 
-#import "Authorizer.h"
-@interface MUMController ()
+@interface MUMController ()<MUMMenuDelegate,NSUserNotificationCenterDelegate,MUMViewControllerDelegate>
 {
 @private
-    NSStatusItem* _statusItem;
-    MSUSettings *_msuSettings;
-    MUMMenuView* _menuView;
-    
-    NSPopover *_popover;
+    NSStatusItem *_statusItem;
+    MUMMenuView  *_menuView;
+    NSPopover    *_popover;
     BOOL _notificationsEnabled;
     BOOL _setupDone;
 }
+@property (strong) MUMSettings *msuSettings;
+@property (strong) IBOutlet MUMMenu *menu;
+
 @end
 
 @implementation MUMController{
-    MUMConfigView* _configView;
+    MUMConfigView *_configView;
 }
 
-@synthesize menu;
-
 -(void)awakeFromNib{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(configureStatusBar) name:MUMFinishedLaunching object:NULL];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(configureStatusBar)
+                                                 name:MUMFinishedLaunching
+                                               object:NULL];
 }
 
 -(void)dealloc{
@@ -42,43 +46,43 @@
 
 #pragma mark - Setup Menu Items / Status Bar
 -(void)configureStatusBar{
-    _notificationsEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationsEnabled];
+    _notificationsEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:kMUMNotificationsEnabled];
     [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
 
     _statusItem = [[NSStatusBar systemStatusBar]statusItemWithLength:NSVariableStatusItemLength];
     [_statusItem setHighlightMode:YES];
-    [_statusItem setMenu:menu];
+    [_statusItem setMenu:_menu];
     
     if(!_menuView){
-        _menuView = [[MUMMenuView alloc]initWithStatusItem:_statusItem andMenu:menu];
+        _menuView = [[MUMMenuView alloc]initWithStatusItem:_statusItem andMenu:_menu];
     }
     
     _statusItem.view = _menuView;
+    _menu.delegate = self;
     
-    [menu setDelegate:self];
-    [menu addAlternateItemsToMenu];
+    [_menu addAlternateItemsToMenu];
     
     [self addAllObservers];
-    [self getMSUSettingsFromHelper];
+    [self getMUMSettingsFromHelper];
 }
 
 -(void)configureMenu{
-    [menu addSettingsToMenu];
-    [menu addManagedInstallListToMenu];
-    [menu addOptionalInstallListToMenu];
-    [menu addItemsToInstallListToMenu];
-    [menu addItemsToRemoveListToMenu];
-    [menu addManagedUpdateListToMenu];
-    [[menu itemWithTitle:@"Notifications"] setState:_notificationsEnabled];
+    [_menu addSettingsToMenu:_msuSettings];
+    [_menu addManagedInstallListToMenu:_msuSettings];
+    [_menu addOptionalInstallListToMenu:_msuSettings];
+    [_menu addItemsToInstallListToMenu:_msuSettings];
+    [_menu addItemsToRemoveListToMenu:_msuSettings];
+    [_menu addManagedUpdateListToMenu:_msuSettings];
+    [[_menu itemWithTitle:@"Notifications"] setState:_notificationsEnabled];
     _setupDone=YES;
 }
 
 -(void)refreshMenu{
-    [self getMSUSettingsFromHelper];
+    [self getMUMSettingsFromHelper];
 }
 
 -(void)defaultsChanged:(id)sender{
-    [menu refreshAllItems];
+    [_menu refreshAllItems:_msuSettings];
 }
 
 #pragma mark - Controller IBActions / Selectors
@@ -86,10 +90,10 @@
     [[NSWorkspace sharedWorkspace] launchApplication:@"/Applications/Utilities/Managed Software Update.app"];
 }
 
--(IBAction)enableNotifications:(id)sender{
+-(IBAction)enableNotifications:(NSMenuItem*)sender{
     _notificationsEnabled = !_notificationsEnabled;
-    [(NSMenuItem*)sender setState:_notificationsEnabled ? NSOnState:NSOffState];
-    [[NSUserDefaults standardUserDefaults]setBool:_notificationsEnabled forKey:kNotificationsEnabled];
+    [sender setState:_notificationsEnabled ? NSOnState:NSOffState];
+    [[NSUserDefaults standardUserDefaults]setBool:_notificationsEnabled forKey:kMUMNotificationsEnabled];
 }
 
 -(void)quitNow:(id)sender{
@@ -97,7 +101,8 @@
 }
 
 -(void)openLogFile:(id)sender{
-    [[NSWorkspace sharedWorkspace]openFile:_msuSettings.logFile withApplication:@"/Applications/Utilities/Console.app"];
+    [[NSWorkspace sharedWorkspace]openFile:_msuSettings.logFile
+                           withApplication:@"/Applications/Utilities/Console.app"];
 }
 
 -(void)aboutMunkiMenu:(id)sender{
@@ -107,7 +112,7 @@
 #pragma mark - Config View
 -(void)openConfigView{
     // We use the popupIsActive in the AppDelegate to bridge over to
-    // the canBecomeKeyWindow Catagory in order to allow the statudItemView
+    // the canBecomeKeyWindow Catagory in order to allow the statusItemView
     // to become a key view.
     
     if(!_configView){
@@ -117,41 +122,40 @@
     
     if (_popover == nil) {
         _popover = [[NSPopover alloc] init];
-        _popover.contentViewController = _configView;
     }
     
-    
+    _popover.contentViewController = _configView;
+
     if (!_popover.isShown) {
         [_popover showRelativeToRect:_menuView.frame
                               ofView:_menuView
                        preferredEdge:NSMinYEdge];
     }
-    ((MUMDelegate*)[NSApp delegate]).popupIsActive = YES;
-
+    
+    [[NSApp delegate] setPopupIsActive:YES];
     
     // If the computer is managed using MCX there's no use editing
     // the ManagedInsalls.plist, so we won't bother adding this to the menu
     BOOL mcxManaged = [[NSFileManager defaultManager] fileExistsAtPath:@"/Library/Managed Preferences/ManagedInstalls.plist"];
     
-    if(mcxManaged){
-        [_configView.repoURLTF setEnabled:NO];
-        [_configView.clientIDTF setEnabled:NO];
-        [_configView.logFileTF setEnabled:NO];
-        [_configView.manifestURLTF setEnabled:NO];
-        [_configView.catalogURLTF setEnabled:NO];
-        [_configView.packageURLTF setEnabled:NO];
-        [_configView.ASUEnabledCB setEnabled:NO];
-        [_configView.setButton setEnabled:NO];
-        [_configView.managedByMCX setHidden:NO];
-    }
+    [_configView.repoURLTF     setEnabled:mcxManaged ? YES:NO];
+    [_configView.clientIDTF    setEnabled:mcxManaged ? YES:NO];
+    [_configView.logFileTF     setEnabled:mcxManaged ? YES:NO];
+    [_configView.manifestURLTF setEnabled:mcxManaged ? YES:NO];
+    [_configView.catalogURLTF  setEnabled:mcxManaged ? YES:NO];
+    [_configView.packageURLTF  setEnabled:mcxManaged ? YES:NO];
+    [_configView.ASUEnabledCB  setEnabled:mcxManaged ? YES:NO];
+    [_configView.setButton     setEnabled:mcxManaged ? YES:NO];
+    [_configView.managedByMCX  setHidden:mcxManaged  ? YES:NO];
     
-    _configView.repoURLTF.stringValue = _msuSettings.softwareRepoURL;
-    _configView.clientIDTF.stringValue = _msuSettings.clientIdentifier;
-    _configView.logFileTF.stringValue = _msuSettings.logFile;
+    
+    _configView.repoURLTF.stringValue     = _msuSettings.softwareRepoURL;
+    _configView.clientIDTF.stringValue    = _msuSettings.clientIdentifier;
+    _configView.logFileTF.stringValue     = _msuSettings.logFile;
     _configView.manifestURLTF.stringValue = _msuSettings.manifestURL;
-    _configView.catalogURLTF.stringValue = _msuSettings.catalogURL;
-    _configView.packageURLTF.stringValue = _msuSettings.packageURL;
-    _configView.ASUEnabledCB.state = _msuSettings.installASU;
+    _configView.catalogURLTF.stringValue  = _msuSettings.catalogURL;
+    _configView.packageURLTF.stringValue  = _msuSettings.packageURL;
+    _configView.ASUEnabledCB.state        = _msuSettings.installASU;
 }
 
 -(void)closeConfigView{
@@ -159,116 +163,110 @@
         [_popover close];
     }
     
-    ((MUMDelegate*)[NSApp delegate]).popupIsActive = NO;
+    [[NSApp delegate] setPopupIsActive:NO];
 
     _configView = nil;
+    _popover = nil;
 }
 
 -(void)configureMunki{
-    NSData* authorization = [self authorizeHelper];
+    NSData *authorization = [MUMAuthorizer authorizeHelper];
     assert(authorization != nil);
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc]initWithCapacity:7];
     
-    _msuSettings.softwareRepoURL  = _configView.repoURLTF.stringValue;
-    _msuSettings.clientIdentifier = _configView.clientIDTF.stringValue;
-    _msuSettings.logFile          = _configView.logFileTF.stringValue;
-    _msuSettings.manifestURL      = _configView.manifestURLTF.stringValue;
-    _msuSettings.catalogURL       = _configView.catalogURLTF.stringValue;
-    _msuSettings.packageURL       = _configView.packageURLTF.stringValue;
-    _msuSettings.installASU       = _configView.ASUEnabledCB.state;
+    if(_configView.repoURLTF.isNotBlank){
+        [dict setObject:_configView.repoURLTF.stringValue
+                 forKey:kMUMSoftwareRepoURL];
+    }
+    if(_configView.clientIDTF.isNotBlank){
+        [dict setObject:_configView.clientIDTF.stringValue
+                 forKey:kMUMClientIdentifier];
+    }
+    if(_configView.logFileTF.isNotBlank){
+        [dict setObject:_configView.logFileTF.stringValue
+                 forKey:kMUMLogFile];
+    }
+    if(_configView.manifestURLTF.isNotBlank){
+        [dict setObject:_configView.manifestURLTF.stringValue
+                 forKey:kMUMManifestURL];
+    }
+    if(_configView.catalogURLTF.isNotBlank){
+        [dict setObject:_configView.catalogURLTF.stringValue
+                 forKey:kMUMCatalogURL];
+    }
+    if(_configView.packageURLTF.isNotBlank){
+        [dict setObject:_configView.packageURLTF.stringValue
+                 forKey:kMUMPackageURL];
+    }
+    
+    [dict setObject:[NSNumber numberWithBool:_configView.ASUEnabledCB.state ]
+             forKey:kMUMInstallAppleSoftwareUpdates];
     
     [self closeConfigView];
     
-    NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName
-                                                                                    options:NSXPCConnectionPrivileged];
-    
-    helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
-    [helperXPCConnection resume];
-    
-    [[helperXPCConnection remoteObjectProxyWithErrorHandler:^(NSError *error) {
-        NSLog(@"MSU Configuration Error: %@",error.localizedDescription);
-    }] configureMunki:_msuSettings authorization:authorization withReply:^(NSError * error)
-     {[[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if(error){
-            NSLog(@"%@",[error localizedDescription]);
+    MUMHelperConnection *helper = [MUMHelperConnection new];
+    [helper connectToHelper];
+    [[helper.connection remoteObjectProxyWithErrorHandler:^(NSError *error) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [NSApp presentError:error];
+        }];
+    }] configureMunki:dict authorization:authorization withReply:^(NSError *error) {
+        if(error){
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [NSApp presentError:error];
+            }];
         }else{
-            [menu refreshing];
+            [_menu refreshing:_msuSettings];
         }
     }];
-         [helperXPCConnection invalidate];
-         // we don't need to keep the helper app alive so send the quit signal.
-         // when needed we'll just launch it later.
-         [self quitHelper];
-     }];
-    
 
 }
 
 #pragma mark - Helper Agent (NSXPC)
--(void)getMSUSettingsFromHelper{
+-(void)getMUMSettingsFromHelper{
     // This gets the MSU details from the helper app.  We use a helper app
     // here to handle the situation where the ManagedInstall.plist is
     // in the root's ~/Library/Preferences/ folder.  Since the helper app
     // runs as root it can read the values and pass it back to us.
-    NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName
-                                                                                    options:NSXPCConnectionPrivileged];
-    
-    helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
-    [helperXPCConnection resume];
-    
-    [[helperXPCConnection remoteObjectProxyWithErrorHandler:^(NSError *error) {
-        NSLog(@"%@",[error localizedDescription]);
-    }] getPreferenceDictionary:^(MSUSettings * settings, NSError * error)
-     {[[NSOperationQueue mainQueue] addOperationWithBlock:^{
-             if(error){
-                 NSLog(@"%@",[error localizedDescription]);
-                 [NSApp presentError:error];
-             }else{
-                 _msuSettings = settings;
-                 if(!_setupDone){
-                     [self configureMenu];
-                     [self installGlobalLogin];
-                 }else{
-                     [menu refreshAllItems];
-                 }
-             }
-         }];
-         [helperXPCConnection invalidate];
-         // we don't need to keep the helper app alive so send the quit signal.
-         // when needed we'll just launch it later.
-       [self quitHelper];
-     }];
-}
-
-
--(void)installGlobalLogin{
-    NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName options:NSXPCConnectionPrivileged];
-    helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
-    [helperXPCConnection resume];
-    [[helperXPCConnection remoteObjectProxyWithErrorHandler:^(NSError *error) {
-        NSLog(@"%@",[error localizedDescription]);
-    }] installGlobalLoginItem:[[NSBundle mainBundle]bundleURL] withReply:^(NSError *error) {
+   
+    MUMHelperConnection *helper = [MUMHelperConnection new];
+    [helper connectToHelper];
+    [[helper.connection remoteObjectProxyWithErrorHandler:^(NSError *error) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if(error){
-                NSLog(@"%@",error.localizedDescription);
-            }
+            [NSApp presentError:error];
         }];
-        [helperXPCConnection invalidate];
+    }] getPreferenceDictionary:^(MUMSettings *settings, NSError *error) {
+        if(error){
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [NSApp presentError:error];
+            }];
+        }else{
+            _msuSettings = settings;
+            if(!_setupDone)
+                [self configureMenu];
+            else
+                [_menu refreshAllItems:_msuSettings];
+        }
+        [[helper.connection remoteObjectProxy]quitHelper];
     }];
+
+
 }
+
 
 -(void)uninstallHelper:(MUMMenu *)menu{
-    NSData* authorization = [self authorizeHelper];
+    NSData *authorization = [MUMAuthorizer authorizeHelper];
     assert(authorization != nil);
     
     // Uninstall the Helper app and launchD files, then unload the launchd job.
     // The Helper App removes the files then we call a selector on the App delegate
     // To do the SMJob Unblessing
-    NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName options:NSXPCConnectionPrivileged];
-    helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
-    [helperXPCConnection resume];
-    [[helperXPCConnection remoteObjectProxyWithErrorHandler:^(NSError *error) {
-        NSLog(@"%@",[error localizedDescription]);
+    MUMHelperConnection *helper = [MUMHelperConnection new];
+    [helper connectToHelper];
+    [[helper.connection remoteObjectProxyWithErrorHandler:^(NSError *error) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [NSApp presentError:error];
+        }];
     }] uninstall:[[NSBundle mainBundle] bundleURL] authorization:authorization withReply:^(NSError *error) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             if(error){
@@ -277,18 +275,8 @@
                 [[NSApp delegate] performSelector:@selector(setupDidEndWithUninstallRequest) withObject:nil];
             }
         }];
-        [helperXPCConnection invalidate];
     }];
 }
-
--(void)quitHelper{
-    NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName options:NSXPCConnectionPrivileged];
-    helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
-    [helperXPCConnection resume];
-    [[helperXPCConnection remoteObjectProxy] quitHelper];
-}
-
-
 
 #pragma mark - UserNotifications Delegate/Methods
 - (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center shouldPresentNotification:(NSUserNotification *)notification
@@ -309,7 +297,7 @@
     if(_notificationsEnabled){
         NSUserNotification *notification = [[NSUserNotification alloc] init];
         notification.title = @"Updates Complete!";
-        notification.informativeText = [NSString stringWithFormat:@"All managed software updates have been completed"];
+        notification.informativeText = @"All managed software updates have been completed";
         [notification setHasActionButton:YES];
         notification.actionButtonTitle = @"Done";
         [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
@@ -320,7 +308,7 @@
     if(_notificationsEnabled){
         NSUserNotification *notification = [[NSUserNotification alloc] init];
         notification.title = @"Avaliable Software Updates";
-        notification.informativeText = [NSString stringWithFormat:@"There are software updates that need installed."];
+        notification.informativeText = @"There are software updates that need installed.";
         notification.soundName = nil;
         [notification setHasActionButton:YES];
         notification.actionButtonTitle = @"Install";
@@ -331,10 +319,10 @@
 
 #pragma mark - Observing/Observers
 -(void)addAllObservers{
-    NSDistributedNotificationCenter *dndc = [NSDistributedNotificationCenter defaultCenter];
-    [dndc addObserver:self selector:@selector(refreshMenu) name:MSUUpdate object:nil];
-    [dndc addObserver:self selector:@selector(refreshMenu) name:MSUUpdateComplete object:nil];
-    [dndc addObserver:self selector:@selector(msuNeedsRunNotify) name:MSUUpdateAvaliable object:nil];
+    NSDistributedNotificationCenter *nsdnc = [NSDistributedNotificationCenter defaultCenter];
+    [nsdnc addObserver:self selector:@selector(refreshMenu) name:MSUUpdate object:nil];
+    [nsdnc addObserver:self selector:@selector(refreshMenu) name:MSUUpdateComplete object:nil];
+    [nsdnc addObserver:self selector:@selector(msuNeedsRunNotify) name:MSUUpdateAvaliable object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(defaultsChanged:) name:NSUserDefaultsDidChangeNotification object:nil];
 }
@@ -348,89 +336,6 @@
     NSLog(@"%@",keyPath);
 }
 
-#pragma mark - utils
-
--(NSData*)authorizeHelper{
-    OSStatus                    err;
-    AuthorizationExternalForm   extForm;
-    AuthorizationRef            authRef;
-    NSData*                     authorization;
-    
-    err = AuthorizationCreate(NULL, NULL, 0, &authRef);
-    if (err == errAuthorizationSuccess) {
-        err = AuthorizationMakeExternalForm(authRef, &extForm);
-    }
-    if (err == errAuthorizationSuccess) {
-        authorization = [[NSData alloc] initWithBytes:&extForm length:sizeof(extForm)];
-    }
-    assert(err == errAuthorizationSuccess);
-    
-    if (authRef) {
-        [Authorizer setupAuthorizationRights:authRef];
-    }
-    return authorization;
-}
-
-#pragma mark - Menu Delegate
--(NSString*)repoURL:(MUMMenu*)menu{
-    return _msuSettings.softwareRepoURL;
-}
-
--(NSString*)manifestURL:(MUMMenu *)menu{
-    return _msuSettings.manifestURL;
-}
-
--(NSString*)catalogURL:(MUMMenu *)menu{
-    return _msuSettings.catalogURL;
-}
-
--(NSString*)packageURL:(MUMMenu*)menu{
-    return _msuSettings.packageURL;
-}
-
--(NSString *)clientIdentifier:(MUMMenu *)menu{
-    return _msuSettings.clientIdentifier;
-}
-
--(NSString*)logFile:(MUMMenu *)menu{
-    return _msuSettings.logFile;
-}
-
--(NSArray *)managedInstalls:(MUMMenu *)menu{
-    return _msuSettings.managedInstalls;
-}
-
--(NSArray *)managedUpdates:(MUMMenu *)menu{
-    return _msuSettings.managedUpdates;
-}
-
--(NSArray*)managedUninstalls:(MUMMenu*)menu{
-    return _msuSettings.managedUninstalls;
-}
-
--(NSArray*)processedInstalls:(MUMMenu *)menu{
-    return _msuSettings.processedInstalls;
-}
-
--(NSArray*)optionalInstalls:(MUMMenu *)menu{
-   return _msuSettings.optionalInstalls;
-}
-
--(NSArray *)installedItems:(MUMMenu *)menu{
-    return _msuSettings.installedItems;
-}
-
--(NSArray *)itemsToInstall:(MUMMenu *)menu{
-    return _msuSettings.itemsToInstall;
-}
-
--(NSArray *)itemsToRemove:(MUMMenu *)menu{
-    return _msuSettings.itemsToRemove;
-}
-
--(NSArray *)warnings:(MUMMenu *)menu{
-    return _msuSettings.msuWarnings;
-}
 
 #pragma mark - NSMenuDelegate
 - (void)menuDidClose:(NSMenu *)menu

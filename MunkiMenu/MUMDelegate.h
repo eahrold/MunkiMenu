@@ -9,8 +9,6 @@
 #import <Cocoa/Cocoa.h>
 
 @interface MUMDelegate : NSObject <NSApplicationDelegate>
--(void)setupDidEndWithUninstallRequest;
-
 @property BOOL popupIsActive;
-
+-(void)setupDidEndWithUninstallRequest;
 @end

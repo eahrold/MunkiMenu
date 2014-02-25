@@ -28,16 +28,6 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BE8B45FF184510B0005D435B"
-               BuildableName = "MunkiMenuTests.xctest"
-               BlueprintName = "MunkiMenuTests"
-               ReferencedContainer = "container:MunkiMenu.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

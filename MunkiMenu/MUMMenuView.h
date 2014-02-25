@@ -9,6 +9,6 @@
 #import <Cocoa/Cocoa.h>
 
 @interface MUMMenuView : NSView
--(id)initWithStatusItem:(NSStatusItem*)statusItem andMenu:(NSMenu*)menu;
+-(instancetype)initWithStatusItem:(NSStatusItem*)statusItem andMenu:(NSMenu*)menu;
 -(void)setActive:(BOOL)active;
 @end

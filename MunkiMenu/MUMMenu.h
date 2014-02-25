@@ -8,25 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-@class MUMMenu, MUMController;
+@class MUMMenu, MUMController, MUMSettings;
 
 @protocol MUMMenuDelegate <NSObject,NSMenuDelegate>
--(NSString*)repoURL:(MUMMenu*)menu;
--(NSString*)manifestURL:(MUMMenu*)menu;
--(NSString*)catalogURL:(MUMMenu*)menu;
--(NSString*)packageURL:(MUMMenu*)menu;
--(NSString*)clientIdentifier:(MUMMenu*)menu;
--(NSString*)logFile:(MUMMenu *)menu;
--(NSArray*)managedInstalls:(MUMMenu *)menu;
--(NSArray*)managedUpdates:(MUMMenu*)menu;
--(NSArray*)managedUninstalls:(MUMMenu*)menu;
--(NSArray*)optionalInstalls:(MUMMenu *)menu;
--(NSArray*)processedInstalls:(MUMMenu *)menu;
--(NSArray*)installedItems:(MUMMenu *)menu;
--(NSArray*)itemsToInstall:(MUMMenu *)menu;
--(NSArray*)itemsToRemove:(MUMMenu *)menu;
--(NSArray*)warnings:(MUMMenu *)menu;
-
 -(IBAction)runManagedSoftwareUpdate:(id)sender;
 -(void)openLogFile:(id)sender;
 -(void)uninstallHelper:(id)sender;
@@ -38,12 +22,12 @@
 
 @property (weak) id<MUMMenuDelegate>delegate;
 -(void)addAlternateItemsToMenu;
--(void)addSettingsToMenu;
--(void)addManagedInstallListToMenu;
--(void)addOptionalInstallListToMenu;
--(void)addItemsToInstallListToMenu;
--(void)addItemsToRemoveListToMenu;
--(void)addManagedUpdateListToMenu;
--(void)refreshAllItems;
--(void)refreshing;
+-(void)addSettingsToMenu:(MUMSettings*)settings;
+-(void)addManagedInstallListToMenu:(MUMSettings*)settings;
+-(void)addOptionalInstallListToMenu:(MUMSettings*)settings;
+-(void)addItemsToInstallListToMenu:(MUMSettings*)settings;
+-(void)addItemsToRemoveListToMenu:(MUMSettings*)settings;
+-(void)addManagedUpdateListToMenu:(MUMSettings*)settings;
+-(void)refreshAllItems:(MUMSettings*)settings;
+-(void)refreshing:(MUMSettings*)settings;
 @end

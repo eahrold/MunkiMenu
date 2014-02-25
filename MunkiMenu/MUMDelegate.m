@@ -7,33 +7,42 @@
 //
 
 #import "MUMDelegate.h"
-#import "MUMLoginItem.h"
-#import "SMJobBlesser.h"
 #import "MUMInterface.h"
+#import "MUMHelperConnection.h"
+#import "MUMError.h"
+#import "AHLaunchCtl.h"
 
 @implementation MUMDelegate
--(void)awakeFromNib{
-    [[NSUserDefaults standardUserDefaults]registerDefaults:@{kShowManagedInstalls:@NO,
-                                                             kShowOptionalInstalls:@YES,
-                                                             kShowManagedUpdates:@NO,
-                                                             kShowItemsToInsatll:@YES,
-                                                             kShowItemsToRemove:@YES,
-                                                             kNotificationsEnabled:@YES}];
-    
+-(void)applicationWillFinishLaunching:(NSNotification *)notification{
+    [[NSUserDefaults standardUserDefaults]registerDefaults:@{kMUMShowManagedInstalls:  @NO,
+                                                             kMUMShowOptionalInstalls: @YES,
+                                                             kMUMShowManagedUpdates:   @NO,
+                                                             kMUMShowItemsToInsatll:   @YES,
+                                                             kMUMShowItemsToRemove:    @YES,
+                                                             kMUMNotificationsEnabled: @YES}];
 }
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification{
-    NSError* error;
-    
-    if(![JobBlesser blessHelperWithLabel:kHelperName
-                               andPrompt:@"To add Managed Software Update to the Status Bar"
-                                   error:&error]){
-        
-        if(error){
-            [NSApp presentError:error modalForWindow:NULL delegate:self
-             didPresentSelector:@selector(setupDidEndWithTerminalError:) contextInfo:nil];
-        }
+    NSError *error;
+    if(![[NSFileManager defaultManager]fileExistsAtPath:@"/Applications/Utilities/Managed Software Update.app"]){
+        [MUMError presentErrorWithCode:kMUMErrorMunkiNotInstalled
+                              delegate:self
+                    didPresentSelector:@selector(setupDidEndWithTerminalError:)];
     }
-    
+   
+    if(![AHLaunchCtl installHelper:kMUMHelperName
+                            prompt:@"To add Managed Software Update to the Status Bar"
+                             error:&error])
+    {
+        if(error)
+        {
+            NSLog(@"%@",error.localizedDescription);
+            [MUMError presentErrorWithCode:kMUMErrorCouldNotInstallHelper
+                                  delegate:self
+                        didPresentSelector:@selector(setupDidEndWithTerminalError:)];
+        }
+        return;
+    }
     [[NSNotificationCenter defaultCenter]postNotificationName:MUMFinishedLaunching object:self];
 }
 
@@ -43,16 +52,15 @@
 }
 
 - (void)setupDidEndWithUninstallRequest{
-    [JobBlesser removeHelperWithLabel:kHelperName];
-    [NSApp presentError:[NSError errorWithDomain:@"" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Helper Tool and associated files have been removed.  You can safely remove MunkiMenu from the Applications folder.  We will now quit"}] modalForWindow:NULL delegate:self
-     didPresentSelector:@selector(setupDidEndWithTerminalError:) contextInfo:nil];
+    [MUMError presentErrorWithCode:kMUMErrorUninstallRequest
+                          delegate:self
+                didPresentSelector:@selector(setupDidEndWithTerminalError:)];
 }
 
 -(void)applicationWillTerminate:(NSNotification *)notification{
-    NSXPCConnection *helperXPCConnection = [[NSXPCConnection alloc] initWithMachServiceName:kHelperName options:NSXPCConnectionPrivileged];
-    helperXPCConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperAgent)];
-    [helperXPCConnection resume];
-    [[helperXPCConnection remoteObjectProxy] quitHelper];
+    MUMHelperConnection *helper = [MUMHelperConnection new];
+    [helper connectToHelper];
+    [[helper.connection remoteObjectProxy] quitHelper];
 }
 
 @end
