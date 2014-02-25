@@ -17,7 +17,6 @@
 }
 
 - (void)refreshView;
-- (void)setActive:(BOOL)active;
 @end
 
 @implementation MUMMenuView
