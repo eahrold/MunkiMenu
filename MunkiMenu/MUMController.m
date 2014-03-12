@@ -138,15 +138,15 @@
     // the ManagedInsalls.plist, so we won't bother adding this to the menu
     BOOL mcxManaged = [[NSFileManager defaultManager] fileExistsAtPath:@"/Library/Managed Preferences/ManagedInstalls.plist"];
     
-    [_configView.repoURLTF     setEnabled:mcxManaged ? NO:YES];
-    [_configView.clientIDTF    setEnabled:mcxManaged ? NO:YES];
-    [_configView.logFileTF     setEnabled:mcxManaged ? NO:YES];
-    [_configView.manifestURLTF setEnabled:mcxManaged ? NO:YES];
-    [_configView.catalogURLTF  setEnabled:mcxManaged ? NO:YES];
-    [_configView.packageURLTF  setEnabled:mcxManaged ? NO:YES];
-    [_configView.ASUEnabledCB  setEnabled:mcxManaged ? NO:YES];
-    [_configView.setButton     setEnabled:mcxManaged ? NO:YES];
-    [_configView.managedByMCX  setHidden: mcxManaged ? NO:YES];
+    [_configView.repoURLTF     setEnabled:!mcxManaged];
+    [_configView.clientIDTF    setEnabled:!mcxManaged];
+    [_configView.logFileTF     setEnabled:!mcxManaged];
+    [_configView.manifestURLTF setEnabled:!mcxManaged];
+    [_configView.catalogURLTF  setEnabled:!mcxManaged];
+    [_configView.packageURLTF  setEnabled:!mcxManaged];
+    [_configView.ASUEnabledCB  setEnabled:!mcxManaged];
+    [_configView.setButton     setEnabled:!mcxManaged];
+    [_configView.managedByMCX  setHidden: !mcxManaged];
     
     
     _configView.repoURLTF.stringValue     = _msuSettings.softwareRepoURL;
