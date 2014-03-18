@@ -71,7 +71,7 @@ def unloadJob(launcher):
     cfuser = SCDynamicStoreCopyConsoleUser( None, None, None )
     if cfuser[0]:
         os.seteuid(cfuser[1])
-        print "unloading %s for %s" %  launch_plist,cfuser[0])
+        print "unloading %s for %s" %  (launch_plist,cfuser[0])
         try:
             subprocess.call(['/bin/launchctl','unload', launch_plist])
         except:
