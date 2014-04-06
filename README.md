@@ -4,7 +4,7 @@ MunkiMenu makes Managed Software Update easily accessible.  It lives in the stat
 When pressing the command key It also shows some at a glance information that is useful to administrators when trying to diagnose client misconfiguration. It also brings up the Quit item.
 
 
-[Visit the Release Page](https://github.com/eahrold/MunkiMenu/releases)
+[Visit the Release Page][releases]
 
 ![default][default] Default  
 ![Command Key Pressed][commandKey] Command Key Pressed  
@@ -18,12 +18,13 @@ It uses NSXPC to communicate between the main app and the helper app so this wil
 
 It's coded to use SMJobBless to install the helper app and by default will prompt the user for authorization as admin. 
 
-However, if you want to install MunkiMenu in a way that will not require user interaction (i.e using munki) you should create a copy-file dmg with only the MunkiMenu.app then add these Pre-Install, Post-Install and Pre-Uninstall script to the pkginfo.  
+However, if you want to install MunkiMenu in a way that will not require user interaction (i.e using munki) you can create a copy-file dmg, or use the one avaliable on the [Release Page][releases], then add these Pre-Install, Post-Install and Pre-Uninstall script to the munki pkginfo.  
 
-__Also you'll want to have a single string in blocking_applications array if "none" (no quotes)__
+__Also you'll want to have a single string in blocking_applications array set as "none" (no quotes)__
 
 ####Pre-Install
-preinstall quits MunkiMenu and dose some clean up in order to proceed with installation.  It also fixes possible previous release issues.
+preinstall quits MunkiMenu and dose some clean up in order to proceed with installation.  
+It also fixes possible previous release issues.
 ```shell
 #!/bin/bash
 PRE_INSTALL="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
@@ -32,9 +33,9 @@ PRE_INSTALL="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
 
 ####Post-Install
 postinstall copies the helper tool to the /Library/PrivilegedHelperTools/ folder,
-registers it with LaunchD and creates an application launcher launchd.plist to start MunkiMenu at login.  
+registers it with LaunchD and creates an application launcher launchd.plist to start MunkiMenu at login.
 
-_ *note It uses the same SMJobBless mechanism as the GUI to insure that the applicaiton is properly codesigned which could potentially affect communication with the helper tool._
+_*note It uses the same SMJobBless mechanism as the GUI to insure that the applicaiton is properly codesigned which, if not, could potentially affect communication with the helper tool._
 ```shell
 #!/bin/bash
 POST_INSTALL="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
@@ -47,7 +48,7 @@ POST_INSTALL="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
 [[ -x ${POST_INSTALL} ]] && ${POST_INSTALL} --postinstall-no-launch
 ```
 ####Pre-Uninstall
-preuninstall unloads and removes helper tool, Unloads and uninstalls lpplication launcher
+preuninstall unloads and removes helper tool, Unloads and uninstalls the application launcher
 ```shell
 #!/bin/bash
 PRE_UNINSTALL="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
@@ -66,3 +67,4 @@ To uninstall the helper tool and associated files, click the option key while th
 [commandKey]:./docs/commandKey.png
 [optionKey]:./docs/optionKey.png
 [scripts]:./Scripts
+[releases]:https://github.com/eahrold/MunkiMenu/releases
