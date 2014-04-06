@@ -14,7 +14,6 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-    
     }
     return self;
 }
@@ -32,7 +31,6 @@
     NSLog(@"Checking on key");
     if([self class]==NSClassFromString(@"NSStatusBarWindow"))
     {
-        
         if([_delegate popoverIsShown])
             return NO;
     }

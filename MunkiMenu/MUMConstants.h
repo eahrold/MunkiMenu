@@ -19,7 +19,7 @@ static NSString * const kMUMPackageURL                  = @"PackageURL";
 static NSString * const kMUMManagedInstallDir           = @"ManagedInstallDir";
 static NSString * const kMUMLogFile                     = @"LogFile";
 static NSString * const kMUMClientIdentifier            = @"ClientIdentifier";
-static NSString * const kMUMInstallAppleSoftwareUpdates                  = @"InstallAppleSoftwareUpdates";
+static NSString * const kMUMInstallAppleSoftwareUpdates = @"InstallAppleSoftwareUpdates";
 
 // Strings from ManagedInstallReport.plist
 static NSString * const kMUMManagedInstalls             = @"managed_installs_list";
@@ -47,6 +47,6 @@ static NSString * const MSUUpdateComplete    = @"com.googlecode.munki.ManagedSof
 static NSString * const MSUUpdate            = @"com.googlecode.munki.ManagedSoftwareUpdate.update";
 static NSString * const MSUUpdateAvaliable   = @"com.googlecode.munki.ManagedSoftwareUpdate.avaliableupdates";
 static NSString * const MUMFinishedLaunching = @"com.google.code.munkimenu.didfinishlaunching";
-
+static NSString * const MUMClosePopover      = @"com.google.code.munkimenu.closepopover";
 
 #endif

@@ -325,6 +325,7 @@
     [nsdnc addObserver:self selector:@selector(msuNeedsRunNotify) name:MSUUpdateAvaliable object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(defaultsChanged:) name:NSUserDefaultsDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeConfigView) name:MUMClosePopover object:nil];
 }
 
 -(void)removeAllObservers{
@@ -335,7 +336,6 @@
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     NSLog(@"%@",keyPath);
 }
-
 
 #pragma mark - NSMenuDelegate
 - (void)menuDidClose:(NSMenu *)menu

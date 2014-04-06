@@ -14,8 +14,8 @@
 -(BOOL)popoverIsShown;
 @end
 
-@interface MUMConfigView : NSViewController{
-}
+@interface MUMConfigView : NSViewController
+
 @property id<MUMViewControllerDelegate>delegate;
 @property (assign) IBOutlet NSTextField* repoURLTF;
 @property (assign) IBOutlet NSTextField* clientIDTF;

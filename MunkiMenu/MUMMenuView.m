@@ -7,13 +7,15 @@
 //
 
 #import "MUMMenuView.h"
+#import "MUMConstants.h"
+#import "MUMDelegate.h"
 
 @interface MUMMenuView ()
 {
-    BOOL _active;
-    NSImageView *_imageView;
+    BOOL          _active;
+    NSImageView  *_imageView;
     NSStatusItem *_statusItem;
-    NSMenu *_statusItemMenu;
+    NSMenu       *_statusItemMenu;
 }
 
 - (void)refreshView;
@@ -43,6 +45,9 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
+    if([[NSApp delegate]popupIsActive])
+        [[NSNotificationCenter defaultCenter]postNotificationName:MUMClosePopover object:nil];
+    
     [self setActive:YES];
     [_statusItem popUpStatusItemMenu:_statusItemMenu];
 }

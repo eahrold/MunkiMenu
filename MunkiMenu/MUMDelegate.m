@@ -63,4 +63,7 @@
     [[helper.connection remoteObjectProxy] quitHelper];
 }
 
+-(void)applicationWillResignActive:(NSNotification *)notification{
+    [[NSNotificationCenter defaultCenter]postNotificationName:MUMClosePopover object:nil];
+}
 @end
