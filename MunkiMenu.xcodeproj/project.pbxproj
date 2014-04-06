@@ -119,6 +119,7 @@
 		BECD1E9218576006009BEB9F /* MUMConfigView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MUMConfigView.xib; sourceTree = "<group>"; };
 		BECD1E95185761CD009BEB9F /* MUMMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MUMMenuView.h; sourceTree = "<group>"; };
 		BECD1E96185761CD009BEB9F /* MUMMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MUMMenuView.m; sourceTree = "<group>"; };
+		BED4C5E018F10AE000E3ACF2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		BEE3B710184D85B700E19FF7 /* NSString(TextField)+isNotBlank.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString(TextField)+isNotBlank.h"; sourceTree = "<group>"; };
 		BEE3B711184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString(TextField)+isNotBlank.m"; sourceTree = "<group>"; };
 		BEE3B716184E2AF600E19FF7 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/ServiceManagement.framework; sourceTree = DEVELOPER_DIR; };
@@ -197,6 +198,7 @@
 		BE8B45D6184510B0005D435B = {
 			isa = PBXGroup;
 			children = (
+				BED4C5E018F10AE000E3ACF2 /* README.md */,
 				BE2C6F0818B940B600584021 /* HelperTool_CodeSign_RunScript.py */,
 				BE69529818491E9C0008CFAA /* Shared */,
 				BE8B45E8184510B0005D435B /* MunkiMenu */,
