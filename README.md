@@ -22,6 +22,10 @@ However, if you want to install MunkiMenu in a way that will not require user in
 
 __Also you'll want to have a single string in blocking_applications array set as "none" (no quotes)__
 
+
+### THESE ARE NOT CURRENTLY WORKING BUT WILL SHROTLY
+#### USE THE SCRIPTS LOCATED [HERE][scripts] UNTIL V0.2.6
+
 ####Pre-Install
 preinstall quits MunkiMenu and dose some clean up in order to proceed with installation.  
 It also fixes possible previous release issues.
