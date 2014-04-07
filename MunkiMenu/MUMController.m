@@ -122,11 +122,13 @@
     
     if (_popover == nil) {
         _popover = [[NSPopover alloc] init];
+        _popover.behavior = NSPopoverBehaviorTransient;
     }
     
     _popover.contentViewController = _configView;
 
     if (!_popover.isShown) {
+        [[NSApplication sharedApplication] activateIgnoringOtherApps : YES];
         [_popover showRelativeToRect:_menuView.frame
                               ofView:_menuView
                        preferredEdge:NSMinYEdge];
