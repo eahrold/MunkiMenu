@@ -52,7 +52,8 @@ POST_INSTALL="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
 ```
 ####Pre-Uninstall
 preuninstall unloads and removes helper tool, Unloads and uninstalls the application launcher
-_*this preuninstall script is first implemented in v0.2.5 do not use this if upgrading from 0.2.4 or earlier it will
+
+_*this preuninstall script is first implemented in v0.2.5 do not use this if uninstaling 0.2.4 or earlier it will
 cause the application to hang use the [pre-install script found here][scripts]_
 ```shell
 #!/bin/bash
