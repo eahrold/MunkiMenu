@@ -25,6 +25,9 @@ __Also you'll want to have a single string in blocking_applications array set as
 ####Pre-Install
 preinstall quits MunkiMenu and dose some clean up in order to proceed with installation.  
 It also fixes possible previous release issues.
+
+_*!! this preinstall script is first implemented in v0.2.5 do not use this if upgrading from 0.2.4 or earlier it will
+cause the ManagedSoftwareUpdate to hang. use the [pre-install script found here][scripts] (this has no effect on the post-install script)_
 ```shell
 #!/bin/bash
 PRE_INSTALL="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
@@ -49,8 +52,11 @@ POST_INSTALL="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
 ```
 ####Pre-Uninstall
 preuninstall unloads and removes helper tool, Unloads and uninstalls the application launcher
+_*this preuninstall script is first implemented in v0.2.5 do not use this if upgrading from 0.2.4 or earlier it will
+cause the application to hang use the [pre-install script found here][scripts]_
 ```shell
 #!/bin/bash
+
 PRE_UNINSTALL="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
 [[ -x ${PRE_UNINSTALL} ]] && ${PRE_UNINSTALL} --preuninstall
 ```
