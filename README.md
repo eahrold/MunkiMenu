@@ -30,8 +30,8 @@ _*!! this preinstall script is first implemented in v0.2.5 do not use this if up
 cause the ManagedSoftwareUpdate to hang. use the [pre-install script found here][scripts] (this has no effect on the post-install script)_
 ```shell
 #!/bin/bash
-PRE_INSTALL="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
-[[ -x ${PRE_INSTALL} ]] && ${PRE_INSTALL} --preinstall
+MM_APPLICATION="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
+[[ -x ${MM_APPLICATION} ]] && ${MM_APPLICATION} --preinstall
 ```
 
 ####Post-Install
@@ -41,27 +41,28 @@ registers it with LaunchD and creates an application launcher launchd.plist to s
 _*note It uses the same SMJobBless mechanism as the GUI to insure that the applicaiton is properly codesigned which, if not, could potentially affect communication with the helper tool._
 ```shell
 #!/bin/bash
-POST_INSTALL="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
-[[ -x ${POST_INSTALL} ]] && ${POST_INSTALL} --postinstall
+MM_APPLICATION="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
+[[ -x ${MM_APPLICATION} ]] && ${MM_APPLICATION} --postinstall
 ```
 or if you do not want to have MunkiMenu automatically launch at login 
 ```
 #!/bin/bash
-POST_INSTALL="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
-[[ -x ${POST_INSTALL} ]] && ${POST_INSTALL} --postinstall-no-launch
+MM_APPLICATION="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
+[[ -x ${MM_APPLICATION} ]] && ${MM_APPLICATION} --postinstall-no-launch
 ```
 ####Pre-Uninstall
-preuninstall unloads and removes helper tool, Unloads and uninstalls the application launcher
+preuninstall unloads and removes helper tool, Unloads and uninstalls the application launcher  
 
 _*this preuninstall script is first implemented in v0.2.5 do not use this if uninstaling 0.2.4 or earlier it will
 cause the application to hang use the [pre-install script found here][scripts]_
 ```shell
 #!/bin/bash
 
-PRE_UNINSTALL="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
-[[ -x ${PRE_UNINSTALL} ]] && ${PRE_UNINSTALL} --preuninstall
+MM_APPLICATION="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
+[[ -x ${MM_APPLICATION} ]] && ${MM_APPLICATION} --preuninstall
 ```
 
+#### Custom Script Example
 If you prefere to custom script the pre/post install there are some examples 
 in the [scripts directory][scripts]  at the project's root, written in pyton
   
