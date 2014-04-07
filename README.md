@@ -23,15 +23,11 @@ However, if you want to install MunkiMenu in a way that will not require user in
 __Also you'll want to have a single string in blocking_applications array set as "none" (no quotes)__
 
 
-### THESE ARE NOT CURRENTLY WORKING BUT WILL SHROTLY
-#### USE THE SCRIPTS LOCATED [HERE][scripts] UNTIL V0.2.6
-
 ####Pre-Install
 preinstall quits MunkiMenu and dose some clean up in order to proceed with installation.  
 It also fixes possible previous release issues.
 
-_*!! this preinstall script is first implemented in v0.2.5 do not use this if upgrading from 0.2.4 or earlier it will
-cause the ManagedSoftwareUpdate to hang. use the [pre-install script found here][scripts] (this has no effect on the post-install script)_
+_!! these preinstall methods were first implemented in v0.2.6 do not use this if upgrading from 0.2.5 or earlier it will cause the ManagedSoftwareUpdate to hang. use the [pre-install script found here][scripts] (you can still use the the post-install script)_
 ```shell
 #!/bin/bash
 MM_APPLICATION="/Applications/MunkiMenu.app/Contents/MacOS/MunkiMenu"
