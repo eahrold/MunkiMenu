@@ -10,6 +10,8 @@
 	<string>MunkiMenu</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
+		<key>6A9D4102-C23E-458F-98EF-6D2637D6F2DF</key>
+		<string>https://github.com/eahrold/AHLaunchCtl.git</string>
 		<key>6C18FD86-A452-4B90-B799-E43B612CB387</key>
 		<string>https://code.google.com/p/munkimenu/</string>
 	</dict>
@@ -17,6 +19,8 @@
 	<string>MunkiMenu.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
+		<key>6A9D4102-C23E-458F-98EF-6D2637D6F2DF</key>
+		<string>../../MunkiMenu/AHLaunchCtl</string>
 		<key>6C18FD86-A452-4B90-B799-E43B612CB387</key>
 		<string>../..</string>
 	</dict>
@@ -28,6 +32,14 @@
 	<string>6C18FD86-A452-4B90-B799-E43B612CB387</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>6A9D4102-C23E-458F-98EF-6D2637D6F2DF</string>
+			<key>IDESourceControlWCCName</key>
+			<string>AHLaunchCtl</string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>

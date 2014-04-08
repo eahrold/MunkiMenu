@@ -12,6 +12,8 @@
 		BE56DDCE1850E31D00FCF55F /* MUMAuthorizer.m in Sources */ = {isa = PBXBuildFile; fileRef = BE56DDCD1850E31D00FCF55F /* MUMAuthorizer.m */; };
 		BE56DDCF1850E31D00FCF55F /* MUMAuthorizer.m in Sources */ = {isa = PBXBuildFile; fileRef = BE56DDCD1850E31D00FCF55F /* MUMAuthorizer.m */; };
 		BE56DDD01850EAC400FCF55F /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE2C07381847CF8800DF867A /* Security.framework */; };
+		BE5D44B318F3983400450160 /* libAHLaunchCtl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BE5D44AE18F397CF00450160 /* libAHLaunchCtl.a */; };
+		BE5D44B618F3985800450160 /* libAHLaunchCtl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BE5D44AE18F397CF00450160 /* libAHLaunchCtl.a */; };
 		BE6A737C1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = BE6A737B1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.m */; };
 		BE7FAE2718BBDE4100715E03 /* MUMSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = BE7FAE2618BBDE4100715E03 /* MUMSettings.m */; };
 		BE7FAE2818BBDED100715E03 /* MUMSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = BE7FAE2618BBDE4100715E03 /* MUMSettings.m */; };
@@ -40,12 +42,52 @@
 		BEE3B712184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m in Sources */ = {isa = PBXBuildFile; fileRef = BEE3B711184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m */; };
 		BEE3B718184E2B0D00E19FF7 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE2C07301847A7CD00DF867A /* CoreServices.framework */; };
 		BEF910EC18B7D89A00D12D89 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEAF714F188591CA0043A406 /* SystemConfiguration.framework */; };
-		BEF910ED18B7D95100D12D89 /* libAHLaunchCtl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BEF910E918B7D81C00D12D89 /* libAHLaunchCtl.a */; };
-		BEF910EE18B7D95800D12D89 /* libAHLaunchCtl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BEF910E918B7D81C00D12D89 /* libAHLaunchCtl.a */; };
 		BEF910EF18B7E85500D12D89 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEE3B716184E2AF600E19FF7 /* ServiceManagement.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		BE5D44A918F397CF00450160 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BE5D44A218F397CF00450160 /* AHLaunchCtl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BE91DC4418A586D5000FD8D7;
+			remoteInfo = LaunchControl;
+		};
+		BE5D44AB18F397CF00450160 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BE5D44A218F397CF00450160 /* AHLaunchCtl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BE5B001B18A55BAA000D8603;
+			remoteInfo = com.eeaapps.launchctl.helper;
+		};
+		BE5D44AD18F397CF00450160 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BE5D44A218F397CF00450160 /* AHLaunchCtl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BE76C6F118A19369003C94A0;
+			remoteInfo = AHLaunchCtl;
+		};
+		BE5D44AF18F397CF00450160 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BE5D44A218F397CF00450160 /* AHLaunchCtl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BE76C70418A19369003C94A0;
+			remoteInfo = AHLaunchCtlTests;
+		};
+		BE5D44B118F3981800450160 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BE5D44A218F397CF00450160 /* AHLaunchCtl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = BE76C6F018A19369003C94A0;
+			remoteInfo = AHLaunchCtl;
+		};
+		BE5D44B418F3985200450160 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BE5D44A218F397CF00450160 /* AHLaunchCtl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = BE76C6F018A19369003C94A0;
+			remoteInfo = AHLaunchCtl;
+		};
 		BE967058184785AC006B3A92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BE8B45D7184510B0005D435B /* Project object */;
@@ -77,6 +119,7 @@
 		BE2C6F0818B940B600584021 /* HelperTool_CodeSign_RunScript.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = HelperTool_CodeSign_RunScript.py; sourceTree = "<group>"; };
 		BE56DDCC1850E31D00FCF55F /* MUMAuthorizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MUMAuthorizer.h; path = MunkiMenu/MUMAuthorizer.h; sourceTree = "<group>"; };
 		BE56DDCD1850E31D00FCF55F /* MUMAuthorizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MUMAuthorizer.m; path = MunkiMenu/MUMAuthorizer.m; sourceTree = "<group>"; };
+		BE5D44A218F397CF00450160 /* AHLaunchCtl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AHLaunchCtl.xcodeproj; path = MunkiMenu/AHLaunchCtl/AHLaunchCtl.xcodeproj; sourceTree = "<group>"; };
 		BE67461918BBB6C40021074A /* MUMConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MUMConstants.h; path = MunkiMenu/MUMConstants.h; sourceTree = "<group>"; };
 		BE6A737A1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSWindow+canBecomeKeyWindow.h"; sourceTree = "<group>"; };
 		BE6A737B1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSWindow+canBecomeKeyWindow.m"; sourceTree = "<group>"; };
@@ -123,9 +166,6 @@
 		BEE3B710184D85B700E19FF7 /* NSString(TextField)+isNotBlank.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString(TextField)+isNotBlank.h"; sourceTree = "<group>"; };
 		BEE3B711184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString(TextField)+isNotBlank.m"; sourceTree = "<group>"; };
 		BEE3B716184E2AF600E19FF7 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/ServiceManagement.framework; sourceTree = DEVELOPER_DIR; };
-		BEF910E718B7D81C00D12D89 /* AHLaunchCtl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AHLaunchCtl.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		BEF910E818B7D81C00D12D89 /* AHLaunchJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHLaunchJob.h; sourceTree = "<group>"; };
-		BEF910E918B7D81C00D12D89 /* libAHLaunchCtl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libAHLaunchCtl.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,11 +173,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE5D44B318F3983400450160 /* libAHLaunchCtl.a in Frameworks */,
 				BEF910EC18B7D89A00D12D89 /* SystemConfiguration.framework in Frameworks */,
 				BEF910EF18B7E85500D12D89 /* ServiceManagement.framework in Frameworks */,
 				BE2C07391847CF8800DF867A /* Security.framework in Frameworks */,
 				BE8B45E3184510B0005D435B /* Cocoa.framework in Frameworks */,
-				BEF910ED18B7D95100D12D89 /* libAHLaunchCtl.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,18 +185,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE5D44B618F3985800450160 /* libAHLaunchCtl.a in Frameworks */,
 				BEAF7151188591D10043A406 /* ServiceManagement.framework in Frameworks */,
 				BEAF7150188591CA0043A406 /* SystemConfiguration.framework in Frameworks */,
 				BE56DDD01850EAC400FCF55F /* Security.framework in Frameworks */,
 				BEE3B718184E2B0D00E19FF7 /* CoreServices.framework in Frameworks */,
 				BE96704D18478586006B3A92 /* Foundation.framework in Frameworks */,
-				BEF910EE18B7D95800D12D89 /* libAHLaunchCtl.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BE5D44A318F397CF00450160 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BE5D44AA18F397CF00450160 /* LaunchControl.app */,
+				BE5D44AC18F397CF00450160 /* com.eeaapps.launchctl.helper */,
+				BE5D44AE18F397CF00450160 /* libAHLaunchCtl.a */,
+				BE5D44B018F397CF00450160 /* AHLaunchCtlTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		BE69529818491E9C0008CFAA /* Shared */ = {
 			isa = PBXGroup;
 			children = (
@@ -198,13 +249,14 @@
 		BE8B45D6184510B0005D435B = {
 			isa = PBXGroup;
 			children = (
+				BE69529818491E9C0008CFAA /* Shared */,
 				BED4C5E018F10AE000E3ACF2 /* README.md */,
 				BE2C6F0818B940B600584021 /* HelperTool_CodeSign_RunScript.py */,
-				BE69529818491E9C0008CFAA /* Shared */,
 				BE8B45E8184510B0005D435B /* MunkiMenu */,
 				BE96704E18478586006B3A92 /* Helper Tool */,
 				BE8B45E1184510B0005D435B /* Frameworks */,
 				BE8B45E0184510B0005D435B /* Products */,
+				BE5D44A218F397CF00450160 /* AHLaunchCtl.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -220,7 +272,6 @@
 		BE8B45E1184510B0005D435B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BEF910E518B7D81C00D12D89 /* AHLaunchCtl */,
 				BEAF714F188591CA0043A406 /* SystemConfiguration.framework */,
 				BEE3B716184E2AF600E19FF7 /* ServiceManagement.framework */,
 				BE2C07381847CF8800DF867A /* Security.framework */,
@@ -300,25 +351,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		BEF910E518B7D81C00D12D89 /* AHLaunchCtl */ = {
-			isa = PBXGroup;
-			children = (
-				BEF910E618B7D81C00D12D89 /* headers */,
-				BEF910E918B7D81C00D12D89 /* libAHLaunchCtl.a */,
-			);
-			name = AHLaunchCtl;
-			path = MunkiMenu/include;
-			sourceTree = "<group>";
-		};
-		BEF910E618B7D81C00D12D89 /* headers */ = {
-			isa = PBXGroup;
-			children = (
-				BEF910E718B7D81C00D12D89 /* AHLaunchCtl.h */,
-				BEF910E818B7D81C00D12D89 /* AHLaunchJob.h */,
-			);
-			path = headers;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -336,6 +368,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				BE5D44B218F3981800450160 /* PBXTargetDependency */,
 				BE967059184785AC006B3A92 /* PBXTargetDependency */,
 			);
 			name = MunkiMenu;
@@ -353,6 +386,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				BE5D44B518F3985200450160 /* PBXTargetDependency */,
 			);
 			name = com.googlecode.MunkiMenu.helper;
 			productName = helper;
@@ -379,6 +413,12 @@
 			mainGroup = BE8B45D6184510B0005D435B;
 			productRefGroup = BE8B45E0184510B0005D435B /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = BE5D44A318F397CF00450160 /* Products */;
+					ProjectRef = BE5D44A218F397CF00450160 /* AHLaunchCtl.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				BE8B45DE184510B0005D435B /* MunkiMenu */,
@@ -386,6 +426,37 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		BE5D44AA18F397CF00450160 /* LaunchControl.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = LaunchControl.app;
+			remoteRef = BE5D44A918F397CF00450160 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BE5D44AC18F397CF00450160 /* com.eeaapps.launchctl.helper */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = com.eeaapps.launchctl.helper;
+			remoteRef = BE5D44AB18F397CF00450160 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BE5D44AE18F397CF00450160 /* libAHLaunchCtl.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libAHLaunchCtl.a;
+			remoteRef = BE5D44AD18F397CF00450160 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BE5D44B018F397CF00450160 /* AHLaunchCtlTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = AHLaunchCtlTests.xctest;
+			remoteRef = BE5D44AF18F397CF00450160 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		BE8B45DD184510B0005D435B /* Resources */ = {
@@ -468,6 +539,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		BE5D44B218F3981800450160 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AHLaunchCtl;
+			targetProxy = BE5D44B118F3981800450160 /* PBXContainerItemProxy */;
+		};
+		BE5D44B518F3985200450160 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AHLaunchCtl;
+			targetProxy = BE5D44B418F3985200450160 /* PBXContainerItemProxy */;
+		};
 		BE967059184785AC006B3A92 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = BE96704A18478586006B3A92 /* com.googlecode.MunkiMenu.helper */;
@@ -582,17 +663,16 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(BUILT_PRODUCTS_DIR)/**",
 				);
 				INFOPLIST_FILE = "MunkiMenu/MunkiMenu-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"${PROJECT_DIR}/MunkiMenu/include",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx10.8;
 				STRIP_INSTALLED_PRODUCT = NO;
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -609,17 +689,16 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(BUILT_PRODUCTS_DIR)/**",
 				);
 				INFOPLIST_FILE = "MunkiMenu/MunkiMenu-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"${PROJECT_DIR}/MunkiMenu/include",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx10.8;
 				STRIP_INSTALLED_PRODUCT = NO;
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -635,11 +714,13 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INSTALL_PATH = "";
-				LIBRARY_SEARCH_PATHS = (
+				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"${PROJECT_DIR}/MunkiMenu/include",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(BUILT_PRODUCTS_DIR)/**",
 				);
+				INSTALL_PATH = "";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = (
 					"-sectcreate",
@@ -654,6 +735,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx10.8;
 				STRIP_INSTALLED_PRODUCT = NO;
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
 		};
@@ -664,11 +746,13 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "helper/helper-Prefix.pch";
-				INSTALL_PATH = "";
-				LIBRARY_SEARCH_PATHS = (
+				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"${PROJECT_DIR}/MunkiMenu/include",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(BUILT_PRODUCTS_DIR)/**",
 				);
+				INSTALL_PATH = "";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = (
 					"-sectcreate",
@@ -683,6 +767,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx10.8;
 				STRIP_INSTALLED_PRODUCT = NO;
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Release;
 		};

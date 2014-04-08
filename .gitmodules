@@ -1,0 +1,3 @@
+[submodule "MunkiMenu/AHLaunchCtl"]
+	path = MunkiMenu/AHLaunchCtl
+	url = https://eahrold@github.com/eahrold/AHLaunchCtl.git
