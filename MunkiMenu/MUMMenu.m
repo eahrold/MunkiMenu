@@ -32,7 +32,12 @@
 
 -(void)refreshAllItems:(MUMSettings*)settings{
     for(NSMenuItem *item in _currentMenuItems){
-        [self removeItem:item];
+        @try {
+            [self removeItem:item];
+        }
+        @catch (NSException *exception) {
+            NSLog(@"that menu item dosn't exist: %@",item);
+        }
     }
     
     [_currentMenuItems removeAllObjects];
@@ -45,20 +50,20 @@
     [self addManagedUpdateListToMenu:settings];
 }
 
--(void)refreshing:(MUMSettings*)settings{
+-(void)refreshing:(NSString*)title{
     for(NSMenuItem *item in _currentMenuItems){
         [self removeItem:item];
     }
     
     [_currentMenuItems removeAllObjects];
-    [self addSettingsToMenu:settings];
     
     NSMenuItem *refreshing = [NSMenuItem new];
-    [refreshing setTitle:@"Refreshing Menu..."];
+    [refreshing setTitle:title ? title : @"Refreshing Menu..."];
     
     [self insertItem:refreshing atIndex:[self insertIndex]];
     [_currentMenuItems addObject:refreshing];    
 }
+
 
 -(void)addAlternateItemsToMenu{
     /*add the about an uninstall here so we can set the selectors programatically*/
@@ -227,10 +232,10 @@
             
             if([[dict valueForKey:@"installed"] boolValue]){
                 [install setState:YES];
-            }else{
-                [install setTarget:delegate];
-                [install setAction:@selector(runManagedSoftwareUpdate:)];
             }
+
+            [install setTarget:delegate];
+            [install setAction:@selector(chooseOptionalInstall:)];
             [details addItem:install];
         }
         

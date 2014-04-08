@@ -19,6 +19,16 @@ static NSString * errorMsgFromCode(NSInteger code){
             break;
         case kMUMErrorUninstallRequest: msg = @"Helper Tool and associated files have been removed.  You can safely remove MunkiMenu from the Applications folder.  We will now quit";
             break;
+        case kMSU_EXIT_STATUS_OBJC_MISSING: msg = @"objc missing";
+            break;
+        case kMSU_EXIT_STATUS_MUNKI_DIRS_FAILURE: msg = @"could not write to munki directories";
+            break;
+        case kMSU_EXIT_STATUS_SERVER_UNAVAILABLE: msg = @"server unavaliable";
+            break;
+        case kMSU_EXIT_STATUS_INVALID_PARAMETERS: msg = @"invalid parameters passed to managedsoftwareupdate";
+            break;
+        case kMSU_EXIT_STATUS_ROOT_REQUIRED: msg = @"root user required";
+            break;
         default:msg = @"unknown problem occurred";
             break;
     }

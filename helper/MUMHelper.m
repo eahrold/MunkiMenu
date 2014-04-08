@@ -98,27 +98,74 @@ static const NSTimeInterval kHelperCheckInterval = 1.0; // how often to check wh
     reply(settings,error);
 }
 
--(void)configureMunki:(NSDictionary*)settings authorization:(NSData*)authData withReply:(void (^)(NSError*))reply{
+-(void)configureMunki:(NSDictionary*)settings authorization:(NSData*)authData withReply:(void (^)(MUMSettings* , NSError*))reply{
     NSError *error;
     
     error = [MUMAuthorizer checkAuthorization:authData command:_cmd];
     if(error != nil){
-        reply(error);
+        reply(nil,error);
         return;
     }
     
     [[NSUserDefaults standardUserDefaults]setPersistentDomain:settings forName:MSUAppPreferences];
     [[NSUserDefaults standardUserDefaults]synchronize];
     
-    NSTask *task = [NSTask new];
-    [task setLaunchPath:@"/usr/local/munki/managedsoftwareupdate"];
-    
     // use --munkipkgsonly here for to help speed things up...
-    [task setArguments:@[@"--checkonly",@"--munkipkgsonly"]];
-    [task launch];
+    [self runManagedSoftwareUpdate:@[@"--checkonly",@"--munkipkgsonly"] error:&error];
     
+    
+    [self getPreferenceDictionary:^(MUMSettings *info, NSError *error) {
+        reply(info, error);
+    }];
+}
+
+-(void)installOptionalItems:(BOOL)install title:(NSString *)title
+                  withReply:(void (^)(NSError*))reply{
+    NSError *error;
+    NSString* SelfServiceManifest = @"/Users/Shared/.SelfServeManifest";
+    NSMutableDictionary * process = [[NSMutableDictionary alloc]init];
+    
+    NSArray *managedInsalls = @[];
+    NSArray *managedUninstalls = @[];
+    
+    if(install){
+        managedInsalls = @[title];
+    }else{
+        managedUninstalls = @[title];
+    }
+    
+    [process setObject:managedInsalls forKey:@"managed_installs"];
+    [process setObject:managedUninstalls forKey:@"managed_uninstalls"];
+    
+    [process writeToFile:SelfServiceManifest atomically:YES];
+    
+    [self runManagedSoftwareUpdate:@[@"--auto", @"--munkipkgsonly"] error:&error];
+    [self runManagedSoftwareUpdate:@[@"--checkonly", @"--munkipkgsonly"] error:&error];
+
     reply(error);
 }
+
+
+
+-(BOOL)runManagedSoftwareUpdate:(NSArray *)args error:(NSError*__autoreleasing*)error{
+    OSStatus err;
+    NSTask *task = [NSTask new];
+    
+    [task setLaunchPath:@"/usr/local/munki/managedsoftwareupdate"];
+    
+    [task setArguments:args];
+    [task launch];
+    [task waitUntilExit];
+  
+    err = task.terminationStatus;
+    if(err > 0){
+        [MUMError errorWithCode:task.terminationStatus error:error];
+        return NO;
+    }
+    return YES;
+}
+
+
 
 #pragma mark - Clean Up
 -(void)uninstall:(NSURL*)mainAppURL authorization:(NSData*)authData withReply:(void (^)(NSError*))reply{

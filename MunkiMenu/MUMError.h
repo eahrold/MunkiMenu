@@ -14,7 +14,19 @@ typedef NS_ENUM(NSInteger, MUMErrorCodes){
     kMUMErrorCouldNotInstallHelper,
     kMUMErrorMunkiNotInstalled,
     kMUMErrorUninstallRequest,
+    kMUMErrorManagedSoftwareUpdateBadExitStatus,
+
 };
+
+// bridge managedsoftwareupdate error codes
+typedef NS_ENUM(NSInteger, MSUErrorCodes){
+    kMSU_EXIT_STATUS_OBJC_MISSING = 100,
+    kMSU_EXIT_STATUS_MUNKI_DIRS_FAILURE = 101,
+    kMSU_EXIT_STATUS_SERVER_UNAVAILABLE = 150,
+    kMSU_EXIT_STATUS_INVALID_PARAMETERS = 200,
+    kMSU_EXIT_STATUS_ROOT_REQUIRED = 201,
+};
+
 @interface MUMError : NSObject
 
 #ifdef _COCOA_H

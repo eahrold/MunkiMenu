@@ -43,7 +43,7 @@
         }
         return;
     }
-    [[NSNotificationCenter defaultCenter]postNotificationName:MUMFinishedLaunching object:self];
+    [[NSNotificationCenter defaultCenter]postNotificationName:MUMFinishedLaunching object:self];    
 }
 
 - (void)setupDidEndWithTerminalError:(NSAlert *)alert
@@ -66,4 +66,6 @@
 -(void)applicationWillResignActive:(NSNotification *)notification{
     [[NSNotificationCenter defaultCenter]postNotificationName:MUMClosePopover object:nil];
 }
+
+
 @end

@@ -12,6 +12,7 @@
 
 @protocol MUMMenuDelegate <NSObject,NSMenuDelegate>
 -(IBAction)runManagedSoftwareUpdate:(id)sender;
+-(void)chooseOptionalInstall:(NSMenuItem*)sender;
 -(void)openLogFile:(id)sender;
 -(void)uninstallHelper:(id)sender;
 -(void)quitNow:(id)sender;
@@ -29,5 +30,5 @@
 -(void)addItemsToRemoveListToMenu:(MUMSettings*)settings;
 -(void)addManagedUpdateListToMenu:(MUMSettings*)settings;
 -(void)refreshAllItems:(MUMSettings*)settings;
--(void)refreshing:(MUMSettings*)settings;
+-(void)refreshing:(NSString*)title;
 @end

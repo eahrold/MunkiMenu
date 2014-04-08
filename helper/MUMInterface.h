@@ -16,8 +16,18 @@ static NSString * const kMUMHelperName = @"com.googlecode.MunkiMenu.helper";
 @protocol MUMHelperAgent
 @required
 -(void)getPreferenceDictionary:(void (^)(MUMSettings *, NSError *))reply;
--(void)configureMunki:(NSDictionary*)settings authorization:(NSData *)authData withReply:(void (^)(NSError*))reply;
--(void)uninstall:(NSURL*)mainAppURL authorization:(NSData *)authData withReply:(void (^)(NSError*))reply;
+
+-(void)configureMunki:(NSDictionary*)settings
+        authorization:(NSData *)authData
+            withReply:(void (^)(MUMSettings *, NSError *))reply;
+
+// passing YES will install passing NO will remove
+-(void)installOptionalItems:(BOOL)install title:(NSString *)title
+                  withReply:(void (^)(NSError*))reply;
+
+-(void)uninstall:(NSURL*)mainAppURL
+   authorization:(NSData *)authData
+       withReply:(void (^)(NSError*))reply;
 -(void)quitHelper;
 @end
 
