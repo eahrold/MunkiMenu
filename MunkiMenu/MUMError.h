@@ -16,7 +16,11 @@ typedef NS_ENUM(NSInteger, MUMErrorCodes){
     kMUMErrorUninstallRequest,
 };
 @interface MUMError : NSObject
+
+#ifdef _COCOA_H
 +(void)presentErrorWithCode:(MUMErrorCodes)code delegate:(id)sender didPresentSelector:(SEL)selector;
+#endif
+
 +(BOOL)errorWithCode:(MUMErrorCodes)code error:(NSError**)error;
 
 @end
