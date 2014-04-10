@@ -16,6 +16,8 @@
     NSImageView  *_imageView;
     NSStatusItem *_statusItem;
     NSMenu       *_statusItemMenu;
+    NSTimer      *_animationTimer;
+    int           _animationFrame;
 }
 
 - (void)refreshView;
@@ -38,7 +40,8 @@
         [self addSubview:_imageView];
         [self refreshView];
     }
-    _imageView.image = [NSImage imageNamed:@"Managed Software Update18x18"];
+
+    _imageView.image = [NSImage imageNamed:@"mm_icon1"];
 
     return self;
 }
@@ -76,6 +79,24 @@
 {
     _active = active;
     [self refreshView];
+}
+
+-(void)animate{
+    _animationFrame = 1;
+    _animationTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/30.0 target:self selector:@selector(updateImage:) userInfo:nil repeats:YES];
+}
+
+-(void)stopAnimation{
+    [_animationTimer invalidate];    _animationFrame = 1;
+    _imageView.image = [NSImage imageNamed:@"mm_icon1"];
+}
+
+- (void)updateImage:(NSTimer*)timer
+{
+    if(_animationFrame > 30)_animationFrame = 1;
+
+    _imageView.image = [NSImage imageNamed:[NSString stringWithFormat:@"mm_icon%d",_animationFrame]];
+    _animationFrame++;
 }
 
 @end

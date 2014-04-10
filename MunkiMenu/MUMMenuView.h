@@ -11,4 +11,6 @@
 @interface MUMMenuView : NSView
 -(instancetype)initWithStatusItem:(NSStatusItem*)statusItem andMenu:(NSMenu*)menu;
 -(void)setActive:(BOOL)active;
+-(void)animate;
+-(void)stopAnimation;
 @end

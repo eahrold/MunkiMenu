@@ -14,6 +14,7 @@
 		BE56DDD01850EAC400FCF55F /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE2C07381847CF8800DF867A /* Security.framework */; };
 		BE5D44B318F3983400450160 /* libAHLaunchCtl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BE5D44AE18F397CF00450160 /* libAHLaunchCtl.a */; };
 		BE5D44B618F3985800450160 /* libAHLaunchCtl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BE5D44AE18F397CF00450160 /* libAHLaunchCtl.a */; };
+		BE61676818F5C65F0036E9EA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE61676718F5C65F0036E9EA /* Images.xcassets */; };
 		BE6A737C1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = BE6A737B1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.m */; };
 		BE7FAE2718BBDE4100715E03 /* MUMSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = BE7FAE2618BBDE4100715E03 /* MUMSettings.m */; };
 		BE7FAE2818BBDED100715E03 /* MUMSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = BE7FAE2618BBDE4100715E03 /* MUMSettings.m */; };
@@ -25,7 +26,6 @@
 		BE8B45F3184510B0005D435B /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = BE8B45F1184510B0005D435B /* Credits.rtf */; };
 		BE8B45F6184510B0005D435B /* MUMDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BE8B45F5184510B0005D435B /* MUMDelegate.m */; };
 		BE8B45F9184510B0005D435B /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BE8B45F7184510B0005D435B /* MainMenu.xib */; };
-		BE8B45FB184510B0005D435B /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE8B45FA184510B0005D435B /* Images.xcassets */; };
 		BE8B46171845155A005D435B /* Managed Software Update.icns in Resources */ = {isa = PBXBuildFile; fileRef = BE8B46161845155A005D435B /* Managed Software Update.icns */; };
 		BE8B461A18451663005D435B /* MUMController.m in Sources */ = {isa = PBXBuildFile; fileRef = BE8B461918451663005D435B /* MUMController.m */; };
 		BE8B461D18451687005D435B /* MUMMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = BE8B461C18451687005D435B /* MUMMenu.m */; };
@@ -120,6 +120,7 @@
 		BE56DDCC1850E31D00FCF55F /* MUMAuthorizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MUMAuthorizer.h; path = MunkiMenu/MUMAuthorizer.h; sourceTree = "<group>"; };
 		BE56DDCD1850E31D00FCF55F /* MUMAuthorizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MUMAuthorizer.m; path = MunkiMenu/MUMAuthorizer.m; sourceTree = "<group>"; };
 		BE5D44A218F397CF00450160 /* AHLaunchCtl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AHLaunchCtl.xcodeproj; path = MunkiMenu/AHLaunchCtl/AHLaunchCtl.xcodeproj; sourceTree = "<group>"; };
+		BE61676718F5C65F0036E9EA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		BE67461918BBB6C40021074A /* MUMConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MUMConstants.h; path = MunkiMenu/MUMConstants.h; sourceTree = "<group>"; };
 		BE6A737A1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSWindow+canBecomeKeyWindow.h"; sourceTree = "<group>"; };
 		BE6A737B1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSWindow+canBecomeKeyWindow.m"; sourceTree = "<group>"; };
@@ -140,7 +141,6 @@
 		BE8B45F4184510B0005D435B /* MUMDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MUMDelegate.h; sourceTree = "<group>"; };
 		BE8B45F5184510B0005D435B /* MUMDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MUMDelegate.m; sourceTree = "<group>"; };
 		BE8B45F8184510B0005D435B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		BE8B45FA184510B0005D435B /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		BE8B4601184510B0005D435B /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		BE8B46161845155A005D435B /* Managed Software Update.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "Managed Software Update.icns"; path = "../Managed Software Update.icns"; sourceTree = "<group>"; };
 		BE8B461818451663005D435B /* MUMController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MUMController.h; sourceTree = "<group>"; };
@@ -237,8 +237,8 @@
 		BE76C6E518A14F1F003C94A0 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
+				BE61676718F5C65F0036E9EA /* Images.xcassets */,
 				BEB7F5D618451F3700C7ADDB /* Managed Software Update18x18.png */,
-				BE8B45FA184510B0005D435B /* Images.xcassets */,
 				BE8B46161845155A005D435B /* Managed Software Update.icns */,
 				BECD1E9218576006009BEB9F /* MUMConfigView.xib */,
 				BE8B45F7184510B0005D435B /* MainMenu.xib */,
@@ -465,7 +465,7 @@
 			files = (
 				BECD1E9418576006009BEB9F /* MUMConfigView.xib in Resources */,
 				BE8B45ED184510B0005D435B /* InfoPlist.strings in Resources */,
-				BE8B45FB184510B0005D435B /* Images.xcassets in Resources */,
+				BE61676818F5C65F0036E9EA /* Images.xcassets in Resources */,
 				BE8B45F3184510B0005D435B /* Credits.rtf in Resources */,
 				BE8B46171845155A005D435B /* Managed Software Update.icns in Resources */,
 				BEB7F5D718451F3700C7ADDB /* Managed Software Update18x18.png in Resources */,

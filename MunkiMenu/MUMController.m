@@ -106,17 +106,21 @@
     [_menu refreshing:[NSString stringWithFormat:@"%@ %@...",!sender.state ? @"Installing":@"Removing",sender.title]];
     
     _selfInitiatedRun = YES;
+    [_menuView animate];
     [helper connectToHelper];
     [[helper.connection remoteObjectProxyWithErrorHandler:^(NSError *error) {
         _selfInitiatedRun = NO;
         NSLog(@"%@",error.localizedDescription);
     }] installOptionalItems:!sender.state title:sender.title withReply:^(NSError *error) {
+        [_menuView stopAnimation];
+
         if(error){
             _selfInitiatedRun = NO;
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [NSApp presentError:error];
             }];
         }else{
+            [self optionalItemChangedNotification:!sender.state ? YES:NO titile:sender.title success:error ? NO:YES];
             NSLog(@"changed install");
             [sender setState:!sender.state];
         }
@@ -237,6 +241,7 @@
     MUMHelperConnection *helper = [MUMHelperConnection new];
     [helper connectToHelper];
     [[helper.connection remoteObjectProxyWithErrorHandler:^(NSError *error) {
+        [_menu refreshAllItems:_msuSettings];
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [NSApp presentError:error];
         }];
@@ -249,6 +254,8 @@
             if(settings){
                 _msuSettings = settings;
                 [_menu refreshAllItems:settings];
+            }else{
+                [_menu refreshAllItems:_msuSettings];
             }
         }
     }];
