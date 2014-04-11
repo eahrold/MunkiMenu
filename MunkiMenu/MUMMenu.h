@@ -31,4 +31,5 @@
 -(void)addManagedUpdateListToMenu:(MUMSettings*)settings;
 -(void)refreshAllItems:(MUMSettings*)settings;
 -(void)refreshing:(NSString*)title;
+
 @end

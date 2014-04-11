@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "NSArray+firstObject.h"
 
 typedef NS_ENUM(NSInteger, MUMErrorCodes){
     kMUMErrorSuccess = 0,
@@ -15,24 +16,17 @@ typedef NS_ENUM(NSInteger, MUMErrorCodes){
     kMUMErrorMunkiNotInstalled,
     kMUMErrorUninstallRequest,
     kMUMErrorManagedSoftwareUpdateBadExitStatus,
-
+    kMUMErrorCouldNotRetrieveManifest,
 };
 
-// bridge managedsoftwareupdate error codes
-typedef NS_ENUM(NSInteger, MSUErrorCodes){
-    kMSU_EXIT_STATUS_OBJC_MISSING = 100,
-    kMSU_EXIT_STATUS_MUNKI_DIRS_FAILURE = 101,
-    kMSU_EXIT_STATUS_SERVER_UNAVAILABLE = 150,
-    kMSU_EXIT_STATUS_INVALID_PARAMETERS = 200,
-    kMSU_EXIT_STATUS_ROOT_REQUIRED = 201,
-};
 
 @interface MUMError : NSObject
 
-#ifdef _COCOA_H
+#ifdef __MUNKI_MENU_APP__
 +(void)presentErrorWithCode:(MUMErrorCodes)code delegate:(id)sender didPresentSelector:(SEL)selector;
 #endif
 
 +(BOOL)errorWithCode:(MUMErrorCodes)code error:(NSError**)error;
++(NSError*)errorWithCode:(MUMErrorCodes)code;
 
 @end

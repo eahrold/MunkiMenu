@@ -26,8 +26,8 @@ static NSString * const kMUMManagedInstalls             = @"managed_installs_lis
 static NSString * const kMUMManagedUpdates              = @"managed_updates_list";
 static NSString * const kMUMManagedUninstalls           = @"managed_uninstalls_list";
 static NSString * const kMUMInstalledItems              = @"InstalledItems";
-static NSString * const kMUMItemsToInstall              = @"ItemsToInstall";
-static NSString * const kMUMItemsToRemove               = @"ItemsToRemove";
+static NSString * const kMUMItemsToInstall              = @"managed_installs";
+static NSString * const kMUMItemsToRemove               = @"removals";
 static NSString * const kMUMMSUWarnings                 = @"Warnings";
 
 // Strings from InstallInfo.plist
@@ -43,9 +43,15 @@ static NSString * const kMUMShowItemsToRemove           = @"ShowItemsToRemove";
 static NSString * const kMUMNotificationsEnabled        = @"NotificationsEnabled";
 
 // NSDistributed Notification Center Strings broadcast from managedsoftwareupdate
+static NSString * const MSUUpdateStarted     = @"com.googlecode.munki.managedsoftwareupdate.started";
+static NSString * const MSUUpdateEnded       = @"com.googlecode.munki.managedsoftwareupdate.ended";
+static NSString * const MSUUpdateChanged     = @"com.googlecode.munki.managedsoftwareupdate.updateschanged";
+
+
 static NSString * const MSUUpdateComplete    = @"com.googlecode.munki.ManagedSoftwareUpdate.complete";
 static NSString * const MSUUpdate            = @"com.googlecode.munki.ManagedSoftwareUpdate.update";
 static NSString * const MSUUpdateAvaliable   = @"com.googlecode.munki.ManagedSoftwareUpdate.avaliableupdates";
+
 static NSString * const MUMFinishedLaunching = @"com.google.code.munkimenu.didfinishlaunching";
 static NSString * const MUMClosePopover      = @"com.google.code.munkimenu.closepopover";
 

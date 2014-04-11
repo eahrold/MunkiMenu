@@ -14,6 +14,7 @@
 #import "MUMHelperConnection.h"
 #import "MUMAuthorizer.h"
 #import "NSString(TextField)+isNotBlank.h"
+#import "MUMManagedSoftwareUpdate.h"
 
 @interface MUMController ()<MUMMenuDelegate,NSUserNotificationCenterDelegate,MUMViewControllerDelegate>
 {
@@ -21,24 +22,23 @@
     NSStatusItem *_statusItem;
     MUMMenuView  *_menuView;
     NSPopover    *_popover;
+    
     BOOL _notificationsEnabled;
     BOOL _selfInitiatedRun;
     BOOL _setupDone;
 }
 @property (strong) MUMSettings *msuSettings;
 @property (strong) IBOutlet MUMMenu *menu;
-@property (nonatomic) BOOL managedSoftwareUpdateIsRunning;
 
 @end
 
 @implementation MUMController{
     MUMConfigView *_configView;
 }
-@synthesize managedSoftwareUpdateIsRunning = _managedSoftwareUpdateIsRunning;
 
 -(void)awakeFromNib{
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(configureStatusBar)
+                                             selector:@selector(setupStatusBar)
                                                  name:MUMFinishedLaunching
                                                object:NULL];
 }
@@ -48,7 +48,7 @@
 }
 
 #pragma mark - Setup Menu Items / Status Bar
--(void)configureStatusBar{
+-(void)setupStatusBar{
     _notificationsEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:kMUMNotificationsEnabled];
     [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
 
@@ -66,10 +66,10 @@
     [_menu addAlternateItemsToMenu];
     
     [self addAllObservers];
-    [self getMUMSettingsFromHelper];
+    [self refreshMunkiMenu:nil];
 }
 
--(void)configureMenu{
+-(void)setupMenu{
     [_menu addSettingsToMenu:_msuSettings];
     [_menu addManagedInstallListToMenu:_msuSettings];
     [_menu addOptionalInstallListToMenu:_msuSettings];
@@ -78,10 +78,6 @@
     [_menu addManagedUpdateListToMenu:_msuSettings];
     [[_menu itemWithTitle:@"Notifications"] setState:_notificationsEnabled];
     _setupDone=YES;
-}
-
--(void)refreshMenu{
-    [self getMUMSettingsFromHelper];
 }
 
 -(void)defaultsChanged:(id)sender{
@@ -103,28 +99,26 @@
 -(void)chooseOptionalInstall:(NSMenuItem*)sender{
     MUMHelperConnection *helper = [MUMHelperConnection new];
     
-    [_menu refreshing:[NSString stringWithFormat:@"%@ %@...",!sender.state ? @"Installing":@"Removing",sender.title]];
+    [self msuRunStarted:[NSString stringWithFormat:@"%@ %@...",!sender.state ? @"Installing":@"Removing",sender.title]];
     
-    _selfInitiatedRun = YES;
-    [_menuView animate];
     [helper connectToHelper];
     [[helper.connection remoteObjectProxyWithErrorHandler:^(NSError *error) {
-        _selfInitiatedRun = NO;
         NSLog(@"%@",error.localizedDescription);
     }] installOptionalItems:!sender.state title:sender.title withReply:^(NSError *error) {
-        [_menuView stopAnimation];
-
+        [self msuRunEnded];
         if(error){
-            _selfInitiatedRun = NO;
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [NSApp presentError:error];
             }];
         }else{
             [self optionalItemChangedNotification:!sender.state ? YES:NO titile:sender.title success:error ? NO:YES];
-            NSLog(@"changed install");
             [sender setState:!sender.state];
         }
-        [self performSelectorOnMainThread:@selector(getMUMSettingsFromHelper) withObject:nil waitUntilDone:NO];
+        
+        // get this back on the main thread...
+        [self performSelectorOnMainThread:@selector(refreshMunkiMenu:)
+                               withObject:nil
+                            waitUntilDone:NO];
     }];
 }
 
@@ -236,42 +230,43 @@
              forKey:kMUMInstallAppleSoftwareUpdates];
     
     [self closeConfigView];
+    [self msuRunStarted:@"Updating Configuration..."];
     
-    [_menu refreshing:@"Updating Configuration..."];
     MUMHelperConnection *helper = [MUMHelperConnection new];
     [helper connectToHelper];
+    
     [[helper.connection remoteObjectProxyWithErrorHandler:^(NSError *error) {
         [_menu refreshAllItems:_msuSettings];
+        [self msuRunEnded];
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [NSApp presentError:error];
         }];
     }] configureMunki:dict authorization:authorization withReply:^(MUMSettings* settings,NSError *error) {
+        [self msuRunEnded];
         if(error){
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [NSApp presentError:error];
             }];
+        }
+        if(settings){
+            _msuSettings = settings;
+            [_menu refreshAllItems:settings];
         }else{
-            if(settings){
-                _msuSettings = settings;
-                [_menu refreshAllItems:settings];
-            }else{
-                [_menu refreshAllItems:_msuSettings];
-            }
+            [_menu refreshAllItems:_msuSettings];
         }
     }];
-
 }
 
 #pragma mark - Helper Agent (NSXPC)
--(void)getMUMSettingsFromHelper{
+-(void)refreshMunkiMenu:(NSNotification*)sender{
     // This gets the MSU details from the helper app.  We use a helper app
     // here to handle the situation where the ManagedInstall.plist is
     // in the root's ~/Library/Preferences/ folder.  Since the helper app
     // runs as root it can read the values and pass it back to us.
 
     // if the helper app is currently running an update
-    // any info here will be obsolete so just skip it...
-    if(!self.managedSoftwareUpdateIsRunning){
+    // any info here will be obsolete so just skip it...    
+    if(!_selfInitiatedRun){
         MUMHelperConnection *helper = [MUMHelperConnection new];
         [helper connectToHelper];
         [[helper.connection remoteObjectProxyWithErrorHandler:^(NSError *error) {
@@ -286,16 +281,12 @@
             }else{
                 _msuSettings = settings;
                 if(!_setupDone)
-                    [self configureMenu];
+                    [self setupMenu];
                 else
                     [_menu refreshAllItems:_msuSettings];
             }
            [[helper.connection remoteObjectProxy]quitHelper];
         }];
-    }else{
-//        [_menu refreshing:@"Getting updated..."];
-//        NSTimeInterval recheck = 5.0;
-//        [self performSelector:@selector(getMUMSettingsFromHelper) withObject:self afterDelay:recheck];
     }
 }
 
@@ -350,7 +341,8 @@
     }
 }
 
--(void)msuNeedsRunNotify{
+-(void)msuNeedsRunNotify:(NSNotification*)sender{
+    DPrint(@"%@",sender.name);
     if(_notificationsEnabled && !_selfInitiatedRun){
         NSUserNotification *notification = [[NSUserNotification alloc] init];
         notification.title = @"Avaliable Software Updates";
@@ -363,12 +355,43 @@
     }
 }
 
+-(void)optionalItemChangedNotification:(BOOL)installed titile:(NSString*)title success:(BOOL)success{
+    if(_notificationsEnabled){
+        NSUserNotification *notification = [[NSUserNotification alloc] init];
+        
+        NSString* status;
+        if(success)
+            status = [NSString stringWithFormat:@"%@",installed ? @"Successfully installed":@"Sucessfully removed"];
+        else
+            status = [NSString stringWithFormat:@"%@",installed ? @"There were problems installing":@"There were problems removing"];
+
+        [notification setHasActionButton:NO];
+        notification.title = [NSString stringWithFormat:@"Finished managed %@", installed ? @"install":@"removal"];
+        notification.informativeText = [NSString stringWithFormat:@"%@ %@",status,title];
+        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+    }
+}
+
 #pragma mark - Observing/Observers
 -(void)addAllObservers{
+    NSString *version = [MUMManagedSoftwareUpdate version];
+    NSInteger MajorVersion = [[[version componentsSeparatedByString:@"."]firstObject]integerValue];
     NSDistributedNotificationCenter *nsdnc = [NSDistributedNotificationCenter defaultCenter];
-    [nsdnc addObserver:self selector:@selector(refreshMenu) name:MSUUpdate object:nil];
-    [nsdnc addObserver:self selector:@selector(refreshMenu) name:MSUUpdateComplete object:nil];
-    [nsdnc addObserver:self selector:@selector(msuNeedsRunNotify) name:MSUUpdateAvaliable object:nil];
+
+    if(MajorVersion >= 2){
+        // For Munki2
+        DPrint(@"Observing For Munki2");
+        [nsdnc addObserver:self selector:@selector(refreshMunkiMenu:) name:MSUUpdateEnded object:nil];
+        [nsdnc addObserver:self selector:@selector(refreshMunkiMenu:) name:MSUUpdateChanged object:nil];
+    }else{
+        DPrint(@"Observing For Munki");
+        // For Munki
+        [nsdnc addObserver:self selector:@selector(refreshMunkiMenu:) name:MSUUpdate object:nil];
+
+        // Custom Munki Build
+        [nsdnc addObserver:self selector:@selector(refreshMunkiMenu:) name:MSUUpdateComplete object:nil];
+        [nsdnc addObserver:self selector:@selector(msuNeedsRunNotify:) name:MSUUpdateAvaliable object:nil];
+    }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(defaultsChanged:) name:NSUserDefaultsDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeConfigView) name:MUMClosePopover object:nil];
@@ -379,8 +402,16 @@
     [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 
--(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    NSLog(@"%@",keyPath);
+#pragma mark - Self Run
+-(void)msuRunStarted:(NSString*)statusMessage{
+    [_menuView animate];
+    [_menu refreshing:statusMessage];
+    _selfInitiatedRun = YES;
+}
+
+-(void)msuRunEnded{
+    [_menuView stopAnimation];
+    _selfInitiatedRun = NO;
 }
 
 #pragma mark - NSMenuDelegate
@@ -392,37 +423,6 @@
 #pragma mark - ConfigView Delegate
 -(BOOL)popoverIsShown{
     return _popover.isShown;
-}
-
-#pragma mark - Utility
--(BOOL)managedSoftwareUpdateIsRunning{
-    printf("checking on status\n");
-
-    NSTask* task = [NSTask new];
-    
-    NSPipe *outPipe = [NSPipe pipe];
-    
-    task.standardOutput = outPipe;
-    task.launchPath     = @"/bin/ps";
-    task.arguments      = @[@"-e",@"-o",@"command="];
-    task.standardOutput = outPipe;
-    task.standardError  = outPipe;
-    
-    [task launch];
-    [task waitUntilExit];
-    
-    NSData *outputData = [[outPipe fileHandleForReading] readDataToEndOfFile];
-    NSString *outputString = [[NSString alloc] initWithData:outputData encoding:NSUTF8StringEncoding];
-    
-    NSString *managedsoftwareupdate = @"/usr/local/munki/managedsoftwareupdate";
-    NSString *supervisor = @"supervisor";
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF CONTAINS %@ and NOT SELF CONTAINS %@",managedsoftwareupdate,supervisor];
-    NSArray* runningProcs = [outputString componentsSeparatedByString:@"\n"];
-
-    if([[runningProcs filteredArrayUsingPredicate:predicate]count])
-        return YES;
-    
-    return NO;
 }
 
 

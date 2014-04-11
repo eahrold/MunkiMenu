@@ -7,3 +7,9 @@
 #ifdef __OBJC__
     #import <Foundation/Foundation.h>
 #endif
+
+#ifndef __RUN_AS_ROOT__
+#define __RUN_AS_ROOT__
+#endif
+
+#define HLog(s,...)  syslog(1,"%s\n",[[NSString stringWithFormat:(s), ##__VA_ARGS__]UTF8String])

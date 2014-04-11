@@ -81,20 +81,21 @@
     [self refreshView];
 }
 
--(void)animate{
+-(void)animate
+{
     _animationFrame = 1;
     _animationTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/30.0 target:self selector:@selector(updateImage:) userInfo:nil repeats:YES];
 }
 
--(void)stopAnimation{
-    [_animationTimer invalidate];    _animationFrame = 1;
+-(void)stopAnimation
+{
+    [_animationTimer invalidate];
     _imageView.image = [NSImage imageNamed:@"mm_icon1"];
 }
 
 - (void)updateImage:(NSTimer*)timer
 {
     if(_animationFrame > 30)_animationFrame = 1;
-
     _imageView.image = [NSImage imageNamed:[NSString stringWithFormat:@"mm_icon%d",_animationFrame]];
     _animationFrame++;
 }

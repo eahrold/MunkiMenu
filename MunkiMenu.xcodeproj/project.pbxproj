@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BE2B994818F6DDA300A4428D /* MUMManagedSoftwareUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = BE2B994718F6DDA300A4428D /* MUMManagedSoftwareUpdate.m */; };
+		BE2B996918F6E5D600A4428D /* MUMManagedSoftwareUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = BE2B994718F6DDA300A4428D /* MUMManagedSoftwareUpdate.m */; };
+		BE2B996D18F7297B00A4428D /* NSArray+firstObject.m in Sources */ = {isa = PBXBuildFile; fileRef = BE2B996C18F7297B00A4428D /* NSArray+firstObject.m */; };
+		BE2B996E18F7297B00A4428D /* NSArray+firstObject.m in Sources */ = {isa = PBXBuildFile; fileRef = BE2B996C18F7297B00A4428D /* NSArray+firstObject.m */; };
 		BE2C07321847A88B00DF867A /* MUMHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = BE96705F1847896B006B3A92 /* MUMHelper.m */; };
 		BE2C07391847CF8800DF867A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE2C07381847CF8800DF867A /* Security.framework */; };
 		BE56DDCE1850E31D00FCF55F /* MUMAuthorizer.m in Sources */ = {isa = PBXBuildFile; fileRef = BE56DDCD1850E31D00FCF55F /* MUMAuthorizer.m */; };
@@ -111,6 +115,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BE2B994618F6DDA300A4428D /* MUMManagedSoftwareUpdate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MUMManagedSoftwareUpdate.h; path = MunkiMenu/MUMManagedSoftwareUpdate.h; sourceTree = "<group>"; };
+		BE2B994718F6DDA300A4428D /* MUMManagedSoftwareUpdate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MUMManagedSoftwareUpdate.m; path = MunkiMenu/MUMManagedSoftwareUpdate.m; sourceTree = "<group>"; };
+		BE2B996B18F7297B00A4428D /* NSArray+firstObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+firstObject.h"; sourceTree = "<group>"; };
+		BE2B996C18F7297B00A4428D /* NSArray+firstObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+firstObject.m"; sourceTree = "<group>"; };
 		BE2C07301847A7CD00DF867A /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/CoreServices.framework; sourceTree = DEVELOPER_DIR; };
 		BE2C07331847AB7400DF867A /* helper-Launchd.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "helper-Launchd.plist"; sourceTree = "<group>"; };
 		BE2C07341847BB9C00DF867A /* helper-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "helper-Info.plist"; sourceTree = "<group>"; };
@@ -219,6 +227,8 @@
 				BE56DDCD1850E31D00FCF55F /* MUMAuthorizer.m */,
 				BE7FAE2918BBE3A400715E03 /* MUMError.h */,
 				BE7FAE2A18BBE3A400715E03 /* MUMError.m */,
+				BE2B994618F6DDA300A4428D /* MUMManagedSoftwareUpdate.h */,
+				BE2B994718F6DDA300A4428D /* MUMManagedSoftwareUpdate.m */,
 			);
 			name = Shared;
 			sourceTree = "<group>";
@@ -230,6 +240,8 @@
 				BE6A737B1857A47200A4DA71 /* NSWindow+canBecomeKeyWindow.m */,
 				BEE3B710184D85B700E19FF7 /* NSString(TextField)+isNotBlank.h */,
 				BEE3B711184D85B700E19FF7 /* NSString(TextField)+isNotBlank.m */,
+				BE2B996B18F7297B00A4428D /* NSArray+firstObject.h */,
+				BE2B996C18F7297B00A4428D /* NSArray+firstObject.m */,
 			);
 			name = "Custom Catagories";
 			sourceTree = "<group>";
@@ -249,9 +261,9 @@
 		BE8B45D6184510B0005D435B = {
 			isa = PBXGroup;
 			children = (
-				BE69529818491E9C0008CFAA /* Shared */,
 				BED4C5E018F10AE000E3ACF2 /* README.md */,
 				BE2C6F0818B940B600584021 /* HelperTool_CodeSign_RunScript.py */,
+				BE69529818491E9C0008CFAA /* Shared */,
 				BE8B45E8184510B0005D435B /* MunkiMenu */,
 				BE96704E18478586006B3A92 /* Helper Tool */,
 				BE8B45E1184510B0005D435B /* Frameworks */,
@@ -510,6 +522,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE8B45F6184510B0005D435B /* MUMDelegate.m in Sources */,
+				BE2B994818F6DDA300A4428D /* MUMManagedSoftwareUpdate.m in Sources */,
+				BE2B996D18F7297B00A4428D /* NSArray+firstObject.m in Sources */,
 				BE8B461A18451663005D435B /* MUMController.m in Sources */,
 				BE8B461D18451687005D435B /* MUMMenu.m in Sources */,
 				BE984C3918A02E630098E4F1 /* MUMHelperConnection.m in Sources */,
@@ -530,9 +544,11 @@
 			files = (
 				BE96705018478586006B3A92 /* main.m in Sources */,
 				BE2C07321847A88B00DF867A /* MUMHelper.m in Sources */,
+				BE2B996E18F7297B00A4428D /* NSArray+firstObject.m in Sources */,
 				BE56DDCF1850E31D00FCF55F /* MUMAuthorizer.m in Sources */,
 				BE7FAE2818BBDED100715E03 /* MUMSettings.m in Sources */,
 				BE7FAE2D18BBF9C200715E03 /* MUMError.m in Sources */,
+				BE2B996918F6E5D600A4428D /* MUMManagedSoftwareUpdate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

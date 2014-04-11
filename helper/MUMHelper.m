@@ -9,6 +9,7 @@
 #import "MUMHelper.h"
 #import "MUMAuthorizer.h"
 #import "AHLaunchCtl.h"
+#import "MUMManagedSoftwareUpdate.h"
 
 static NSString *const MSUAppPreferences = @"ManagedInstalls";
 static const NSTimeInterval kHelperCheckInterval = 1.0; // how often to check whether to quit
@@ -60,13 +61,13 @@ static const NSTimeInterval kHelperCheckInterval = 1.0; // how often to check wh
     
     // Pull out the name of the item to install from the dictionary
     NSMutableSet *itemsToInstall = [NSMutableSet new];
-    for(NSDictionary *dict in msuReport[kMUMItemsToInstall]){
+    for(NSDictionary *dict in msuInstallInfo[kMUMItemsToInstall]){
         [itemsToInstall addObject:dict[@"name"]];
     }
     
     // Pull out the name of the item to remove from the dictionary
     NSMutableSet *itemsToRemove  = [NSMutableSet new];
-    for(NSDictionary *dict in msuReport[kMUMItemsToRemove]){
+    for(NSDictionary *dict in msuInstallInfo[kMUMItemsToRemove]){
         [itemsToRemove addObject:dict[@"name"]];
     }
     
@@ -106,21 +107,40 @@ static const NSTimeInterval kHelperCheckInterval = 1.0; // how often to check wh
         reply(nil,error);
         return;
     }
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     
-    [[NSUserDefaults standardUserDefaults]setPersistentDomain:settings forName:MSUAppPreferences];
-    [[NSUserDefaults standardUserDefaults]synchronize];
+    NSDictionary* previousSettings = [defaults persistentDomainForName:MSUAppPreferences];
+    [defaults setPersistentDomain:settings forName:MSUAppPreferences];
+    [defaults synchronize];
     
     // use --munkipkgsonly here for to help speed things up...
-    [self runManagedSoftwareUpdate:@[@"--checkonly",@"--munkipkgsonly"] error:&error];
-    
-    
-    [self getPreferenceDictionary:^(MUMSettings *info, NSError *error) {
-        reply(info, error);
+    [MUMManagedSoftwareUpdate runWithArgs:@[@"--checkonly",@"--munkipkgsonly"] reply:^(NSArray *runErrors, NSError *execError) {
+        if(execError){
+            [defaults setPersistentDomain:previousSettings forName:MSUAppPreferences];
+            [defaults synchronize];
+            reply(nil,execError);
+            return;
+        }
+        
+        NSPredicate *missingManifest = [NSPredicate predicateWithFormat:@"SELF CONTAINS %@ AND SELF CONTAINS %@",
+                                  @"Could not retrieve manifest",@"manifest"];
+        
+        if([[runErrors filteredArrayUsingPredicate:missingManifest] count]){
+            [defaults setPersistentDomain:previousSettings forName:MSUAppPreferences];
+            [defaults synchronize];
+            reply(nil,[MUMError errorWithCode:kMUMErrorCouldNotRetrieveManifest]);
+            return;
+        }
+        
+        
+        [self getPreferenceDictionary:^(MUMSettings *info, NSError *error) {
+            reply(info, error);
+            return;
+        }];
     }];
 }
 
--(void)installOptionalItems:(BOOL)install title:(NSString *)title
-                  withReply:(void (^)(NSError*))reply{
+-(void)installOptionalItems:(BOOL)install title:(NSString *)title withReply:(void (^)(NSError*))reply{
     NSError *error;
     NSString* SelfServiceManifest = @"/Users/Shared/.SelfServeManifest";
     NSMutableDictionary * process = [[NSMutableDictionary alloc]init];
@@ -139,31 +159,22 @@ static const NSTimeInterval kHelperCheckInterval = 1.0; // how often to check wh
     
     [process writeToFile:SelfServiceManifest atomically:YES];
     
-    [self runManagedSoftwareUpdate:@[@"--auto", @"--munkipkgsonly"] error:&error];
-    [self runManagedSoftwareUpdate:@[@"--checkonly", @"--munkipkgsonly"] error:&error];
+    [MUMManagedSoftwareUpdate runWithArgs:@[@"--checkonly", @"--munkipkgsonly"] reply:^(NSArray *runErrors, NSError *execError) {
+        if(execError){
+            reply(execError);
+            return;
+        }
+        
+        
+        [MUMManagedSoftwareUpdate runWithArgs:@[@"--installonly", @"--munkipkgsonly"] reply:^(NSArray *runErrors, NSError *execError) {
+            reply(error);
+        }];
+    }];
 
-    reply(error);
 }
 
 
 
--(BOOL)runManagedSoftwareUpdate:(NSArray *)args error:(NSError*__autoreleasing*)error{
-    OSStatus err;
-    NSTask *task = [NSTask new];
-    
-    [task setLaunchPath:@"/usr/local/munki/managedsoftwareupdate"];
-    
-    [task setArguments:args];
-    [task launch];
-    [task waitUntilExit];
-  
-    err = task.terminationStatus;
-    if(err > 0){
-        [MUMError errorWithCode:task.terminationStatus error:error];
-        return NO;
-    }
-    return YES;
-}
 
 
 

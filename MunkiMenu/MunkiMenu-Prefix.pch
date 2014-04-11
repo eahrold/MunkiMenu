@@ -6,5 +6,17 @@
 
 #ifdef __OBJC__
     #import <Cocoa/Cocoa.h>
-    #define _COCOA_H
+
+#endif
+
+#ifndef __MUNKI_MENU_APP__
+    #define __MUNKI_MENU_APP__
+#endif
+
+#ifdef DEBUG
+    #define DLog( s, ... ) NSLog( @"<%@:%d> %@", [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__,  [NSString stringWithFormat:(s), ##__VA_ARGS__] )
+    #define DPrint(s,...)  printf("%s\n",[[NSString stringWithFormat:(s), ##__VA_ARGS__]UTF8String])
+#else
+    #define DLog( s, ... )
+    #define DPrint( s, ...)
 #endif

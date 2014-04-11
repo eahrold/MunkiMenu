@@ -29,6 +29,6 @@
 @property (copy) NSArray  *itemsToRemove;
 @property (copy) NSArray  *msuWarnings;
 @property (copy) NSArray  *optionalInstalls;
-@property  BOOL            installASU;
+@property        BOOL      installASU;
 
 @end

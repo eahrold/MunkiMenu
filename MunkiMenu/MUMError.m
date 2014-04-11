@@ -19,15 +19,7 @@ static NSString * errorMsgFromCode(NSInteger code){
             break;
         case kMUMErrorUninstallRequest: msg = @"Helper Tool and associated files have been removed.  You can safely remove MunkiMenu from the Applications folder.  We will now quit";
             break;
-        case kMSU_EXIT_STATUS_OBJC_MISSING: msg = @"objc missing";
-            break;
-        case kMSU_EXIT_STATUS_MUNKI_DIRS_FAILURE: msg = @"could not write to munki directories";
-            break;
-        case kMSU_EXIT_STATUS_SERVER_UNAVAILABLE: msg = @"server unavaliable";
-            break;
-        case kMSU_EXIT_STATUS_INVALID_PARAMETERS: msg = @"invalid parameters passed to managedsoftwareupdate";
-            break;
-        case kMSU_EXIT_STATUS_ROOT_REQUIRED: msg = @"root user required";
+        case kMUMErrorCouldNotRetrieveManifest: msg = @"Could not retrieve managed install manifest, please check the settings and try again";
             break;
         default:msg = @"unknown problem occurred";
             break;
@@ -37,9 +29,9 @@ static NSString * errorMsgFromCode(NSInteger code){
 
 
 @implementation MUMError
+#ifdef __MUNKI_MENU_APP__
 +(void)presentErrorWithCode:(MUMErrorCodes)code delegate:(id)sender didPresentSelector:(SEL)selector
 {
-#ifdef _COCOA_H
     NSError* error;
     [[self class]errorWithCode:code error:&error];
     [NSApp presentError:error
@@ -47,22 +39,26 @@ static NSString * errorMsgFromCode(NSInteger code){
                delegate:sender
      didPresentSelector:selector
             contextInfo:NULL];
-#endif
 }
+#endif
 
 +(BOOL)errorWithCode:(MUMErrorCodes)code error:(NSError *__autoreleasing *)error{
     BOOL rc = code > kMUMErrorSuccess ? NO:YES;
-    NSString * msg = errorMsgFromCode(code);
-    NSError *err = [NSError errorWithDomain:@"com.googlecode.MunkiMenu"
-                                       code:code
-                                   userInfo:@{NSLocalizedDescriptionKey:msg}];
+    NSError *err = [self errorWithCode:code];
     if(error)
         *error = err;
     else
-        NSLog(@"Error: %@",msg);
+        NSLog(@"Error: %@",err.localizedDescription);
     
     return rc;
 }
 
++(NSError*)errorWithCode:(MUMErrorCodes)code{
+    NSString * msg = errorMsgFromCode(code);
+    NSError  * error = [NSError errorWithDomain:@"com.googlecode.MunkiMenu"
+                                       code:code
+                                   userInfo:@{NSLocalizedDescriptionKey:msg}];
+    return error;
+}
 
 @end
