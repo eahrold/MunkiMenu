@@ -99,6 +99,8 @@ int preuninstall(){
 int main(int argc, const char * argv[])
 {
     NSArray *args = [[NSProcessInfo processInfo] arguments];
+    NSLog(@"Launching... %@",args);
+    NSPredicate *ignoredStrings =[NSPredicate predicateWithFormat:@"SELF BEGINSWITH[cd]  %@ OR SELF == %@",@"-psn",@"-NSDocumentRevisionsDebugMode"];
     
     if (args.count > 1){
         if([args[1] isEqualToString:kPreinstall]){
@@ -117,7 +119,7 @@ int main(int argc, const char * argv[])
             return usage(0);
         }
         // this catches the debug arg from passed from Xcode
-        else if([args[1] isEqualToString:@"-NSDocumentRevisionsDebugMode"]){
+        else if([ignoredStrings evaluateWithObject:args[1]]){
             return NSApplicationMain(argc, argv);
         }else{
             printf( "\nWarning: \"%s\" is not a valid option!",[args[1] UTF8String]);
