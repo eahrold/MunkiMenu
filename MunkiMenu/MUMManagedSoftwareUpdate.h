@@ -15,7 +15,7 @@
  *  NSTask Wrapper to Run managedsoftwareupdate
  *
  *  @param args  Arguments normally passed to managedsoftwareupdate
- *  @param reply <#reply description#>
+ *  @param reply block argument that takes 2 values Array of run errors represented as strings, and an NSError populated with an execution error generated from a managedsoftwareupdate run. 
  */
 +(void)runWithArgs:(NSArray *)args reply:(void (^)(NSArray *runErrors, NSError *execError))reply;
 #endif
