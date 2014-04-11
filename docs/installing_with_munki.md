@@ -6,7 +6,7 @@ Add an array with a single string of "none" (no quotes) to the "blocking_applica
 
 Then add the following script items to MunkiMenu's pkginfo.  
 
-_* if you plan to install MunkiMenu in a directory other than the Applications folder change the script accordingly _
+_** if you plan to install MunkiMenu in a directory other than the Applications folder change the script accordingly **_
 
 ####Pre-Install
 
@@ -63,6 +63,6 @@ To uninstall the helper tool and associated files, click the option key while th
 
 #### [Other Tech Notes][tech_notes]
 [releases]:https://github.com/eahrold/MunkiMenu/releases
-[scripts]:./Scripts
-[tech_notes]:./docs/technotes.md
+[scripts]:../Scripts
+[tech_notes]:./technotes.md
 
