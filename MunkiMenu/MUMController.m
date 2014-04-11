@@ -374,11 +374,8 @@
 
 #pragma mark - Observing/Observers
 -(void)addAllObservers{
-    NSString *version = [MUMManagedSoftwareUpdate version];
-    NSInteger MajorVersion = [[[version componentsSeparatedByString:@"."]firstObject]integerValue];
     NSDistributedNotificationCenter *nsdnc = [NSDistributedNotificationCenter defaultCenter];
-
-    if(MajorVersion >= 2){
+    if([MUMManagedSoftwareUpdate majorVerson] == 2){
         // For Munki2
         DPrint(@"Observing For Munki2");
         [nsdnc addObserver:self selector:@selector(refreshMunkiMenu:) name:MSUUpdateEnded object:nil];

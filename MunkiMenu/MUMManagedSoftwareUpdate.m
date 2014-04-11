@@ -131,6 +131,15 @@ typedef NS_ENUM(NSInteger, MSUErrorCodes){
     return managedsoftwareupdate.outputString;
 }
 
++(NSInteger)majorVerson{
+    NSString *version = [self version];
+    NSArray *majorVersion = [version componentsSeparatedByString:@"."];
+    if(majorVersion){
+        return [majorVersion[0] integerValue];
+    }
+    return 0;
+}
+
 +(BOOL)instanceIsRunning{
     NSTask* task = [NSTask new];
     

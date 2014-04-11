@@ -21,5 +21,7 @@
 #endif
 
 +(NSString*)version;
++(NSInteger)majorVerson;
+
 +(BOOL)instanceIsRunning;
 @end

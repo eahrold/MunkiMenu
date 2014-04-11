@@ -165,12 +165,20 @@ static const NSTimeInterval kHelperCheckInterval = 1.0; // how often to check wh
             return;
         }
         
-        
         [MUMManagedSoftwareUpdate runWithArgs:@[@"--installonly", @"--munkipkgsonly"] reply:^(NSArray *runErrors, NSError *execError) {
-            reply(error);
+            NSString *managedInstallDir = [self stringFromCFPref:kMUMManagedInstallDir];
+            NSString *info = [NSString stringWithFormat:@"%@/InstallInfo.plist",managedInstallDir];
+            // The InstallInfo.plist can sometimes not get recreated,
+            // this may be excessive, but another run takes care of it.
+            if([[NSFileManager defaultManager]fileExistsAtPath:info]){
+                reply(error);
+            }else{
+                [MUMManagedSoftwareUpdate runWithArgs:@[@"--checkonly", @"--munkipkgsonly"] reply:^(NSArray *runErrors, NSError *execError) {
+                        reply(execError);
+                }];
+            }
         }];
     }];
-
 }
 
 
