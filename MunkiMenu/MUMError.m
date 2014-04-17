@@ -21,6 +21,10 @@ static NSString * errorMsgFromCode(NSInteger code){
             break;
         case kMUMErrorCouldNotRetrieveManifest: msg = @"Could not retrieve managed install manifest, please check the settings and try again";
             break;
+        case kMUMErrorManagedSoftwareUpdateBadExitStatus: msg = @"There was a problem running Managed Software update, please check your settings and try again, see the log for more info";
+            break;
+        case kMUMErrorManagedSoftwareUpdateInstanceIsRunning: msg = @"An instance of Managed Software Update is already running, you can try again after that completes";
+            break;
         default:msg = @"unknown problem occurred";
             break;
     }

@@ -16,6 +16,7 @@ typedef NS_ENUM(NSInteger, MUMErrorCodes){
     kMUMErrorMunkiNotInstalled,
     kMUMErrorUninstallRequest,
     kMUMErrorManagedSoftwareUpdateBadExitStatus,
+    kMUMErrorManagedSoftwareUpdateInstanceIsRunning,
     kMUMErrorCouldNotRetrieveManifest,
 };
 

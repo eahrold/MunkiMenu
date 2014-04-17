@@ -97,8 +97,12 @@
 
 
 -(void)chooseOptionalInstall:(NSMenuItem*)sender{
-    MUMHelperConnection *helper = [MUMHelperConnection new];
+    if([MUMManagedSoftwareUpdate instanceIsRunning]){
+        [MUMError presentErrorWithCode:kMUMErrorManagedSoftwareUpdateInstanceIsRunning delegate:self didPresentSelector:nil];
+        return;
+    }
     
+    MUMHelperConnection *helper = [MUMHelperConnection new];
     [self msuRunStarted:[NSString stringWithFormat:@"%@ %@...",!sender.state ? @"Installing":@"Removing",sender.title]];
     
     [helper connectToHelper];
