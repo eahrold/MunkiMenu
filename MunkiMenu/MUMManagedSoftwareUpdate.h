@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ *  Wraper for /usr/local/munki/managedsoftwareupdate.
+ *  @discussion to actually perform a run, this class needs to run as root, so put #define __RUN_AS_ROOT__ in the helper tool's .pch file 
+ */
 @interface MUMManagedSoftwareUpdate : NSTask
 
 #ifdef __RUN_AS_ROOT__
@@ -20,8 +24,24 @@
 +(void)runWithArgs:(NSArray *)args reply:(void (^)(NSArray *runErrors, NSError *execError))reply;
 #endif
 
+/**
+ *  Get the current version of managedsoftwareupdate
+ *
+ *  @return Current Version string
+ */
 +(NSString*)version;
+
+/**
+ *  Get the majorVersion of managedsoftwareupdate, i.e. 0.9.8 is 0, 1.1 is 1, and 2.0 is 2
+ *
+ *  @return majorVerson
+ */
 +(NSInteger)majorVerson;
 
+/**
+ *  Determine if an instance of managedsoftwareupdat is currently running
+ *
+ *  @return YES if instance is running, NO if no
+ */
 +(BOOL)instanceIsRunning;
 @end

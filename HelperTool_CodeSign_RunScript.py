@@ -25,7 +25,10 @@ import subprocess
 import plistlib
 
 '''
-the name for the helper tool will be default to this format com.your.app.helper
+the name for the helper tool will be default to this format
+
+com.your.app.helper
+
 which is the main apps bundleID with a .helper extension.
 if the executable you're installing is something other than that specify it here
 '''

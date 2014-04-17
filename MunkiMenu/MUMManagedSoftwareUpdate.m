@@ -119,11 +119,13 @@ typedef NS_ENUM(NSInteger, MSUErrorCodes){
 
 
 #pragma mark - Class Methods / Convience
+#ifdef __RUN_AS_ROOT__
 +(void)runWithArgs:(NSArray *)args reply:(void (^)(NSArray *runErrors, NSError *execError))reply{
     MUMManagedSoftwareUpdate *managedsoftwareupdate = [[MUMManagedSoftwareUpdate alloc] initWithArgs:args];
     [managedsoftwareupdate run];
     reply(managedsoftwareupdate.runErrors,managedsoftwareupdate.execError);
 }
+#endif
 
 +(NSString*)version{
     MUMManagedSoftwareUpdate* managedsoftwareupdate = [[MUMManagedSoftwareUpdate alloc]initWithArgs:@[@"--version"]];
