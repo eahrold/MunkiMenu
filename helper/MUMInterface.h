@@ -15,6 +15,11 @@ static NSString * const kMUMHelperName = @"com.googlecode.MunkiMenu.helper";
 
 @protocol MUMHelperAgent
 @required
+/**
+ *  Get the current settings for managedsoftwareupdate
+ *
+ *  @param reply reply block that takes two objects, MUMSettings and NSError
+ */
 -(void)getPreferenceDictionary:(void (^)(MUMSettings *, NSError *))reply;
 
 /**

@@ -66,16 +66,11 @@
     [_menu addAlternateItemsToMenu];
     
     [self addAllObservers];
-    [self refreshMunkiMenu:nil];
+    [self getSettingsFromHelper:nil];
 }
 
 -(void)setupMenu{
-    [_menu addSettingsToMenu:_msuSettings];
-    [_menu addManagedInstallListToMenu:_msuSettings];
-    [_menu addOptionalInstallListToMenu:_msuSettings];
-    [_menu addItemsToInstallListToMenu:_msuSettings];
-    [_menu addItemsToRemoveListToMenu:_msuSettings];
-    [_menu addManagedUpdateListToMenu:_msuSettings];
+    [_menu refreshAllItems:_msuSettings];
     [[_menu itemWithTitle:@"Notifications"] setState:_notificationsEnabled];
     _setupDone=YES;
 }
@@ -120,7 +115,7 @@
         }
         
         // get this back on the main thread...
-        [self performSelectorOnMainThread:@selector(refreshMunkiMenu:)
+        [self performSelectorOnMainThread:@selector(getSettingsFromHelper:)
                                withObject:nil
                             waitUntilDone:NO];
     }];
@@ -262,7 +257,7 @@
 }
 
 #pragma mark - Helper Agent (NSXPC)
--(void)refreshMunkiMenu:(NSNotification*)sender{
+-(void)getSettingsFromHelper:(NSNotification*)sender{
     // This gets the MSU details from the helper app.  We use a helper app
     // here to handle the situation where the ManagedInstall.plist is
     // in the root's ~/Library/Preferences/ folder.  Since the helper app
@@ -382,15 +377,15 @@
     if([MUMManagedSoftwareUpdate majorVerson] == 2){
         // For Munki2
         DPrint(@"Observing For Munki2");
-        [nsdnc addObserver:self selector:@selector(refreshMunkiMenu:) name:MSUUpdateEnded object:nil];
-        [nsdnc addObserver:self selector:@selector(refreshMunkiMenu:) name:MSUUpdateChanged object:nil];
+        [nsdnc addObserver:self selector:@selector(getSettingsFromHelper:) name:MSUUpdateEnded object:nil];
+        [nsdnc addObserver:self selector:@selector(getSettingsFromHelper:) name:MSUUpdateChanged object:nil];
     }else{
         DPrint(@"Observing For Munki");
         // For Munki
-        [nsdnc addObserver:self selector:@selector(refreshMunkiMenu:) name:MSUUpdate object:nil];
+        [nsdnc addObserver:self selector:@selector(getSettingsFromHelper:) name:MSUUpdate object:nil];
 
         // Custom Munki Build
-        [nsdnc addObserver:self selector:@selector(refreshMunkiMenu:) name:MSUUpdateComplete object:nil];
+        [nsdnc addObserver:self selector:@selector(getSettingsFromHelper:) name:MSUUpdateComplete object:nil];
         [nsdnc addObserver:self selector:@selector(msuNeedsRunNotify:) name:MSUUpdateAvaliable object:nil];
     }
     

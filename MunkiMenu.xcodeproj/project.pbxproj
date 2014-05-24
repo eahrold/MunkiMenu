@@ -370,12 +370,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BE8B4610184510B0005D435B /* Build configuration list for PBXNativeTarget "MunkiMenu" */;
 			buildPhases = (
-				BE2C6F0918B940E700584021 /* ShellScript */,
 				BE8B45DB184510B0005D435B /* Sources */,
 				BE8B45DC184510B0005D435B /* Frameworks */,
 				BE8B45DD184510B0005D435B /* Resources */,
 				BE96705A184785B7006B3A92 /* CopyFiles */,
-				BE4DC29618BA43370022A1DB /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -486,35 +484,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		BE2C6F0918B940E700584021 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PROJECT_DIR}\"/HelperTool_CodeSign_RunScript.py";
-		};
-		BE4DC29618BA43370022A1DB /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "exit 0";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BE8B45DB184510B0005D435B /* Sources */ = {

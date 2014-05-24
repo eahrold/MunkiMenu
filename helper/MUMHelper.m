@@ -40,7 +40,6 @@ static const NSTimeInterval kHelperCheckInterval = 1.0; // how often to check wh
 }
 
 #pragma mark - ManagedInstall.plist Methods
-
 -(void)getPreferenceDictionary:(void (^)(MUMSettings *, NSError *))reply{
     NSError *error;
     MUMSettings *settings = [MUMSettings new];
@@ -115,6 +114,7 @@ static const NSTimeInterval kHelperCheckInterval = 1.0; // how often to check wh
     
     // use --munkipkgsonly here for to help speed things up...
     [MUMManagedSoftwareUpdate runWithArgs:@[@"--checkonly",@"--munkipkgsonly"] reply:^(NSArray *runErrors, NSError *execError) {
+        NSError *error;
         if(execError){
             [defaults setPersistentDomain:previousSettings forName:MSUAppPreferences];
             [defaults synchronize];
@@ -128,7 +128,8 @@ static const NSTimeInterval kHelperCheckInterval = 1.0; // how often to check wh
         if([[runErrors filteredArrayUsingPredicate:missingManifest] count]){
             [defaults setPersistentDomain:previousSettings forName:MSUAppPreferences];
             [defaults synchronize];
-            reply(nil,[MUMError errorWithCode:kMUMErrorCouldNotRetrieveManifest]);
+            [MUMError errorWithCode:kMUMErrorCouldNotRetrieveManifest error:&error];
+            reply(nil,error);
             return;
         }
         
@@ -180,11 +181,6 @@ static const NSTimeInterval kHelperCheckInterval = 1.0; // how often to check wh
         }];
     }];
 }
-
-
-
-
-
 
 #pragma mark - Clean Up
 -(void)uninstall:(NSURL*)mainAppURL authorization:(NSData*)authData withReply:(void (^)(NSError*))reply{

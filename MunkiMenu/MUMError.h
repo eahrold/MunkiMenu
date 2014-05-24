@@ -23,11 +23,10 @@ typedef NS_ENUM(NSInteger, MUMErrorCodes){
 
 @interface MUMError : NSObject
 
-#ifdef __MUNKI_MENU_APP__
+#ifdef _APPKITDEFINES_H
 +(void)presentErrorWithCode:(MUMErrorCodes)code delegate:(id)sender didPresentSelector:(SEL)selector;
 #endif
 
 +(BOOL)errorWithCode:(MUMErrorCodes)code error:(NSError**)error;
-+(NSError*)errorWithCode:(MUMErrorCodes)code;
 
 @end

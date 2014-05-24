@@ -100,7 +100,7 @@ int main(int argc, const char * argv[])
 {
     NSArray *args = [[NSProcessInfo processInfo] arguments];
     NSLog(@"Launching... %@",args);
-    NSPredicate *ignoredStrings =[NSPredicate predicateWithFormat:@"SELF BEGINSWITH[cd]  %@ OR SELF == %@",@"-psn",@"-NSDocumentRevisionsDebugMode"];
+    NSPredicate *ignoredStrings =[NSPredicate predicateWithFormat:@"SELF BEGINSWITH[cd] %@ OR SELF == %@",@"-psn",@"-NSDocumentRevisionsDebugMode"];
     
     if (args.count > 1){
         if([args[1] isEqualToString:kPreinstall]){

@@ -31,7 +31,7 @@
     NSLog(@"Checking on key");
     if([self class]==NSClassFromString(@"NSStatusBarWindow"))
     {
-        if([_delegate popoverIsShown])
+        if(_delegate.popoverIsShown)
             return NO;
     }
     

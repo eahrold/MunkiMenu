@@ -9,18 +9,18 @@
 #import "MUMManagedSoftwareUpdate.h"
 
 typedef NS_ENUM(NSInteger, MSUErrorCodes){
-    EXIT_STATUS_OBJC_MISSING = 100,
+    EXIT_STATUS_OBJC_MISSING       = 100,
     EXIT_STATUS_MUNKI_DIRS_FAILURE = 101,
     EXIT_STATUS_SERVER_UNAVAILABLE = 150,
     EXIT_STATUS_INVALID_PARAMETERS = 200,
-    EXIT_STATUS_ROOT_REQUIRED = 201,
+    EXIT_STATUS_ROOT_REQUIRED      = 201,
 };
 
 @interface MUMManagedSoftwareUpdate ()
 @property (copy,nonatomic)    NSString *outputString;
 @property (copy,nonatomic)    NSArray  *runErrors;
 @property (copy,nonatomic)    NSError  *execError;
-@property (copy)              NSArray  *arguments;
+@property (copy,nonatomic)    NSArray  *arguments;
 @property (nonatomic)         NSTask   *task;
 @property (nonatomic)         OSStatus  exitStatus;
 
@@ -145,18 +145,15 @@ typedef NS_ENUM(NSInteger, MSUErrorCodes){
 +(BOOL)instanceIsRunning{
     NSTask* task = [NSTask new];
     
-    NSPipe *outPipe = [NSPipe pipe];
-    
-    task.standardOutput = outPipe;
     task.launchPath     = @"/bin/ps";
     task.arguments      = @[@"-e",@"-o",@"command="];
-    task.standardOutput = outPipe;
-    task.standardError  = outPipe;
+    task.standardOutput = [NSPipe pipe];
+    task.standardError  = task.standardOutput;
     
     [task launch];
     [task waitUntilExit];
     
-    NSData *outputData = [[outPipe fileHandleForReading] readDataToEndOfFile];
+    NSData *outputData = [[task.standardOutput fileHandleForReading] readDataToEndOfFile];
     NSString *outputString = [[NSString alloc] initWithData:outputData encoding:NSUTF8StringEncoding];
     
     NSString *managedsoftwareupdate = @"/usr/local/munki/managedsoftwareupdate";

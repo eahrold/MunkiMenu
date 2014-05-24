@@ -10,7 +10,7 @@
 
 @class MUMMenu, MUMController, MUMSettings;
 
-@protocol MUMMenuDelegate <NSObject,NSMenuDelegate>
+@protocol MUMMenuDelegate <NSMenuDelegate>
 -(IBAction)runManagedSoftwareUpdate:(id)sender;
 -(void)chooseOptionalInstall:(NSMenuItem*)sender;
 -(void)openLogFile:(id)sender;
@@ -23,13 +23,6 @@
 
 @property (weak) id<MUMMenuDelegate>delegate;
 -(void)addAlternateItemsToMenu;
--(void)addSettingsToMenu:(MUMSettings*)settings;
--(void)addManagedInstallListToMenu:(MUMSettings*)settings;
--(void)addOptionalInstallListToMenu:(MUMSettings*)settings;
--(void)addItemsToInstallListToMenu:(MUMSettings*)settings;
--(void)addItemsToRemoveListToMenu:(MUMSettings*)settings;
--(void)addManagedUpdateListToMenu:(MUMSettings*)settings;
 -(void)refreshAllItems:(MUMSettings*)settings;
 -(void)refreshing:(NSString*)title;
-
 @end

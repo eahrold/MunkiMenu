@@ -33,7 +33,7 @@ static NSString * errorMsgFromCode(NSInteger code){
 
 
 @implementation MUMError
-#ifdef __MUNKI_MENU_APP__
+#ifdef _APPKITDEFINES_H
 +(void)presentErrorWithCode:(MUMErrorCodes)code delegate:(id)sender didPresentSelector:(SEL)selector
 {
     NSError* error;
@@ -47,17 +47,14 @@ static NSString * errorMsgFromCode(NSInteger code){
 #endif
 
 +(BOOL)errorWithCode:(MUMErrorCodes)code error:(NSError *__autoreleasing *)error{
-    BOOL rc = code > kMUMErrorSuccess ? NO:YES;
     NSError *err = [self errorWithCode:code];
-    if(error)
-        *error = err;
-    else
-        NSLog(@"Error: %@",err.localizedDescription);
-    
-    return rc;
+    if(error)*error = err;
+    else NSLog(@"Error: %@",err.localizedDescription);
+    return code == kMUMErrorSuccess ? YES:NO;
 }
 
 +(NSError*)errorWithCode:(MUMErrorCodes)code{
+    if(code == kMUMErrorSuccess)return nil;
     NSString * msg = errorMsgFromCode(code);
     NSError  * error = [NSError errorWithDomain:@"com.googlecode.MunkiMenu"
                                        code:code

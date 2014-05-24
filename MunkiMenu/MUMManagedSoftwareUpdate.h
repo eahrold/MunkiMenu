@@ -12,7 +12,7 @@
  *  Wraper for /usr/local/munki/managedsoftwareupdate.
  *  @discussion to actually perform a run, this class needs to run as root, so put #define __RUN_AS_ROOT__ in the helper tool's .pch file 
  */
-@interface MUMManagedSoftwareUpdate : NSTask
+@interface MUMManagedSoftwareUpdate : NSObject
 
 #ifdef __RUN_AS_ROOT__
 /**

@@ -6,11 +6,6 @@
 
 #ifdef __OBJC__
     #import <Cocoa/Cocoa.h>
-
-#endif
-
-#ifndef __MUNKI_MENU_APP__
-    #define __MUNKI_MENU_APP__
 #endif
 
 #ifdef DEBUG
