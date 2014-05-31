@@ -75,21 +75,10 @@
     _setupDone=YES;
 }
 
--(void)defaultsChanged:(id)sender{
-    [_menu refreshAllItems:_msuSettings];
-}
-
 #pragma mark - Controller IBActions / Selectors
 -(IBAction)runManagedSoftwareUpdate:(id)sender{
     [[NSWorkspace sharedWorkspace] launchApplication:@"/Applications/Utilities/Managed Software Update.app"];
 }
-
--(IBAction)enableNotifications:(NSMenuItem*)sender{
-    _notificationsEnabled = !_notificationsEnabled;
-    [sender setState:_notificationsEnabled ? NSOnState:NSOffState];
-    [[NSUserDefaults standardUserDefaults]setBool:_notificationsEnabled forKey:kMUMNotificationsEnabled];
-}
-
 
 -(void)chooseOptionalInstall:(NSMenuItem*)sender{
     if([MUMManagedSoftwareUpdate instanceIsRunning]){
@@ -121,6 +110,12 @@
     }];
 }
 
+-(IBAction)enableNotifications:(NSMenuItem*)sender{
+    _notificationsEnabled = !_notificationsEnabled;
+    [sender setState:_notificationsEnabled ? NSOnState:NSOffState];
+    [[NSUserDefaults standardUserDefaults]setBool:_notificationsEnabled forKey:kMUMNotificationsEnabled];
+}
+
 -(void)quitNow:(id)sender{
     [NSApp terminate:self];
 }
@@ -132,6 +127,10 @@
 
 -(void)aboutMunkiMenu:(id)sender{
     [[NSApplication sharedApplication]orderFrontStandardAboutPanel:self];
+}
+
+-(void)defaultsChanged:(id)sender{
+    [_menu refreshAllItems:_msuSettings];
 }
 
 #pragma mark - Config View
@@ -400,7 +399,7 @@
 
 #pragma mark - Self Run
 -(void)msuRunStarted:(NSString*)statusMessage{
-    [_menuView animate];
+    [_menuView startAnimation];
     [_menu refreshing:statusMessage];
     _selfInitiatedRun = YES;
 }

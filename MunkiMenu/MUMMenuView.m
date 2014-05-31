@@ -20,7 +20,6 @@
     int           _animationFrame;
 }
 
-- (void)refreshView;
 @end
 
 @implementation MUMMenuView
@@ -28,7 +27,7 @@
 -(instancetype)initWithStatusItem:(NSStatusItem*)statusItem andMenu:(NSMenu *)menu
 {
     float ImageViewWidth = 22;
-    CGFloat height = [NSStatusBar systemStatusBar].thickness;
+    CGFloat height = [[NSStatusBar systemStatusBar] thickness];
     self = [super initWithFrame:NSMakeRect(0, 0, ImageViewWidth, height)];
             
     if (self) {
@@ -38,12 +37,23 @@
         _active = NO;
         _imageView = [[NSImageView alloc] initWithFrame:NSMakeRect(0, 0, ImageViewWidth, height)];
         [self addSubview:_imageView];
-        [self refreshView];
+        [self setNeedsDisplay:YES];
     }
 
     _imageView.image = [NSImage imageNamed:@"mm_icon1"];
 
     return self;
+}
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+	if (_active) {
+        [[NSColor selectedMenuItemColor] setFill];
+        NSRectFill(dirtyRect);
+    } else {
+        [[NSColor clearColor] setFill];
+        NSRectFill(dirtyRect);
+    }
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
@@ -60,31 +70,16 @@
     [self setActive:NO];
 }
 
-- (void)drawRect:(NSRect)dirtyRect
-{
-	if (_active) {
-        [[NSColor selectedMenuItemColor] setFill];
-        NSRectFill(dirtyRect);
-    } else {
-        [[NSColor clearColor] setFill];
-        NSRectFill(dirtyRect);
-    }
-}
-
--(void)refreshView{
-    [self setNeedsDisplay:YES];
-}
-
 - (void)setActive:(BOOL)active
 {
     _active = active;
-    [self refreshView];
+    [self setNeedsDisplay:YES];
 }
 
--(void)animate
+-(void)startAnimation
 {
     _animationFrame = 1;
-    _animationTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/30.0 target:self selector:@selector(updateImage:) userInfo:nil repeats:YES];
+    _animationTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/30.0 target:self selector:@selector(updateImage) userInfo:nil repeats:YES];
 }
 
 -(void)stopAnimation
@@ -93,7 +88,7 @@
     _imageView.image = [NSImage imageNamed:@"mm_icon1"];
 }
 
-- (void)updateImage:(NSTimer*)timer
+- (void)updateImage
 {
     if(_animationFrame > 30)_animationFrame = 1;
     _imageView.image = [NSImage imageNamed:[NSString stringWithFormat:@"mm_icon%d",_animationFrame]];
