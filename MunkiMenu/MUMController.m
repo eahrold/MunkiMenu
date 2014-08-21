@@ -113,7 +113,8 @@
 -(IBAction)enableNotifications:(NSMenuItem*)sender{
     _notificationsEnabled = !_notificationsEnabled;
     [sender setState:_notificationsEnabled ? NSOnState:NSOffState];
-    [[NSUserDefaults standardUserDefaults]setBool:_notificationsEnabled forKey:kMUMNotificationsEnabled];
+    [[NSUserDefaults standardUserDefaults]setBool:_notificationsEnabled
+                                           forKey:kMUMNotificationsEnabled];
 }
 
 -(void)quitNow:(id)sender{
@@ -389,6 +390,7 @@
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(defaultsChanged:) name:NSUserDefaultsDidChangeNotification object:nil];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeConfigView) name:MUMClosePopover object:nil];
 }
 

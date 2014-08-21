@@ -43,7 +43,7 @@ typedef NS_ENUM(NSInteger, MSUErrorCodes){
     
     self.task.standardOutput = [NSPipe pipe];
     self.task.standardError  = [NSPipe pipe];
-    
+
     if(self.arguments){
         self.task.arguments = self.arguments;
     }
