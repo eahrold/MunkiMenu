@@ -50,20 +50,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		BE5D44A918F397CF00450160 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BE5D44A218F397CF00450160 /* AHLaunchCtl.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BE91DC4418A586D5000FD8D7;
-			remoteInfo = LaunchControl;
-		};
-		BE5D44AB18F397CF00450160 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BE5D44A218F397CF00450160 /* AHLaunchCtl.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BE5B001B18A55BAA000D8603;
-			remoteInfo = com.eeaapps.launchctl.helper;
-		};
 		BE5D44AD18F397CF00450160 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BE5D44A218F397CF00450160 /* AHLaunchCtl.xcodeproj */;
@@ -208,8 +194,6 @@
 		BE5D44A318F397CF00450160 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BE5D44AA18F397CF00450160 /* LaunchControl.app */,
-				BE5D44AC18F397CF00450160 /* com.eeaapps.launchctl.helper */,
 				BE5D44AE18F397CF00450160 /* libAHLaunchCtl.a */,
 				BE5D44B018F397CF00450160 /* AHLaunchCtlTests.xctest */,
 			);
@@ -438,20 +422,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		BE5D44AA18F397CF00450160 /* LaunchControl.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = LaunchControl.app;
-			remoteRef = BE5D44A918F397CF00450160 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		BE5D44AC18F397CF00450160 /* com.eeaapps.launchctl.helper */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = com.eeaapps.launchctl.helper;
-			remoteRef = BE5D44AB18F397CF00450160 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		BE5D44AE18F397CF00450160 /* libAHLaunchCtl.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;

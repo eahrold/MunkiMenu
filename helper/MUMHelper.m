@@ -189,7 +189,8 @@ static const NSTimeInterval kHelperCheckInterval = 1.0; // how often to check wh
     error = [MUMAuthorizer checkAuthorization:authData command:_cmd];
     reply(error);
     if(error == nil){
-        [AHLaunchCtl uninstallHelper:kMUMHelperName error:nil];
+        [AHLaunchCtl removeFilesForHelperWithLabel:kMUMHelperName error:nil];
+        [AHLaunchCtl uninstallHelper:kMUMHelperName prompt:@"" error:nil];
     }
 }
 
