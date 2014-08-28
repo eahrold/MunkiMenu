@@ -42,7 +42,6 @@ int preinstall(){
     if(![AHLaunchCtl launchAtLogin:[[NSBundle mainBundle]bundlePath] launch:NO global:YES keepAlive:NO error:&error]){
         if(error){
             NSLog(@"%@",error.localizedDescription);
-            return 1;
         }
     }
     previouse_release_fixes();
@@ -58,16 +57,15 @@ int postinstall(BOOL launchAtLogin){
                             prompt:@"To add Managed Software Update to the Status Bar"
                              error:&error]){
         if(error){
-            NSLog(@"%@",error.localizedDescription);
-            return 1;
+            NSLog(@"ERROR during postinstall: %@",error.localizedDescription);
+            return (int)error.code;
         }
     }
 
     if(![AHLaunchCtl launchAtLogin:[[NSBundle mainBundle]bundlePath] launch:launchAtLogin global:YES keepAlive:NO error:&error]){
-        NSLog(@"error!");
         if(error){
             NSLog(@"%@",error.localizedDescription);
-            return 1;
+            return (int)error.code;
         }
     }
     printf("done with postinstall...\n");
@@ -77,18 +75,21 @@ int postinstall(BOOL launchAtLogin){
 int preuninstall(){
     printf("Starting preuninstall...\n");
     NSError *error;
-    if(![AHLaunchCtl uninstallHelper:@"com.googlecode.MunkiMenu.helper" error:&error]){
-        if(error){
-            NSLog(@"%@",error.localizedDescription);
-            return 1;
-        }
+    if(![AHLaunchCtl removeFilesForHelperWithLabel:@"com.googlecode.MunkiMenu.helper" error:&error]){
+        NSLog(@"ERROR during pre-uninstall:%@",error.localizedDescription);
+        return (int)error.code;
+    }
+    
+    if(![AHLaunchCtl uninstallHelper:@"com.googlecode.MunkiMenu.helper" prompt:@"" error:&error]){
+        NSLog(@"%@",error.localizedDescription);
+        return (int)error.code;
     }
     
     if(![AHLaunchCtl launchAtLogin:[[NSBundle mainBundle]bundlePath] launch:NO global:YES keepAlive:NO error:&error]){
         NSLog(@"error!");
         if(error){
             NSLog(@"%@",error.localizedDescription);
-            return 1;
+            return (int)error.code;
         }
     }
     printf("done with preuninsatll...\n");
@@ -99,31 +100,31 @@ int preuninstall(){
 int main(int argc, const char * argv[])
 {
     NSArray *args = [[NSProcessInfo processInfo] arguments];
-    NSLog(@"Launching... %@",args);
-    NSPredicate *ignoredStrings =[NSPredicate predicateWithFormat:@"SELF BEGINSWITH[cd] %@ OR SELF == %@",@"-psn",@"-NSDocumentRevisionsDebugMode"];
+    NSPredicate *isOptArgPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH '--' AND SELF CONTAINS[CD] 'install'"];
     
     if (args.count > 1){
-        if([args[1] isEqualToString:kPreinstall]){
-            return preinstall();
-        }
-        else if([args[1] isEqualToString:kPostinstall]){
-            return postinstall(YES);
-        }
-        else if([args[1] isEqualToString:kPostinstallNoLaunch]){
-            return postinstall(NO);
-        }
-        else if([args[1] isEqualToString:kPreuninstall]){
-            return preuninstall();
-        }
-        else if([args[1] isEqualToString:kCliHelp]){
-            return usage(0);
-        }
-        // this catches the debug arg from passed from Xcode
-        else if([ignoredStrings evaluateWithObject:args[1]]){
-            return NSApplicationMain(argc, argv);
-        }else{
-            printf( "\nWarning: \"%s\" is not a valid option!",[args[1] UTF8String]);
-            return usage(1);
+        NSString *installArg =  [[args filteredArrayUsingPredicate:isOptArgPred] lastObject];
+        BOOL isMunkiScriptKey =  installArg ? YES:NO;
+            
+        if(isMunkiScriptKey) {
+            if([installArg isEqualToString:kPreinstall]){
+                return preinstall();
+            }
+            else if([installArg isEqualToString:kPostinstall]){
+                return postinstall(YES);
+            }
+            else if([installArg isEqualToString:kPostinstallNoLaunch]){
+                return postinstall(NO);
+            }
+            else if([installArg isEqualToString:kPreuninstall]){
+                return preuninstall();
+            }
+            else if([installArg isEqualToString:kCliHelp]){
+                return usage(0);
+            }else{
+                printf( "\nWarning: \"%s\" is not a valid option!",[installArg UTF8String]);
+                return usage(1);
+            }
         }
     }
     return NSApplicationMain(argc, argv);
