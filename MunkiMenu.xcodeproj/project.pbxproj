@@ -35,7 +35,7 @@
 		BE8B461D18451687005D435B /* MUMMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = BE8B461C18451687005D435B /* MUMMenu.m */; };
 		BE96704D18478586006B3A92 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE96704C18478586006B3A92 /* Foundation.framework */; };
 		BE96705018478586006B3A92 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BE96704F18478586006B3A92 /* main.m */; };
-		BE96705B184785C2006B3A92 /* com.googlecode.MunkiMenu.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = BE96704B18478586006B3A92 /* com.googlecode.MunkiMenu.helper */; };
+		BE96705B184785C2006B3A92 /* com.googlecode.MunkiMenu.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = BE96704B18478586006B3A92 /* com.googlecode.MunkiMenu.helper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BE984C3918A02E630098E4F1 /* MUMHelperConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = BE984C3818A02E630098E4F1 /* MUMHelperConnection.m */; };
 		BEAF7150188591CA0043A406 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEAF714F188591CA0043A406 /* SystemConfiguration.framework */; };
 		BEAF7151188591D10043A406 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEE3B716184E2AF600E19FF7 /* ServiceManagement.framework */; };
@@ -393,7 +393,7 @@
 		BE8B45D7184510B0005D435B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Eldon Ahrold";
 			};
 			buildConfigurationList = BE8B45DA184510B0005D435B /* Build configuration list for PBXProject "MunkiMenu" */;
@@ -625,7 +625,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
 				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
@@ -651,7 +651,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
 				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
@@ -688,7 +688,7 @@
 					"helper/helper-Launchd.plist",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
 				USER_HEADER_SEARCH_PATHS = "";
 			};
@@ -720,7 +720,7 @@
 					"helper/helper-Launchd.plist",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
 				USER_HEADER_SEARCH_PATHS = "";
 			};

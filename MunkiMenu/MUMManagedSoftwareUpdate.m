@@ -137,7 +137,7 @@ typedef NS_ENUM(NSInteger, MSUErrorCodes){
     NSString *version = [self version];
     NSArray *majorVersion = [version componentsSeparatedByString:@"."];
     if(majorVersion){
-        return [majorVersion[0] integerValue];
+        return [[majorVersion firstObject] integerValue];
     }
     return 0;
 }

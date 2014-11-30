@@ -159,7 +159,7 @@
                        preferredEdge:NSMinYEdge];
     }
     
-    [[NSApp delegate] setPopupIsActive:YES];
+    [(MUMDelegate *)[[NSApplication sharedApplication] delegate] setPopupIsActive:YES];
     
     // If the computer is managed using MCX there's no use editing
     // the ManagedInsalls.plist, so we won't bother adding this to the menu
@@ -189,7 +189,7 @@
         [_popover close];
     }
     
-    [[NSApp delegate] setPopupIsActive:NO];
+    [(MUMDelegate *)[[NSApplication sharedApplication] delegate] setPopupIsActive:NO];
 
     _configView = nil;
     _popover = nil;

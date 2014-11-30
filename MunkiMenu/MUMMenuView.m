@@ -58,7 +58,9 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    if([[NSApp delegate]popupIsActive])
+    BOOL popupIsActive = [(MUMDelegate *)[[NSApplication sharedApplication] delegate] popupIsActive];
+
+    if(popupIsActive)
         [[NSNotificationCenter defaultCenter]postNotificationName:MUMClosePopover object:nil];
     
     [self setActive:YES];
